@@ -1,0 +1,2 @@
+{:app-name     :common-clj
+ :kafka-server "localhost:9092"}
