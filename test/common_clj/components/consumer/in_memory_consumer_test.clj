@@ -82,4 +82,3 @@
   (fact "handler didn't consume the message"
     (-> *world* :system :counter-a counter.protocol/get-count)
     => 0))
-

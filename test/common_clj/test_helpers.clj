@@ -1,6 +1,12 @@
 (ns common-clj.test-helpers
   (:require [com.stuartsierra.component :as component]
-            [common-clj.components.consumer.protocol :as consumer.protocol]))
+            [common-clj.components.consumer.protocol :as consumer.protocol]
+            [common-clj.components.logger.protocol :as logger.protocol]
+            [franzy.serialization.json.serializers :as serializers]
+            [franzy.serialization.json.deserializers :as deserializers])
+  (:import (org.apache.kafka.clients.consumer MockConsumer KafkaConsumer
+                                              OffsetResetStrategy ConsumerRecord)
+           (org.apache.kafka.common TopicPartition)))
 
 (defn init!
   "setup components and store them in the world"
@@ -28,3 +34,26 @@
       ex-data
       :type
       (= :schema.core/error)))
+
+(defn kafka-message-arrived!
+  [topic message world]
+  (let [kafka-client (-> world :system :consumer :kafka-client)
+        serializer (serializers/json-serializer)
+        message-bytes (.serialize serializer topic message)]
+    (.rebalance kafka-client [(TopicPartition. topic 0)])
+    (.updateBeginningOffsets kafka-client {(TopicPartition. topic 0) 0})
+    (.updateEndOffsets kafka-client {(TopicPartition. topic 0) 1})
+    (.addRecord kafka-client (ConsumerRecord. topic 0 0 "key" message-bytes)))
+  world)
+
+(defn kafka-try-consume!
+  [topic message world]
+  (let [logger (-> world :system :logger)
+        error-handler (reify Thread$UncaughtExceptionHandler    
+                        (uncaughtException [_ _ e] 
+                          (logger.protocol/log! logger topic e)))
+        consumer-thread (-> world :system :consumer :consumer-thread)]
+    (.setUncaughtExceptionHandler consumer-thread error-handler)
+    (kafka-message-arrived! topic message world)))
+
+(defn mock-kafka-client [& args] (MockConsumer. OffsetResetStrategy/EARLIEST))

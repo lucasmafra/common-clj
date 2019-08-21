@@ -9,7 +9,7 @@
 
 (def dummy-config
   {:app-name     :dummy
-   :kafka-server "localhost:9090"})
+   :kafka-server "localhost:9092"})
 
 (def invalid-config
   {:schrubles "schrubles"})

@@ -21,7 +21,7 @@
     (-> component
         :logs
         deref
-        tag)))
+        (get tag))))
 
 (defn new-logger []
   (map->InMemoryLogger {}))
