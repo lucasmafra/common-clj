@@ -6,7 +6,7 @@
             [common-clj.components.config.protocol :as config.protocol]
             [common-clj.schemata.consumer :as schemata.consumer]
             [common-clj.components.consumer.protocol :as consumer.protocol :refer [Consumer]]
-            [franzy.serialization.json.deserializers :as deserializers])
+            [cheshire.core :refer [parse-string]])
   (:import java.util.Properties
            (org.apache.kafka.clients.consumer ConsumerConfig KafkaConsumer)
            (org.apache.kafka.common.serialization StringDeserializer)
@@ -48,11 +48,10 @@
   (while true
     (let [records (.poll kafka-client 100)]
       (doseq [record records]
-        (let [kafka-topic (.topic record)
-              topic (kafka-topic->topic kafka-topic)
-              raw-message (.value record)
-              message (-> (deserializers/json-deserializer {:key-fn keyword})
-                          (.deserialize kafka-topic raw-message))]
+        (let [kafka-topic          (.topic record)
+              topic                (kafka-topic->topic kafka-topic)
+              raw-message          (.value record)
+              message              (parse-string raw-message true)]
           (consumer.protocol/consume! component topic message))))))
 
 (defn new-kafka-client [props]

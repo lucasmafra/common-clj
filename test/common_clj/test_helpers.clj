@@ -2,8 +2,7 @@
   (:require [com.stuartsierra.component :as component]
             [common-clj.components.consumer.protocol :as consumer.protocol]
             [common-clj.components.logger.protocol :as logger.protocol]
-            [franzy.serialization.json.serializers :as serializers]
-            [franzy.serialization.json.deserializers :as deserializers])
+            [cheshire.core :refer [generate-string]])
   (:import (org.apache.kafka.clients.consumer MockConsumer KafkaConsumer
                                               OffsetResetStrategy ConsumerRecord)
            (org.apache.kafka.common TopicPartition)))
@@ -37,13 +36,11 @@
 
 (defn kafka-message-arrived!
   [topic message world]
-  (let [kafka-client (-> world :system :consumer :kafka-client)
-        serializer (serializers/json-serializer)
-        message-bytes (.serialize serializer topic message)]
+  (let [kafka-client (-> world :system :consumer :kafka-client)]
     (.rebalance kafka-client [(TopicPartition. topic 0)])
     (.updateBeginningOffsets kafka-client {(TopicPartition. topic 0) 0})
     (.updateEndOffsets kafka-client {(TopicPartition. topic 0) 1})
-    (.addRecord kafka-client (ConsumerRecord. topic 0 0 "key" message-bytes)))
+    (.addRecord kafka-client (ConsumerRecord. topic 0 0 "key" (generate-string message))))
   world)
 
 (defn kafka-try-consume!

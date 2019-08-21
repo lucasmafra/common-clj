@@ -78,14 +78,14 @@
       => [valid-message]))
 
   (flow "invalid message arrives to topic"
-        (partial init! system)
+    (partial init! system)
 
-        (partial kafka-try-consume! "TOPIC_A" invalid-message)
-
-        (fact "schema error was thrown"
-          (-> *world* :system :logger (logger.protocol/get-logs "TOPIC_A"))
-          => (match [schema-error?]))
-
-        (fact "handler didn't consume the message"
-          (-> *world* :system :counter-a counter.protocol/get-count)
-          => 0)))
+    (partial kafka-try-consume! "TOPIC_A" invalid-message)
+    
+    (fact "schema error was thrown"
+      (-> *world* :system :logger (logger.protocol/get-logs "TOPIC_A"))
+      => (match [schema-error?]))
+    
+    (fact "handler didn't consume the message"
+      (-> *world* :system :counter-a counter.protocol/get-count)
+      => 0)))

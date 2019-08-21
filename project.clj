@@ -7,8 +7,7 @@
                  [clojure.java-time "0.3.2"]
                  [prismatic/schema "1.1.11"]
                  [org.apache.kafka/kafka-clients "2.1.0"]
-                 [ymilky/franzy-json "0.0.1"]
-                 [com.fasterxml.jackson.core/jackson-core "2.9.9"]
+                 [cheshire "5.9.0"]
                  [com.stuartsierra/component "0.4.0"]]
   :main ^:skip-aot common-clj.core
   :target-path "target/%s"
