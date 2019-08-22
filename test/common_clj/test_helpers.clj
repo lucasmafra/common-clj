@@ -4,7 +4,8 @@
             [common-clj.components.logger.protocol :as logger.protocol]
             [cheshire.core :refer [generate-string]]
             [common-clj.components.producer.protocol :as producer.protocol]
-            [selvage.midje.flow :refer [*world* flow]])
+            [selvage.midje.flow :refer [*world* flow]]
+            [common-clj.lib.kafka :refer [kafka-topic->topic]])
   (:import (org.apache.kafka.clients.consumer MockConsumer KafkaConsumer
                                               OffsetResetStrategy ConsumerRecord)
            (org.apache.kafka.clients.producer MockProducer)
@@ -88,6 +89,13 @@
     (producer.protocol/produce! producer topic message)
     world))
 
+(defn kafka-try-produce!
+  [topic message world]
+  (try
+    (produce! topic message world)
+    (catch Exception e
+      (update-in world [:producer-error topic] #(conj % e)))))
+
 (defn check-kafka-produced-messages [topic]
   (let [kafka-client (-> *world* :system :producer :kafka-client)]
     (->> kafka-client
@@ -97,5 +105,9 @@
                             :value       (.value record)}))
          (filter (fn [{:keys [kafka-topic]}] (= topic kafka-topic)))
          (map :value))))
+
+(defn check-kafka-produced-errors [topic]
+  (or (-> *world* :producer-error topic)
+      []))
 
 (defn mock-kafka-producer [& args] (MockProducer.))

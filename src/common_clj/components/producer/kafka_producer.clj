@@ -43,8 +43,10 @@
   Producer
   (produce! [component topic message]
     (let [{:keys [kafka-client]} component
+          schema (topic producer-topics)
           kafka-topic (topic->kafka-topic topic)
           record (build-record kafka-topic message)]
+      (s/validate schema message)
       (.send kafka-client record))))
 
 (s/defn new-producer [producer-topics :- schemata.producer/ProducerTopics]

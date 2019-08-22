@@ -3,11 +3,14 @@
             [schema.core :as s]
             [selvage.midje.flow :refer [flow]]
             [common-clj.test-helpers :refer [init! kafka-produce! check-kafka-produced-messages
-                                             mock-kafka-producer]]
+                                             mock-kafka-producer kafka-try-produce!
+                                             check-kafka-produced-errors schema-error?
+                                             exception?]]
             [common-clj.components.producer.kafka-producer :as kafka-producer]
             [common-clj.components.config.in-memory-config :as in-memory-config]
             [cheshire.core :refer [generate-string]]
-            [com.stuartsierra.component :as component]))
+            [com.stuartsierra.component :as component]
+            [matcher-combinators.midje :refer [match]]))
 
 (s/defschema SchemaA
   {:field1 s/Str
@@ -46,4 +49,23 @@
         
     (fact "message is produced to correct topic"
       (check-kafka-produced-messages "TOPIC_A") => [(generate-string valid-message)]
-      (check-kafka-produced-messages "TOPIC_B") => [])))
+      (check-kafka-produced-messages "TOPIC_B") => []))
+
+  (flow "try to produce invalid message"
+    (partial init! system)
+
+    (partial kafka-try-produce! :topic-a invalid-message)
+
+    (fact "schema error is thrown"
+      (check-kafka-produced-errors :topic-a) => (match [schema-error?]))
+    
+    (fact "no message is actually produced"
+      (check-kafka-produced-messages :topic-a) => []))
+
+  (flow "try to produce to an unknown topic"
+    (partial init! system)
+
+    (partial kafka-try-produce! :unknown-topic valid-message)
+
+    (fact "error is thrown"
+      (check-kafka-produced-errors :unknown-topic) => (match [exception?]))))
