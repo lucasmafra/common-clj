@@ -60,6 +60,13 @@
                [:config :counter-a :counter-b :logger])))
 
 (with-redefs [kafka-consumer/new-kafka-client mock-kafka-client]
+  (flow "consumer started"
+    (future-fact "it sets consumer group passed to config via :app-name")
+    (future-fact "it listens to kafka server passed to config via :kafka-server"))
+
+  (flow "consumer started but the kafka server is down"
+    (future-fact "it throws error on component/start"))
+
   (flow "valid message arrives"
     (partial init! system)
 
@@ -77,7 +84,7 @@
       (-> *world* :system :logger (logger.protocol/get-logs :message))
       => [valid-message]))
 
-  (flow "invalid message arrives to topic"
+  (flow "invalid message arrives"
     (partial init! system)
 
     (partial kafka-try-consume! "TOPIC_A" invalid-message)

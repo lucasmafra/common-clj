@@ -2,7 +2,9 @@
   (:require [com.stuartsierra.component :as component]
             [common-clj.components.consumer.protocol :as consumer.protocol]
             [common-clj.components.logger.protocol :as logger.protocol]
-            [cheshire.core :refer [generate-string]])
+            [cheshire.core :refer [generate-string]]
+            [common-clj.components.producer.protocol :as producer.protocol]
+            [selvage.midje.flow :refer [*world* flow]])
   (:import (org.apache.kafka.clients.consumer MockConsumer KafkaConsumer
                                               OffsetResetStrategy ConsumerRecord)
            (org.apache.kafka.common TopicPartition)))
@@ -54,3 +56,25 @@
     (kafka-message-arrived! topic message world)))
 
 (defn mock-kafka-client [& args] (MockConsumer. OffsetResetStrategy/EARLIEST))
+
+(defn produce! [topic message world]
+  (let [producer (-> world :system :producer)]
+    (producer.protocol/produce! producer topic message)
+    world))
+
+(defn try-produce!
+  [topic message world]
+  (try
+    (produce! topic message world)
+    (catch Exception e
+      (update-in world [:producer-error topic] #(conj % e)))))
+
+(defn check-produced-messages
+  [topic]
+  (or (-> *world* :system :producer :messages deref topic)
+      []))
+
+(defn check-produced-errors
+  [topic]
+  (or (-> *world* :producer-error topic)
+      []))
