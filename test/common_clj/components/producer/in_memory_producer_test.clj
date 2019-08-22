@@ -1,13 +1,13 @@
 (ns common-clj.components.producer.in-memory-producer-test
-  (:require [midje.sweet :refer :all]
-            [schema.core :as s]
-            [selvage.midje.flow :refer [*world* flow]]
+  (:require [com.stuartsierra.component :as component]
+            [common-clj.components.producer.in-memory-producer :as in-memory-producer]
+            [common-clj.test-helpers :refer [check-produced-errors check-produced-messages exception? init!
+                                             produce! schema-error?
+                                             try-produce!]]
             [matcher-combinators.midje :refer [match]]
-            [com.stuartsierra.component :as component]
-            [common-clj.test-helpers :refer [init! produce! schema-error? try-produce!
-                                             check-produced-messages check-produced-errors
-                                             exception?]]
-            [common-clj.components.producer.in-memory-producer :as in-memory-producer]))
+            [midje.sweet :refer :all]
+            [schema.core :as s]
+            [selvage.midje.flow :refer [*world* flow]]))
 
 (s/defschema SchemaA
   {:field1 s/Str

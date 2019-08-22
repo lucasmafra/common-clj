@@ -1,13 +1,13 @@
 (ns common-clj.test-helpers
-  (:require [com.stuartsierra.component :as component]
+  (:require [cheshire.core :refer [generate-string]]
+            [com.stuartsierra.component :as component]
             [common-clj.components.consumer.protocol :as consumer.protocol]
             [common-clj.components.logger.protocol :as logger.protocol]
-            [cheshire.core :refer [generate-string]]
             [common-clj.components.producer.protocol :as producer.protocol]
-            [selvage.midje.flow :refer [*world* flow]]
-            [common-clj.lib.kafka :refer [kafka-topic->topic]])
-  (:import (org.apache.kafka.clients.consumer MockConsumer KafkaConsumer
-                                              OffsetResetStrategy ConsumerRecord)
+            [common-clj.lib.kafka :refer [kafka-topic->topic]]
+            [selvage.midje.flow :refer [*world* flow]])
+  (:import (org.apache.kafka.clients.consumer ConsumerRecord KafkaConsumer
+                                              MockConsumer OffsetResetStrategy)
            (org.apache.kafka.clients.producer MockProducer)
            (org.apache.kafka.common TopicPartition)))
 

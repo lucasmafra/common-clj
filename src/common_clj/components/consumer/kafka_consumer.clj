@@ -1,17 +1,17 @@
 (ns common-clj.components.consumer.kafka-consumer
-  (:require [com.stuartsierra.component :as component]
-            [schema.core :as s]
-            [schema.coerce :as coerce]
-            [common-clj.schemata.config :as schemata.config]
+  (:require [cheshire.core :refer [parse-string]]
+            [com.stuartsierra.component :as component]
             [common-clj.components.config.protocol :as config.protocol]
-            [common-clj.schemata.consumer :as schemata.consumer]
             [common-clj.components.consumer.protocol :as consumer.protocol :refer [Consumer]]
-            [cheshire.core :refer [parse-string]]
-            [common-clj.lib.kafka :refer [kafka-topic->topic topic->kafka-topic]])
+            [common-clj.lib.kafka :refer [kafka-topic->topic topic->kafka-topic]]
+            [common-clj.schemata.config :as schemata.config]
+            [common-clj.schemata.consumer :as schemata.consumer]
+            [schema.coerce :as coerce]
+            [schema.core :as s])
   (:import java.util.Properties
            (org.apache.kafka.clients.consumer ConsumerConfig KafkaConsumer)
-           (org.apache.kafka.common.serialization StringDeserializer)
-           (org.apache.kafka.common.errors InterruptException)))
+           (org.apache.kafka.common.errors InterruptException)
+           (org.apache.kafka.common.serialization StringDeserializer)))
 
 (defn coerce
   [schema message]

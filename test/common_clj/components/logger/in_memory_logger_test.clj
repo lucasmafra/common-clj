@@ -1,10 +1,10 @@
 (ns common-clj.components.logger.in-memory-logger-test
-  (:require [midje.sweet :refer :all]
-            [selvage.midje.flow :refer [*world* flow]]
+  (:require [com.stuartsierra.component :as component]
+            [common-clj.components.logger.in-memory-logger :as in-memory-logger]
             [common-clj.components.logger.protocol :as logger.protocol]
             [common-clj.test-helpers :refer [init!]]
-            [common-clj.components.logger.in-memory-logger :as in-memory-logger]
-            [com.stuartsierra.component :as component]))
+            [midje.sweet :refer :all]
+            [selvage.midje.flow :refer [*world* flow]]))
 
 (def system
   (component/system-map

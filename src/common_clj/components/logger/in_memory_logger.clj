@@ -1,7 +1,7 @@
 (ns common-clj.components.logger.in-memory-logger
-  (:require [schema.core :as s]
-            [com.stuartsierra.component :as component]
-            [common-clj.components.logger.protocol :refer [Logger]]))
+  (:require [com.stuartsierra.component :as component]
+            [common-clj.components.logger.protocol :refer [Logger]]
+            [schema.core :as s]))
 
 (s/defrecord InMemoryLogger []
   component/Lifecycle

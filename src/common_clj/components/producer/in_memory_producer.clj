@@ -1,8 +1,8 @@
 (ns common-clj.components.producer.in-memory-producer
   (:require [com.stuartsierra.component :as component]
-            [schema.core :as s]
             [common-clj.components.producer.protocol :refer [Producer]]
-            [common-clj.schemata.producer :as schemata.producer]))
+            [common-clj.schemata.producer :as schemata.producer]
+            [schema.core :as s]))
 
 (s/defrecord InMemoryProducer [producer-topics]
   component/Lifecycle

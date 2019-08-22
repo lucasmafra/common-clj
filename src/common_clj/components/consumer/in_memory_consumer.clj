@@ -1,8 +1,8 @@
 (ns common-clj.components.consumer.in-memory-consumer
-  (:require [common-clj.components.consumer.protocol]
-            [common-clj.schemata.consumer :as schemata.consumer]
+  (:require [com.stuartsierra.component :as component]
+            [common-clj.components.consumer.protocol]
             [common-clj.components.consumer.protocol :refer [Consumer]]
-            [com.stuartsierra.component :as component]
+            [common-clj.schemata.consumer :as schemata.consumer]
             [schema.core :as s]))
 
 (defn subscription-key [topic handler]
@@ -10,10 +10,7 @@
 
 (defn maybe-call [handler schema handler-topic component]
   (fn [_ _ _ {:keys [message topic]}]
-    (if (= topic handler-topic)
-      (do
-        (s/validate schema message)
-        (handler message component)))))
+    (when (= topic handler-topic) (s/validate schema message) (handler message component))))
 
 (s/defrecord InMemoryConsumer [consumer-topics :- schemata.consumer/ConsumerTopics]
   component/Lifecycle
@@ -29,7 +26,7 @@
   
   Consumer
   (consume! [component topic message]
-    (let [channel (-> component :channel)]
+    (let [channel (:channel component)]
       (reset! channel {:topic topic :message message}))))
 
 (s/defn new-consumer [consumer-topics :- schemata.consumer/ConsumerTopics]

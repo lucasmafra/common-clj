@@ -1,13 +1,13 @@
 (ns common-clj.components.producer.kafka-producer
-  (:require [common-clj.components.producer.protocol :refer [Producer]]
+  (:require [cheshire.core :refer [generate-string]]
             [com.stuartsierra.component :as component]
-            [schema.core :as s]
-            [common-clj.schemata.producer :as schemata.producer]
             [common-clj.components.config.protocol :as config.protocol]
+            [common-clj.components.producer.protocol :refer [Producer]]
             [common-clj.lib.kafka :refer [topic->kafka-topic]]
-            [cheshire.core :refer [generate-string]])
-  (:import (org.apache.kafka.clients.producer KafkaProducer ProducerConfig ProducerRecord)
-           (java.util Properties)
+            [common-clj.schemata.producer :as schemata.producer]
+            [schema.core :as s])
+  (:import (java.util Properties)
+           (org.apache.kafka.clients.producer KafkaProducer ProducerConfig ProducerRecord)
            (org.apache.kafka.common.serialization StringSerializer)))
 
 (defn producer-props [config]

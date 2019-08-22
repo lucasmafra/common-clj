@@ -1,8 +1,8 @@
 (ns common-clj.components.counter.in-memory-counter-test
-  (:require [midje.sweet :refer :all]
+  (:require [com.stuartsierra.component :as component]
+            [common-clj.components.counter.in-memory-counter :as in-memory-counter]
             [common-clj.components.counter.protocol :as counter.protocol]
-            [com.stuartsierra.component :as component]
-            [common-clj.components.counter.in-memory-counter :as in-memory-counter]))
+            [midje.sweet :refer :all]))
 
 (fact "it starts count at 0"
   (-> (in-memory-counter/new-counter)

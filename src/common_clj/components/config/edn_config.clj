@@ -1,10 +1,10 @@
 (ns common-clj.components.config.edn-config
-  (:require [schema.core :as s]
-            [com.stuartsierra.component :as component]
-            [common-clj.schemata.config :as schemata.config]
-            [common-clj.components.config.protocol :refer [Config]]
+  (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.edn :as edn]))
+            [com.stuartsierra.component :as component]
+            [common-clj.components.config.protocol :refer [Config]]
+            [common-clj.schemata.config :as schemata.config]
+            [schema.core :as s]))
 
 (defn load-edn
   "Load edn from an io/reader source (filename or io/resource)."

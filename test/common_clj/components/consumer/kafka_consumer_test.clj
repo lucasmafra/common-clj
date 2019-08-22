@@ -1,17 +1,17 @@
 (ns common-clj.components.consumer.kafka-consumer-test
-  (:require [midje.sweet :refer :all]
-            [matcher-combinators.midje :refer [match]]
-            [selvage.midje.flow :refer [*world* flow]]
-            [schema.core :as s]
-            [common-clj.test-helpers :refer [init! mock-kafka-client kafka-message-arrived!
-                                             kafka-try-consume! schema-error?]]
+  (:require [com.stuartsierra.component :as component]
             [common-clj.components.config.in-memory-config :as in-memory-config]
             [common-clj.components.consumer.kafka-consumer :as kafka-consumer]
-            [common-clj.components.counter.protocol :as counter.protocol]
-            [common-clj.components.logger.protocol :as logger.protocol]
             [common-clj.components.counter.in-memory-counter :as in-memory-counter]
+            [common-clj.components.counter.protocol :as counter.protocol]
             [common-clj.components.logger.in-memory-logger :as in-memory-logger]
-            [com.stuartsierra.component :as component]))
+            [common-clj.components.logger.protocol :as logger.protocol]
+            [common-clj.test-helpers :refer [init! kafka-message-arrived! kafka-try-consume!
+                                             mock-kafka-client schema-error?]]
+            [matcher-combinators.midje :refer [match]]
+            [midje.sweet :refer :all]
+            [schema.core :as s]
+            [selvage.midje.flow :refer [*world* flow]]))
 
 (s/defschema SchemaA
   {:field1 s/Str

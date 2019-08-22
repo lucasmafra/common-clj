@@ -4,8 +4,8 @@
 ;; Configure the printer
 (defmethod print-method java.time.LocalDate
   [dt out]
-  (.write out (str "#date \"" (.toString dt) "\"")))
+  (.write out (str "#date \"" (str dt) "\"")))
 
 (defmethod print-dup java.time.LocalDate
   [dt out]
-  (.write out (str "#date \"" (.toString dt) "\"")))
+  (.write out (str "#date \"" (str dt) "\"")))
