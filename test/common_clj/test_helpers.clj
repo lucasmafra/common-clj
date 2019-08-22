@@ -7,6 +7,7 @@
             [selvage.midje.flow :refer [*world* flow]])
   (:import (org.apache.kafka.clients.consumer MockConsumer KafkaConsumer
                                               OffsetResetStrategy ConsumerRecord)
+           (org.apache.kafka.clients.producer MockProducer)
            (org.apache.kafka.common TopicPartition)))
 
 (defn init!
@@ -78,3 +79,23 @@
   [topic]
   (or (-> *world* :producer-error topic)
       []))
+
+(def exception? (partial instance? Exception))
+
+(defn kafka-produce!
+  [topic message world]
+  (let [producer (-> world :system :producer)]
+    (producer.protocol/produce! producer topic message)
+    world))
+
+(defn check-kafka-produced-messages [topic]
+  (let [kafka-client (-> *world* :system :producer :kafka-client)]
+    (->> kafka-client
+         .history
+         vec
+         (map (fn [record] {:kafka-topic (.topic record)
+                            :value       (.value record)}))
+         (filter (fn [{:keys [kafka-topic]}] (= topic kafka-topic)))
+         (map :value))))
+
+(defn mock-kafka-producer [& args] (MockProducer.))

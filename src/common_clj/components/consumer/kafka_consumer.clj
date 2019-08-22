@@ -6,23 +6,12 @@
             [common-clj.components.config.protocol :as config.protocol]
             [common-clj.schemata.consumer :as schemata.consumer]
             [common-clj.components.consumer.protocol :as consumer.protocol :refer [Consumer]]
-            [cheshire.core :refer [parse-string]])
+            [cheshire.core :refer [parse-string]]
+            [common-clj.lib.kafka :refer [kafka-topic->topic topic->kafka-topic]])
   (:import java.util.Properties
            (org.apache.kafka.clients.consumer ConsumerConfig KafkaConsumer)
            (org.apache.kafka.common.serialization StringDeserializer)
            (org.apache.kafka.common.errors InterruptException)))
-
-(s/defn topic->kafka-topic [topic :- s/Keyword] :- s/Str
-  (-> topic
-      name
-      clojure.string/upper-case
-      (clojure.string/replace "-" "_")))
-
-(s/defn kafka-topic->topic [kafka-topic :- s/Str] :- s/Keyword
-  (-> kafka-topic
-      clojure.string/lower-case
-      (clojure.string/replace "_" "-")
-      keyword))
 
 (defn coerce
   [schema message]

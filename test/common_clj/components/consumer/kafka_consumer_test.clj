@@ -61,7 +61,7 @@
 
 (with-redefs [kafka-consumer/new-kafka-client mock-kafka-client]
   (flow "consumer started"
-    (future-fact "it sets consumer group passed to config via :app-name")
+    (future-fact "consumer group matches :app-name passed in config")
     (future-fact "it listens to kafka server passed to config via :kafka-server"))
 
   (flow "consumer started but the kafka server is down"
