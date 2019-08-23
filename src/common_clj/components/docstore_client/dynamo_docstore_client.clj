@@ -20,14 +20,14 @@
 
   DocstoreClient
   (ensure-table! [{:keys [client-options]} table-name primary-key-schema]
-    (far/create-table
+    (far/ensure-table
      client-options
      table-name
      primary-key-schema))
 
   (ensure-table! [{:keys [client-options]} table-name primary-key-schema
                   secondary-key-schema]
-    (far/create-table
+    (far/ensure-table
      client-options
      table-name
      primary-key-schema
@@ -50,3 +50,4 @@
 
 (defn new-docstore-client []
   (map->DynamoDocstoreClient {}))
+
