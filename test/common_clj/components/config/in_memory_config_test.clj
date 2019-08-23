@@ -8,8 +8,7 @@
   (:import clojure.lang.ExceptionInfo))
 
 (def dummy-config
-  {:app-name     :dummy
-   :kafka-server "localhost:9092"})
+  {:app-name     :dummy})
 
 (def invalid-config
   {:schrubles "schrubles"})
