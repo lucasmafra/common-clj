@@ -1,8 +1,8 @@
 (ns common-clj.components.docstore-client.dynamo-docstore-client
   (:require [com.stuartsierra.component :as component]
-            [schema.core :as s]
-            [common-clj.components.docstore-client.protocol :refer [DocstoreClient] :as docstore-client.protocol]
             [common-clj.components.config.protocol :as config.protocol]
+            [common-clj.components.docstore-client.protocol :refer [DocstoreClient]]
+            [schema.core :as s]
             [taoensso.faraday :as far]))
 
 (s/defrecord DynamoDocstoreClient []
@@ -16,7 +16,7 @@
       (assoc component :client-options client-options)))
 
   (stop [component]
-    component)
+    (assoc component :client-options nil))
 
   DocstoreClient
   (ensure-table! [{:keys [client-options]} table-name primary-key-schema]
@@ -50,4 +50,3 @@
 
 (defn new-docstore-client []
   (map->DynamoDocstoreClient {}))
-
