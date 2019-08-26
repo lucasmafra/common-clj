@@ -12,7 +12,9 @@
                  [org.slf4j/slf4j-api "1.7.25"]
                  [org.slf4j/slf4j-simple "1.7.25"]
                  [com.taoensso/encore "2.115.0"]
-                 [com.taoensso/faraday "1.9.0"]]
+                 [com.taoensso/faraday "1.9.0"]
+                 [io.pedestal/pedestal.service "0.5.7"]
+                 [io.pedestal/pedestal.jetty "0.5.7"]]
   :main ^:skip-aot common-clj.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}

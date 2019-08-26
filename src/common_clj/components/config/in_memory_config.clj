@@ -7,10 +7,14 @@
 (s/defrecord InMemoryConfig [config :- schemata.config/AppConfig]
   component/Lifecycle
   (start [component]
-    (assoc component :config config))
+    (s/validate schemata.config/AppConfig config)
+    component)
+
+  (stop [component]
+    component)
 
   Config
-  (get-config [{:keys [config]}]
+  (get-config [component]
     config))
 
 (s/defn new-config [config :- schemata.config/AppConfig]
