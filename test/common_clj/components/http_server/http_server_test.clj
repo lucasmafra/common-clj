@@ -28,13 +28,13 @@
   {:status 200})
 
 (def SchemaA
-  {:name s/Str
-   :age s/Int
-   :budget java.math.BigDecimal
-   :admin s/Bool
-   :city s/Keyword
-   :date java.time.LocalDate
-   :date-time java.time.LocalDateTime
+  {:name        s/Str
+   :age         s/Int
+   :budget      java.math.BigDecimal
+   :admin       s/Bool
+   :city        s/Keyword
+   :date        java.time.LocalDate
+   :date-time   java.time.LocalDateTime
    :control-key s/Uuid})
 
 (s/def valid-request-body :- SchemaA

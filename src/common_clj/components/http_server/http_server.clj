@@ -5,18 +5,33 @@
              :as http-server.protocol]
             [common-clj.schemata.http :as schemata.http]
             [io.pedestal.http :as http]
-            [schema.core :as s]))
+            [schema.core :as s]
+            [io.pedestal.interceptor :refer [interceptor]]
+            [io.pedestal.http.body-params :refer [body-params]]))
 
 (defn wrap-handler [handler components]
   (fn [request]
     (handler request components)))
+
+(def json-coercer
+  (interceptor
+   {:name ::json-coercer
+    :enter (fn [{:keys [request] :as context}]
+             (assoc-in context [:request :body] (:json-params request)))}))
+
+(def interceptors
+  [(body-params)
+   json-coercer])
 
 (s/defn routes->pedestal [routes :- schemata.http/Routes components]
   (into
    #{}
    (map
     (fn [[route-name {:keys [path method handler]}]]
-      [path method (wrap-handler handler components) :route-name route-name]))
+      [path
+       method
+       (conj interceptors (wrap-handler handler components))
+       :route-name route-name]))
    routes))
 
 (defonce ^:private server (atom nil))
