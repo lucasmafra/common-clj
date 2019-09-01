@@ -7,12 +7,16 @@
             [io.pedestal.http :as http]
             [schema.core :as s]))
 
-(s/defn routes->pedestal [routes :- schemata.http/Routes]
+(defn wrap-handler [handler components]
+  (fn [request]
+    (handler request components)))
+
+(s/defn routes->pedestal [routes :- schemata.http/Routes components]
   (into
    #{}
    (map
     (fn [[route-name {:keys [path method handler]}]]
-      [path method handler :route-name route-name]))
+      [path method (wrap-handler handler components) :route-name route-name]))
    routes))
 
 (defonce ^:private server (atom nil))
@@ -20,21 +24,23 @@
 (s/defrecord HttpServerImpl [routes]
   component/Lifecycle
   (start [component]
-    (->> component
-        http-server.protocol/create-server
-        http/start
-        (reset! server))
-    component)
+    (let [pedestal-routes (routes->pedestal routes component)
+          service (http-server.protocol/create-server component)]
+      (http/start service)
+      (reset! server service)
+      (-> component
+          (assoc :service service)
+          (assoc :pedestal-routes pedestal-routes))))
 
   (stop [component]
     (http/stop @server)
     component)
 
   HttpServer
-  (create-server [{:keys [config]}]
+  (create-server [{:keys [config] :as component}]
     (let [{:keys [http-port]} (config.protocol/get-config config)]
       (http/create-server
-       {::http/routes (routes->pedestal routes)
+       {::http/routes (routes->pedestal routes component)
         ::http/type   :jetty
         ::http/port   http-port
         ::http/join?  false}))))

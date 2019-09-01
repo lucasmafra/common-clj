@@ -6,17 +6,12 @@
             [common-clj.lib.kafka :refer [kafka-topic->topic topic->kafka-topic]]
             [common-clj.schemata.config :as schemata.config]
             [common-clj.schemata.consumer :as schemata.consumer]
-            [schema.coerce :as coerce]
+            [common-clj.coercion :refer [coerce]]
             [schema.core :as s])
   (:import java.util.Properties
            (org.apache.kafka.clients.consumer ConsumerConfig KafkaConsumer)
            (org.apache.kafka.common.errors InterruptException)
            (org.apache.kafka.common.serialization StringDeserializer)))
-
-(defn coerce
-  [schema message]
-  (let [coercer (coerce/coercer schema coerce/json-coercion-matcher)]
-    (coercer message)))
 
 (defn ^:private consumer-props [config]
   (let [{:keys [app-name kafka-server]} (config.protocol/get-config config)
