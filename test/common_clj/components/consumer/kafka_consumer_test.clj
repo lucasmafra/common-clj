@@ -6,8 +6,8 @@
             [common-clj.components.counter.protocol :as counter.protocol]
             [common-clj.components.logger.in-memory-logger :as in-memory-logger]
             [common-clj.components.logger.protocol :as logger.protocol]
-            [common-clj.test-helpers :refer [init! kafka-message-arrived! kafka-try-consume!
-                                             mock-kafka-client schema-error?]]
+            [common-clj.test-helpers :refer [coercion-error? init! kafka-message-arrived!
+                                             kafka-try-consume! mock-kafka-client]]
             [matcher-combinators.midje :refer [match]]
             [midje.sweet :refer :all]
             [schema.core :as s]
@@ -91,7 +91,7 @@
     
     (fact "schema error was thrown"
       (-> *world* :system :logger (logger.protocol/get-logs "TOPIC_A"))
-      => (match [schema-error?]))
+      => (match [coercion-error?]))
     
     (fact "handler didn't consume the message"
       (-> *world* :system :counter-a counter.protocol/get-count)

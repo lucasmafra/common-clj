@@ -38,6 +38,12 @@
       :type
       (= :schema.core/error)))
 
+(defn coercion-error? [exception-info]
+  (-> exception-info
+      ex-data
+      :type
+      (= :schema-tools.coerce/error)))
+
 (defn kafka-message-arrived!
   [topic message world]
   (let [kafka-client (-> world :system :consumer :kafka-client)]

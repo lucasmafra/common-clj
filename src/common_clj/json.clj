@@ -1,14 +1,11 @@
 (ns common-clj.json
-  (:require [cheshire.core :refer [generate-string]]))
+  (:require [cheshire.core :refer [generate-string parse-string]]))
 
 (defn zone [] (java.time.ZoneId/systemDefault))
 
 (def ^:private special-type->supported-type
   {java.time.LocalDate str
-   java.time.LocalDateTime #(-> %
-                                (.atZone (zone))
-                                .toInstant
-                                java.util.Date/from)})
+   java.time.LocalDateTime str})
 
 (defn to-supported-type [value]
   (let [conversion-fn (or (special-type->supported-type (class value))
@@ -21,5 +18,5 @@
        (into {})
        generate-string))
 
-
-
+(defn string->json [string]
+  (parse-string string true))

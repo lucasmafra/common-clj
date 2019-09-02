@@ -7,6 +7,9 @@
   (start [component]
     (assoc component :counter (atom 0)))
 
+  (stop [component]
+    (assoc component :counter nil))
+
   Counter
   (inc! [component]
     (-> component

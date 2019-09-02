@@ -1,6 +1,6 @@
 (ns common-clj.json-test
-  (:require [midje.sweet :refer :all]
-            [common-clj.json :as json]))
+  (:require [common-clj.json :as json]
+            [midje.sweet :refer :all]))
 
 
 (facts "json->string"
@@ -8,14 +8,20 @@
     (json/json->string {:a "John"})
     => "{\"a\":\"John\"}")
 
-  (fact "date"
+  (fact "LocalDate"
     (json/json->string {:a #date "2019-08-22"})
     => "{\"a\":\"2019-08-22\"}")
 
-  (fact "date-time"
+  (fact "LocalDateTime"
     (json/json->string {:a #date-time "2019-08-22T09:52:37"})
-    => "{\"a\":\"2019-08-22T12:52:37Z\"}"
-    (provided
-     (json/zone) => (java.time.ZoneId/of "America/Sao_Paulo"))))
+    => "{\"a\":\"2019-08-22T09:52:37\"}")
 
+  (fact "BigDecimal"
+    (json/json->string {:a 200M})
+    => "{\"a\":200}"))
 
+(fact "string->json"
+  (-> {:a "John"}
+      json/json->string
+      json/string->json)
+  => {:a "John"})

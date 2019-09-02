@@ -1,27 +1,56 @@
 (ns common-clj.components.http-server.http-server
   (:require [com.stuartsierra.component :as component]
+            [common-clj.coercion :refer [coerce]]
             [common-clj.components.config.protocol :as config.protocol]
             [common-clj.components.http-server.protocol :refer [HttpServer]
              :as http-server.protocol]
+            [common-clj.json :refer [json->string]]
             [common-clj.schemata.http :as schemata.http]
             [io.pedestal.http :as http]
-            [schema.core :as s]
+            [io.pedestal.http.body-params :refer [body-params]]
             [io.pedestal.interceptor :refer [interceptor]]
-            [io.pedestal.http.body-params :refer [body-params]]))
+            [io.pedestal.interceptor.error :as error-int]
+            [schema.core :as s]))
 
 (defn wrap-handler [handler components]
   (fn [request]
     (handler request components)))
 
-(def json-coercer
+(def content-type
   (interceptor
-   {:name ::json-coercer
-    :enter (fn [{:keys [request] :as context}]
-             (assoc-in context [:request :body] (:json-params request)))}))
+   {:name ::content-type
+    :leave (fn [context]
+             (assoc-in context
+                       [:response :headers]
+                       {"Content-Type" "application/json"}))}))
+(defn body-coercer
+  [routes]
+  (interceptor
+   {:name  ::json-coercer
+    :enter (fn [{:keys [request route] :as context}]
+             (let [{:keys [json-params]}    request
+                   {:keys [route-name]}     route
+                   {:keys [request-schema]} (route-name routes)
+                   coerced-body             (when request-schema (coerce request-schema json-params))]
+               (assoc-in context [:request :body] coerced-body)))
+    :leave (fn [{:keys [response route] :as context}]
+             (let [{:keys [body]}            response
+                   {:keys [route-name]}      route
+                   {:keys [response-schema]} (route-name routes)
+                   coerced-body              (json->string body)]
+               (s/validate response-schema body)
+               (assoc-in context [:response :body] coerced-body)))}))
 
-(def interceptors
-  [(body-params)
-   json-coercer])
+(def error-interceptor
+  (error-int/error-dispatch [ctx ex]
+     [{:type :schema-tools.coerce/error}]
+     (assoc ctx :response {:status 400 :body (ex-data ex)})))
+
+(defn interceptors [routes]
+  [content-type
+   error-interceptor
+   (body-params)
+   (body-coercer routes)])
 
 (s/defn routes->pedestal [routes :- schemata.http/Routes components]
   (into
@@ -30,7 +59,7 @@
     (fn [[route-name {:keys [path method handler]}]]
       [path
        method
-       (conj interceptors (wrap-handler handler components))
+       (conj (interceptors routes) (wrap-handler handler components))
        :route-name route-name]))
    routes))
 

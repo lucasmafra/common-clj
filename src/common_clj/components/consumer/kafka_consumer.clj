@@ -1,12 +1,12 @@
 (ns common-clj.components.consumer.kafka-consumer
   (:require [cheshire.core :refer [parse-string]]
             [com.stuartsierra.component :as component]
+            [common-clj.coercion :refer [coerce]]
             [common-clj.components.config.protocol :as config.protocol]
             [common-clj.components.consumer.protocol :as consumer.protocol :refer [Consumer]]
             [common-clj.lib.kafka :refer [kafka-topic->topic topic->kafka-topic]]
             [common-clj.schemata.config :as schemata.config]
             [common-clj.schemata.consumer :as schemata.consumer]
-            [common-clj.coercion :refer [coerce]]
             [schema.core :as s])
   (:import java.util.Properties
            (org.apache.kafka.clients.consumer ConsumerConfig KafkaConsumer)

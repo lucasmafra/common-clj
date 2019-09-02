@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [clojure.java-time "0.3.2"]
                  [prismatic/schema "1.1.11"]
+                 [metosin/schema-tools "0.12.0"]
                  [org.apache.kafka/kafka-clients "2.1.0"]
                  [cheshire "5.9.0"]
                  [com.stuartsierra/component "0.4.0"]

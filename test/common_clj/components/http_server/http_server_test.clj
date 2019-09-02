@@ -1,65 +1,61 @@
 (ns common-clj.components.http-server.http-server-test
-  (:require [common-clj.components.http-server.http-server :as http-server]
-            [com.stuartsierra.component :as component]
-            [common-clj.schemata.http :as schemata.http]
-            [selvage.midje.flow :refer [*world* flow]]
-            [common-clj.test-helpers :refer [init!]]
+  (:require [com.stuartsierra.component :as component]
+            [common-clj.components.config.in-memory-config :as in-memory-config]
             [common-clj.components.counter.in-memory-counter :as in-memory-counter]
             [common-clj.components.counter.protocol :as counter.protocol]
+            [common-clj.components.http-server.http-server :as http-server]
             [common-clj.components.logger.in-memory-logger :as in-memory-logger]
             [common-clj.components.logger.protocol :as logger.protocol]
+            [common-clj.json :refer [json->string string->json]]
+            [common-clj.schemata.http :as schemata.http]
+            [common-clj.test-helpers :refer [init!]]
+            [io.pedestal.http :as http]
+            [io.pedestal.http.route :as http.routes]
             [io.pedestal.test :as test]
+            [matcher-combinators.midje :refer [match]]
             [midje.sweet :refer :all]
             [schema.core :as s]
-            [io.pedestal.http :as http]
-            [common-clj.components.config.in-memory-config :as in-memory-config]
-            [io.pedestal.http.route :as http.routes]
-            [matcher-combinators.midje :refer [match]]
-            [common-clj.json :refer [json->string]]))
+            [selvage.midje.flow :refer [*world* flow]]))
 
-(defn handler-a [{:keys [body json-params] :as request} {:keys [counter-a logger]}]
-  (println json-params)
+(def id #uuid "37929dae-f41d-40d5-b512-729b623d6ea7")
+
+(defn handler-a [{:keys [body] :as request} {:keys [counter-a logger]}]
   (counter.protocol/inc! counter-a)
   (logger.protocol/log! logger :req-body body)
-  {:status 200})
+  {:status 200 :body {:message "Hello"}})
 
 (defn handler-b [request {:keys [counter-b]}]
   (counter.protocol/inc! counter-b)
-  {:status 200})
+  {:status 200 :body {:id id}})
 
-(def SchemaA
+(def RequestA
   {:name        s/Str
-   :age         s/Int
-   :budget      java.math.BigDecimal
-   :admin       s/Bool
-   :city        s/Keyword
-   :date        java.time.LocalDate
-   :date-time   java.time.LocalDateTime
-   :control-key s/Uuid})
+   :date        java.time.LocalDate})
 
-(s/def valid-request-body :- SchemaA
+(s/def valid-request-body :- RequestA
   {:name        "John"
-   :age         22
-   :budget      200M
-   :admin       true
-   :city        :sp
-   :date        #date "2019-08-22"
-   :date-time   #date-time "2019-08-22T09:23:17"
-   :control-key #uuid "b348f264-b9de-429a-9550-69499af20874"})
+   :date        #date "2019-08-22"})
+
+(def invalid-request-body
+ {:name "John"})
+
+(def ResponseB
+  {:name s/Str
+   :id s/Uuid})
 
 (s/def routes :- schemata.http/Routes
   {:a
    {:path            "/a" 
     :method          :post
     :handler         handler-a
-    :request-schema  SchemaA
+    :request-schema  RequestA
     :response-schema s/Any}
 
    :b
    {:path            "/b/:id"
     :method          :get
     :handler         handler-b
-    :response-schema s/Any}})
+    :response-schema ResponseB}})
 
 (def app-config
   {:app-name :common-clj
@@ -116,4 +112,37 @@
 
       (fact "request body is coerced"
         (-> *world* :system :logger (logger.protocol/get-logs :req-body))
-        => [valid-request-body]))))
+        => [valid-request-body])
+
+      (fact "status 200 is returned"
+        (-> *world* :http-responses :a first :status)
+        => 200)
+
+      (fact "content type is application/json"
+        (-> *world* :http-responses :a first :headers)
+        => (match {"Content-Type" "application/json"}))
+
+      (fact "response body is valid json"
+        (-> *world* :http-responses :a first :body string->json)
+        => {:message "Hello"}))
+
+    (flow "invalid request arrives"
+      (partial init! system)
+
+      (partial http-request! :a {:body invalid-request-body})
+
+      (fact "handler is not executed"
+        (-> *world* :system :counter-a counter.protocol/get-count) => 0)
+
+      (fact "status 400 is returned"
+        (-> *world* :http-responses :a first :status) => 400))
+
+    (flow "invalid response body"
+      (partial init! system)
+
+      (partial http-request! :b {:path-params {:id (str id)}})
+
+      (fact "status 500 is returned"
+        (-> *world* :http-responses :b first :status) => 500))
+
+    (future-fact "starts server on port passed via config")))
