@@ -67,10 +67,12 @@
 
 (s/defrecord HttpServerImpl [routes]
   component/Lifecycle
-  (start [component]
+  (start [{:keys [config] :as component}]
     (let [pedestal-routes (routes->pedestal routes component)
-          service (http-server.protocol/create-server component)]
-      (http/start service)
+          service (http-server.protocol/create-server component)
+          env (config.protocol/get-env config)]
+      (when (not (= :test env))
+        (http/start service))
       (reset! server service)
       (-> component
           (assoc :service service)

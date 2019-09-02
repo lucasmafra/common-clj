@@ -63,7 +63,7 @@
 
 (def system
   (component/system-map
-   :config      (in-memory-config/new-config app-config)
+   :config      (in-memory-config/new-config app-config :test)
    :counter-a   (in-memory-counter/new-counter)
    :counter-b   (in-memory-counter/new-counter)
    :logger      (in-memory-logger/new-logger)
@@ -89,60 +89,59 @@
                    :body (json->string body))]
      (update-in world [:http-responses route] conj response))))
 
-(with-redefs [http/start identity]
-  (s/with-fn-validation
-    (flow "init server"
-      (partial init! system)
+(s/with-fn-validation
+  (flow "init server"
+        (partial init! system)
 
-      (fact "routes->pedestal"
-        (-> *world* :system :http-server :pedestal-routes)
-        => (match #{["/a" :post irrelevant :route-name :a]
-                    ["/b/:id" :get irrelevant :route-name :b]})))
+        (fact "routes->pedestal"
+          (-> *world* :system :http-server :pedestal-routes)
+          => (match #{["/a" :post irrelevant :route-name :a]
+                      ["/b/:id" :get irrelevant :route-name :b]})))
 
-    (flow "valid request arrives"
-      (partial init! system)
+  (flow "valid request arrives"
+        (partial init! system)
 
-      (partial http-request! :a {:body valid-request-body})
+        (partial http-request! :a {:body valid-request-body})
 
-      (fact "corresponding handler is called"
-        (-> *world* :system :counter-a counter.protocol/get-count) => 1)
+        (fact "corresponding handler is called"
+          (-> *world* :system :counter-a counter.protocol/get-count) => 1)
 
-      (fact "other handlers are not called"
-        (-> *world* :system :counter-b counter.protocol/get-count) => 0)
+        (fact "other handlers are not called"
+          (-> *world* :system :counter-b counter.protocol/get-count) => 0)
 
-      (fact "request body is coerced"
-        (-> *world* :system :logger (logger.protocol/get-logs :req-body))
-        => [valid-request-body])
+        (fact "request body is coerced"
+          (-> *world* :system :logger (logger.protocol/get-logs :req-body))
+          => [valid-request-body])
 
-      (fact "status 200 is returned"
-        (-> *world* :http-responses :a first :status)
-        => 200)
+        (fact "status 200 is returned"
+          (-> *world* :http-responses :a first :status)
+          => 200)
 
-      (fact "content type is application/json"
-        (-> *world* :http-responses :a first :headers)
-        => (match {"Content-Type" "application/json"}))
+        (fact "content type is application/json"
+          (-> *world* :http-responses :a first :headers)
+          => (match {"Content-Type" "application/json"}))
 
-      (fact "response body is valid json"
-        (-> *world* :http-responses :a first :body string->json)
-        => {:message "Hello"}))
+        (fact "response body is valid json"
+          (-> *world* :http-responses :a first :body string->json)
+          => {:message "Hello"}))
 
-    (flow "invalid request arrives"
-      (partial init! system)
+  (flow "invalid request arrives"
+        (partial init! system)
 
-      (partial http-request! :a {:body invalid-request-body})
+        (partial http-request! :a {:body invalid-request-body})
 
-      (fact "handler is not executed"
-        (-> *world* :system :counter-a counter.protocol/get-count) => 0)
+        (fact "handler is not executed"
+          (-> *world* :system :counter-a counter.protocol/get-count) => 0)
 
-      (fact "status 400 is returned"
-        (-> *world* :http-responses :a first :status) => 400))
+        (fact "status 400 is returned"
+          (-> *world* :http-responses :a first :status) => 400))
 
-    (flow "invalid response body"
-      (partial init! system)
+  (flow "invalid response body"
+        (partial init! system)
 
-      (partial http-request! :b {:path-params {:id (str id)}})
+        (partial http-request! :b {:path-params {:id (str id)}})
 
-      (fact "status 500 is returned"
-        (-> *world* :http-responses :b first :status) => 500))
+        (fact "status 500 is returned"
+          (-> *world* :http-responses :b first :status) => 500))
 
-    (future-fact "starts server on port passed via config")))
+  (future-fact "starts server on port passed via config"))
