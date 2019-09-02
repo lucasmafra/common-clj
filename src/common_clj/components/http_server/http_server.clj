@@ -71,7 +71,7 @@
     (let [pedestal-routes (routes->pedestal routes component)
           service (http-server.protocol/create-server component)
           env (config.protocol/get-env config)]
-      (when (not (= :test env))
+      (when (not= :test env)
         (http/start service))
       (reset! server service)
       (-> component

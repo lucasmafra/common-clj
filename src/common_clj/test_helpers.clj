@@ -4,7 +4,11 @@
             [common-clj.components.consumer.protocol :as consumer.protocol]
             [common-clj.components.logger.protocol :as logger.protocol]
             [common-clj.components.producer.protocol :as producer.protocol]
+            [common-clj.json :refer [json->string]]
             [common-clj.lib.kafka :refer [kafka-topic->topic]]
+            [io.pedestal.http :as http]
+            [io.pedestal.http.route :as http.routes]
+            [io.pedestal.test :as test]            
             [selvage.midje.flow :refer [*world* flow]])
   (:import (org.apache.kafka.clients.consumer ConsumerRecord KafkaConsumer
                                               MockConsumer OffsetResetStrategy)
@@ -117,3 +121,21 @@
       []))
 
 (defn mock-kafka-producer [& args] (MockProducer.))
+
+(defn request-arrived!
+  ([route world]
+   (request-arrived! route {} world))
+  
+  ([route {:keys [path-params body]} world]
+   (let [service (-> world :system :http-server :service :io.pedestal.http/service-fn)
+         routes (-> world :system :http-server :routes)
+         pedestal-routes (-> world :system :http-server :pedestal-routes)
+         url-for (http.routes/url-for-routes
+                  (http.routes/expand-routes pedestal-routes))
+         {:keys [method path]} (route routes)
+         response (test/response-for
+                   service method
+                   (url-for route :path-params path-params)
+                   :headers {"Content-Type" "application/json"}
+                   :body (json->string body))]
+     (update-in world [:http-responses route] conj response))))
