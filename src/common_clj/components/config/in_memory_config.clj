@@ -4,7 +4,8 @@
             [common-clj.schemata.config :as schemata.config]
             [schema.core :as s]))
 
-(s/defrecord InMemoryConfig [config :- schemata.config/AppConfig]
+(s/defrecord InMemoryConfig [config :- schemata.config/AppConfig
+                             env :- schemata.config/Env]
   component/Lifecycle
   (start [component]
     (s/validate schemata.config/AppConfig config)
@@ -15,7 +16,13 @@
 
   Config
   (get-config [component]
-    config))
+    config)
 
-(s/defn new-config [config :- schemata.config/AppConfig]
-  (map->InMemoryConfig {:config config}))
+  (get-env [component]
+    env))
+
+(s/defn new-config
+  ([config :- schemata.config/AppConfig]
+   (new-config config :prod))
+  ([config :- schemata.config/AppConfig env :- schemata.config/Env]
+   (map->InMemoryConfig {:config config :env env})))

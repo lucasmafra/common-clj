@@ -33,4 +33,21 @@
     => (throws Exception (str "Error parsing edn file. "
                               "Make sure you have your app config at 'resources/app.edn'"))
     (provided
-     (io/resource "app.edn") => nil)))
+     (io/resource "app.edn") => nil))
+
+  (facts "get-env"
+    (fact "defaults to prod"      
+      (-> (edn-config/new-config)
+          component/start
+          config.protocol/get-env)
+      => :prod
+      (provided
+       (io/resource "app.edn") => app-config))    
+
+    (fact "can be overwritten"
+      (-> (edn-config/new-config :test)
+          component/start
+          config.protocol/get-env)
+      => :test
+      (provided
+       (io/resource "app.edn") => app-config))))

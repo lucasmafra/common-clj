@@ -19,7 +19,7 @@
         {:error-message (.getMessage e)
          :file source})))))
 
-(s/defrecord EdnConfig []
+(s/defrecord EdnConfig [env :- schemata.config/Env]
   component/Lifecycle
   (start [component]
     (let [config (->> "app.edn" io/resource load-edn)]
@@ -28,7 +28,12 @@
   
   Config
   (get-config [{:keys [config]}]
-    config))
+    config)
 
-(s/defn new-config []
-  (map->EdnConfig {}))
+  (get-env [component]
+    env))
+
+(s/defn new-config
+  ([] (new-config :prod))
+  ([env :- schemata.config/Env]
+   (map->EdnConfig {:env env})))

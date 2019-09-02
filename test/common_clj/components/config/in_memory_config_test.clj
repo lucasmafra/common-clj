@@ -23,4 +23,17 @@
   (fact "it throws when config does not conform to AppConfig schema"
     (-> (in-memory-config/new-config invalid-config)
         component/start)
-    => (throws ExceptionInfo schema-error?)))
+    => (throws ExceptionInfo schema-error?))
+
+  (facts "get-env"
+    (fact "defaults to prod"      
+      (-> (in-memory-config/new-config dummy-config)
+          component/start
+          config.protocol/get-env)
+      => :prod)
+
+    (fact "can be overwritten"
+      (-> (in-memory-config/new-config dummy-config :test)
+          component/start
+          config.protocol/get-env)
+      => :test)))

@@ -8,3 +8,6 @@
    (s/optional-key :aws-access-key)  s/Str
    (s/optional-key :aws-secret-key)  s/Str
    (s/optional-key :http-port)       s/Int})
+
+(def Env
+  (s/enum :test :dev :prod))
