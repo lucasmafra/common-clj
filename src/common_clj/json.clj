@@ -14,8 +14,7 @@
 
 (defn json->string [json]
   (->> json
-       (map (fn [[k v]] {k (to-supported-type v)}))
-       (into {})
+       (clojure.walk/postwalk to-supported-type)
        generate-string))
 
 (defn string->json [string]

@@ -13,8 +13,8 @@
     => "{\"a\":\"2019-08-22\"}")
 
   (fact "LocalDateTime"
-    (json/json->string {:a #date-time "2019-08-22T09:52:37"})
-    => "{\"a\":\"2019-08-22T09:52:37\"}")
+    (json/json->string {:a {:b #date-time "2019-08-22T09:52:37"}})
+    => "{\"a\":{\"b\":\"2019-08-22T09:52:37\"}}")
 
   (fact "BigDecimal"
     (json/json->string {:a 200M})
