@@ -107,7 +107,8 @@
   (flow "invalid request arrives"
         (partial init! system)
 
-        (partial request-arrived! :a {:body invalid-request-body})
+        (partial request-arrived! :a {:body           invalid-request-body
+                                      :supress-errors true})
 
         (fact "handler is not executed"
           (-> *world* :system :counter-a counter.protocol/get-count) => 0)
@@ -118,7 +119,8 @@
   (flow "invalid response body"
         (partial init! system)
 
-        (partial request-arrived! :b {:path-params {:id (str id)}})
+        (partial request-arrived! :b {:path-params    {:id (str id)}
+                                      :supress-errors true})
 
         (fact "status 500 is returned"
           (-> *world* :http-responses :b first :status) => 500))

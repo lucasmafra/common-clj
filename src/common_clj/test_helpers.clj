@@ -126,16 +126,19 @@
   ([route world]
    (request-arrived! route {} world))
   
-  ([route {:keys [path-params body]} world]
-   (let [service (-> world :system :http-server :service :io.pedestal.http/service-fn)
-         routes (-> world :system :http-server :routes)
-         pedestal-routes (-> world :system :http-server :pedestal-routes)
-         url-for (http.routes/url-for-routes
-                  (http.routes/expand-routes pedestal-routes))
-         {:keys [method path]} (route routes)
-         response (test/response-for
-                   service method
-                   (url-for route :path-params path-params)
-                   :headers {"Content-Type" "application/json"}
-                   :body (json->string body))]
+  ([route {:keys [path-params body supress-errors]} world]
+   (let [service                            (-> world :system :http-server :service :io.pedestal.http/service-fn)
+         routes                             (-> world :system :http-server :routes)
+         pedestal-routes                    (-> world :system :http-server :pedestal-routes)
+         url-for                            (http.routes/url-for-routes
+                                             (http.routes/expand-routes pedestal-routes))
+         {:keys [method path]}              (route routes)
+         {:keys [status body] :as response} (test/response-for
+                                             service method
+                                             (url-for route :path-params path-params)
+                                             :headers {"Content-Type" "application/json"}
+                                             :body (json->string body))]
+     (when (and (or (= 500 status) (= 400 status))
+                (not supress-errors))
+       (throw (Exception. body)))
      (update-in world [:http-responses route] conj response))))

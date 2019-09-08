@@ -44,7 +44,10 @@
 (def error-interceptor
   (error-int/error-dispatch [ctx ex]
      [{:type :schema-tools.coerce/error}]
-     (assoc ctx :response {:status 400 :body (ex-data ex)})))
+     (assoc ctx :response {:status 400 :body (ex-data ex)})
+
+     :else
+     (assoc ctx :response {:status 500 :body (ex-data ex)})))
 
 (defn interceptors [routes]
   [content-type
