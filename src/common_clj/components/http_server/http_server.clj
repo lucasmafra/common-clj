@@ -41,19 +41,35 @@
                (s/validate response-schema body)
                (assoc-in context [:response :body] coerced-body)))}))
 
-(def error-interceptor
-  (error-int/error-dispatch [ctx ex]
-     [{:type :schema-tools.coerce/error}]
-     (assoc ctx :response {:status 400 :body (ex-data ex)})
+(defn path-params-coercer
+  [routes]
+  (interceptor
+   {:name  ::path-params-coercer
+    :enter (fn [{:keys [request route] :as context}]
+             (let [{:keys [path-params]}        request
+                   {:keys [route-name]}         route
+                   {:keys [path-params-schema]} (route-name routes)
+                   coerced-path-params (when path-params-schema
+                                         (coerce path-params-schema path-params))]
+               (if coerced-path-params
+                 (assoc-in context [:request :path-params] coerced-path-params)
+                 context)))}))
 
-     :else
-     (assoc ctx :response {:status 500 :body (ex-data ex)})))
+(def error-interceptor
+  (error-int/error-dispatch
+   [ctx ex]
+   [{:type :schema-tools.coerce/error}]
+   (assoc ctx :response {:status 400 :body (ex-data ex)})
+
+   :else
+   (assoc ctx :response {:status 500 :body (ex-data ex)})))
 
 (defn interceptors [routes]
   [content-type
    error-interceptor
    (body-params)
-   (body-coercer routes)])
+   (body-coercer routes)
+   (path-params-coercer routes)])
 
 (s/defn routes->pedestal [routes :- schemata.http/Routes components]
   (into

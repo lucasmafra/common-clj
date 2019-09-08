@@ -16,9 +16,10 @@
 
 (def id #uuid "37929dae-f41d-40d5-b512-729b623d6ea7")
 
-(defn handler-a [{:keys [body] :as request} {:keys [counter-a logger]}]
+(defn handler-a [{:keys [body path-params] :as request} {:keys [counter-a logger]}]
   (counter.protocol/inc! counter-a)
   (logger.protocol/log! logger :req-body body)
+  (logger.protocol/log! logger :id (:id path-params))
   {:status 200 :body {:message "Hello"}})
 
 (defn handler-b [request {:keys [counter-b]}]
@@ -42,17 +43,19 @@
 
 (s/def routes :- schemata.http/Routes
   {:a
-   {:path            "/a" 
+   {:path            "/a/:id" 
     :method          :post
     :handler         handler-a
+    :path-params-schema {:id s/Uuid}
     :request-schema  RequestA
     :response-schema s/Any}
 
    :b
-   {:path            "/b/:id"
-    :method          :get
-    :handler         handler-b
-    :response-schema ResponseB}})
+   {:path               "/b/:id"
+    :method             :get
+    :handler            handler-b
+    :path-params-schema {:id s/Uuid}
+    :response-schema    ResponseB}})
 
 (def app-config
   {:app-name :common-clj
@@ -74,13 +77,14 @@
 
         (fact "routes->pedestal"
           (-> *world* :system :http-server :pedestal-routes)
-          => (match #{["/a" :post irrelevant :route-name :a]
+          => (match #{["/a/:id" :post irrelevant :route-name :a]
                       ["/b/:id" :get irrelevant :route-name :b]})))
 
   (flow "valid request arrives"
         (partial init! system)
 
-        (partial request-arrived! :a {:body valid-request-body})
+        (partial request-arrived! :a {:body        valid-request-body
+                                      :path-params {:id id}})
 
         (fact "corresponding handler is called"
           (-> *world* :system :counter-a counter.protocol/get-count) => 1)
@@ -91,6 +95,10 @@
         (fact "request body is coerced"
           (-> *world* :system :logger (logger.protocol/get-logs :req-body))
           => [valid-request-body])
+
+        (fact "path-params are coerced"
+          (-> *world* :system :logger (logger.protocol/get-logs :id))
+          => [id])
 
         (fact "status 200 is returned"
           (-> *world* :http-responses :a first :status)
@@ -108,6 +116,7 @@
         (partial init! system)
 
         (partial request-arrived! :a {:body           invalid-request-body
+                                      :path-params    {:id id}
                                       :supress-errors true})
 
         (fact "handler is not executed"
@@ -119,10 +128,20 @@
   (flow "invalid response body"
         (partial init! system)
 
-        (partial request-arrived! :b {:path-params    {:id (str id)}
+        (partial request-arrived! :b {:path-params    {:id id}
                                       :supress-errors true})
 
         (fact "status 500 is returned"
           (-> *world* :http-responses :b first :status) => 500))
+
+  (flow "invalid path-param"
+        (partial init! system)
+
+        (partial request-arrived! :b {:path-params    {:id "invalid-uuid"}
+                                      :supress-errors true})
+
+        (fact "400 is returned"
+          (-> *world* :http-responses :b first :status) => 400))
+  
 
   (future-fact "starts server on port passed via config"))
