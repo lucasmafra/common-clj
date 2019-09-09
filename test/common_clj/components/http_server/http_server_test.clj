@@ -109,7 +109,7 @@
           => (match {"Content-Type" "application/json"}))
 
         (fact "response body is valid json"
-          (-> *world* :http-responses :a first :body string->json)
+          (-> *world* :http-responses :a first :body)
           => {:message "Hello"}))
 
   (flow "invalid request arrives"
