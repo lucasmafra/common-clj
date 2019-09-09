@@ -3,10 +3,11 @@
             [common-clj.components.consumer.protocol]
             [common-clj.components.consumer.protocol :refer [Consumer]]
             [common-clj.schemata.consumer :as schemata.consumer]
+            [clojure.repl :refer [demunge]]
             [schema.core :as s]))
 
 (defn subscription-key [topic handler]
-  (str topic "-" (clojure.repl/demunge (str handler))))
+  (str topic "-" (demunge (str handler))))
 
 (defn maybe-call [handler schema handler-topic component]
   (fn [_ _ _ {:keys [message topic]}]
