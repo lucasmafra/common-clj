@@ -5,14 +5,17 @@
             [common-clj.components.logger.protocol :as logger.protocol]
             [common-clj.components.producer.protocol :as producer.protocol]
             [common-clj.json :refer [json->string string->json]]
+            [matcher-combinators.midje :refer [match]]
             [common-clj.lib.kafka :refer [kafka-topic->topic]]
             [io.pedestal.http :as http]
+            [midje.sweet :refer [throws]]
             [io.pedestal.http.route :as http.routes]
             [io.pedestal.test :as test]            
             [selvage.midje.flow :refer [*world* flow]]
             [common-clj.coercion :refer [coerce]])
   (:import (org.apache.kafka.clients.consumer ConsumerRecord KafkaConsumer
                                               MockConsumer OffsetResetStrategy)
+           (clojure.lang ExceptionInfo)
            (org.apache.kafka.clients.producer MockProducer)
            (org.apache.kafka.common TopicPartition)))
 
@@ -149,3 +152,10 @@
                                                               :body
                                                               coerced-body)))
        (update-in world [:http-responses route] conj response)))))
+
+
+(defn throws-ex
+  [m]
+  (throws ExceptionInfo (fn [ex]
+                          (let [matcher (match m)]
+                            (matcher (ex-data ex))))))
