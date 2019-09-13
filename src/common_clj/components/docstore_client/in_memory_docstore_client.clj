@@ -38,7 +38,7 @@
 
   DocstoreClient
   (put-item! [{:keys [store] :as component} table-name v]
-    (let [table                                    (-> store deref table-name)
+    (let [table                                   (-> store deref table-name)
           [primary-key-name primary-key-type]     (-> table :schema :primary-key)
           [secondary-key-name secondary-key-type] (-> table :schema :secondary-key)
           primary-key-value                       (get v primary-key-name)
@@ -109,11 +109,11 @@
               (get-in table [:data primary-key-value secondary-key-value]))]
         (s/validate (s/maybe schema-resp) result))))
 
-  (query [{:keys [store]} table-name primary-key-conditions]
+  (query [{:keys [store]} table-name key-conditions {:keys [schema-resp]}]
     (let  [table                               (-> store deref table-name)
            [primary-key-name primary-key-type] (-> table :schema :primary-key)
            [secondary-key-name]                (-> table :schema :secondary-key)
-           [cmp primary-key-value]             (get primary-key-conditions
+           primary-key-value                   (get key-conditions
                                                     primary-key-name)]
       (when-not table
         (throw (ex-info "Can't do operations on non-existent table"
@@ -122,21 +122,26 @@
       (when-not primary-key-value
         (throw (ex-info "Missing primary key"
                         {:primary-key primary-key-name
-                         :type        :missing-primary-key})))   
-      (if-not secondary-key-name
-        (filterv (comp not nil?)
-                 [(->> table
-                       :data
-                       (filter (fn [[k v]] ((cmp cmp->cmp-fn) k primary-key-value)))
-                       first
-                       second)])
-        (->> table
-             :data
-             (filter (fn [[k v]] ((cmp cmp->cmp-fn) k primary-key-value)))
-             first
-             second
-             vals
-             vec)))))
+                         :type        :missing-primary-key})))
+
+      (let [result
+            (if-not secondary-key-name
+              (filterv (comp not nil?)
+                       [(->> table
+                             :data
+                             (filter (fn [[k v]]
+                                       (= k primary-key-value)))
+                             first
+                             second)])
+              (->> table
+                   :data
+                   (filter (fn [[k v]]                       
+                             (= k primary-key-value)))
+                   first
+                   second
+                   vals
+                   vec))]
+        (s/validate (s/maybe schema-resp) result)))))
 
 (defn new-docstore-client []
   (map->InMemoryDocstoreClient {}))
