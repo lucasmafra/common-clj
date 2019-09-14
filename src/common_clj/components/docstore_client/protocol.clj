@@ -7,4 +7,4 @@
 
   (get-item [component table-name k options])
 
-  (query [component table-name primary-key-conditions options]))
+  (query [component table-name key-conditions options]))

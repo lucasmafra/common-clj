@@ -1,15 +1,15 @@
-(ns common-clj.components.docstore-client.in-memory-docstore-client-test
+(ns common-clj.components.docstore-client.dynamo-docstore-client-test
   (:require [com.stuartsierra.component :as component]
             [common-clj.components.config.in-memory-config
              :as in-memory-config]
-            [common-clj.components.docstore-client.in-memory-docstore-client
-             :as in-memory-docstore-client]
+            [common-clj.components.docstore-client.dynamo-docstore-client
+             :as dynamo-docstore-client]
             [common-clj.components.docstore-client.protocol :as
              docstore-client.protocol]
             [common-clj.test-helpers :refer [schema-error? throws-ex]]
             [midje.sweet :refer :all]
-            [schema.core :as s])
-  (:import clojure.lang.ExceptionInfo))
+            [schema.core :as s]
+            [taoensso.faraday :as far]))
 
 (def dynamo-tables
   {:table-a {:primary-key [:id :s]}
@@ -17,18 +17,26 @@
    :table-b {:primary-key   [:employee-id :s]
              :secondary-key [:control-key :s]}})
 
+(def dynamo-endpoint "http://localhost:8000")
+
 (def config {:app-name :common-clj
-             :dynamo-tables dynamo-tables})
+             :dynamo-tables dynamo-tables
+             :dynamo-endpoint dynamo-endpoint})
 
 (def system
   (component/system-map
    :config (in-memory-config/new-config config)
 
    :db     (component/using
-            (in-memory-docstore-client/new-docstore-client)
+            (dynamo-docstore-client/new-docstore-client)
             [:config])))
 
 (defn init-docstore-client []
+  (let [client-options {:endpoint dynamo-endpoint}
+        tables (far/list-tables client-options)]
+    (doseq [[table-name] dynamo-tables]
+      (when (some #(= table-name %) tables)
+        (far/delete-table client-options table-name))))
   (-> system component/start :db))
 
 (def SchemaA
@@ -214,7 +222,7 @@
           :control-key #uuid "e0515b09-5e4f-4af2-a879-59c5cdbbd00a"}
          {:schema-resp SchemaB}))
       => item-b)
-    (fact "throws schema-error when response does not match"
+    (fact "throws coerce error when response does not match"
       (let [docstore-client (init-docstore-client)]
         (docstore-client.protocol/put-item!
          docstore-client
@@ -225,7 +233,7 @@
          :table-a
          {:id "invalid uuid"}
          {:schema-resp SchemaA}))
-      => (throws-ex {:type :schema.core/error})))
+      => (throws-ex {:type :schema-tools.coerce/error})))
 
   (facts "query"
     (fact "can't do operations on non-existent table"
@@ -310,4 +318,4 @@
          :table-a
          {:id "invalid uuid"}
          {:schema-resp [SchemaA]}))
-      => (throws-ex {:type :schema.core/error}))))
+      => (throws-ex {:type :schema-tools.coerce/error}))))

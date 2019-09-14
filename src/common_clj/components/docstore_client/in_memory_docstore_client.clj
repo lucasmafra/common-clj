@@ -1,9 +1,9 @@
 (ns common-clj.components.docstore-client.in-memory-docstore-client
   (:require [com.stuartsierra.component :as component]
+            [common-clj.components.config.protocol :as config.protocol]
             [common-clj.components.docstore-client.protocol
              :refer [DocstoreClient] :as docstore-client.protocol]
-            [schema.core :as s]
-            [common-clj.components.config.protocol :as config.protocol]))
+            [schema.core :as s]))
 
 (defn- assoc-if
   [m k v]
@@ -49,8 +49,7 @@
                          :type  :non-existent-table})))
       (docstore-client.protocol/put-item! component
                  table-name
-                 (assoc-if {primary-key-name   primary-key-value
-                            secondary-key-name secondary-key-value}
+                 (assoc-if {primary-key-name   primary-key-value}
                            secondary-key-name
                            secondary-key-value)
                  v)))

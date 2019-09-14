@@ -1,21 +1,21 @@
 (ns common-clj.test-helpers
   (:require [cheshire.core :refer [generate-string]]
             [com.stuartsierra.component :as component]
+            [common-clj.coercion :refer [coerce]]
             [common-clj.components.consumer.protocol :as consumer.protocol]
             [common-clj.components.logger.protocol :as logger.protocol]
             [common-clj.components.producer.protocol :as producer.protocol]
             [common-clj.json :refer [json->string string->json]]
-            [matcher-combinators.midje :refer [match]]
             [common-clj.lib.kafka :refer [kafka-topic->topic]]
             [io.pedestal.http :as http]
-            [midje.sweet :refer [throws]]
             [io.pedestal.http.route :as http.routes]
-            [io.pedestal.test :as test]            
-            [selvage.midje.flow :refer [*world* flow]]
-            [common-clj.coercion :refer [coerce]])
-  (:import (org.apache.kafka.clients.consumer ConsumerRecord KafkaConsumer
+            [io.pedestal.test :as test]
+            [matcher-combinators.midje :refer [match]]            
+            [midje.sweet :refer [throws]]
+            [selvage.midje.flow :refer [*world* flow]])
+  (:import (clojure.lang ExceptionInfo)
+           (org.apache.kafka.clients.consumer ConsumerRecord KafkaConsumer
                                               MockConsumer OffsetResetStrategy)
-           (clojure.lang ExceptionInfo)
            (org.apache.kafka.clients.producer MockProducer)
            (org.apache.kafka.common TopicPartition)))
 
@@ -145,7 +145,7 @@
      (when (and (or (= 500 status) (= 400 status))
                 (not supress-errors))
        (throw (Exception. body)))
-     (if (and (not (= 500 status)) (not (= 400 status)))
+     (if (and (not= 500 status) (not= 400 status))
        (let [{:keys [response-schema]} (route routes)
              coerced-body (coerce response-schema (string->json body))]
          (update-in world [:http-responses route] conj (assoc response
