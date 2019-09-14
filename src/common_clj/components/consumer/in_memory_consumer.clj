@@ -1,9 +1,9 @@
 (ns common-clj.components.consumer.in-memory-consumer
-  (:require [com.stuartsierra.component :as component]
+  (:require [clojure.repl :refer [demunge]]
+            [com.stuartsierra.component :as component]
             [common-clj.components.consumer.protocol]
             [common-clj.components.consumer.protocol :refer [Consumer]]
             [common-clj.schemata.consumer :as schemata.consumer]
-            [clojure.repl :refer [demunge]]
             [schema.core :as s]))
 
 (defn subscription-key [topic handler]

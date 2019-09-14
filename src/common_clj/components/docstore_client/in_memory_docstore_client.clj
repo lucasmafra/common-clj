@@ -1,57 +1,66 @@
 (ns common-clj.components.docstore-client.in-memory-docstore-client
   (:require [com.stuartsierra.component :as component]
-            [common-clj.components.docstore-client.protocol :refer [DocstoreClient]]
+            [common-clj.components.config.protocol :as config.protocol]
+            [common-clj.components.docstore-client.protocol
+             :refer [DocstoreClient] :as docstore-client.protocol]
             [schema.core :as s]))
 
-(def cmp->cmp-fn
+(defn- assoc-if
+  [m k v]
+  (if v (assoc m k v) m))
+
+(def ^:private cmp->cmp-fn
   "Maps comparison-operators symbols to comparison functions
    Symbols yet to support:
     #{:le :lt :ge :gt :begins-with :between :ne
       :not-null :null :contains :not-contains :in}"
   {:eq =})
 
+(defn- init-store [dynamo-tables]
+  (reduce
+   (fn [acc [table-name {:keys [primary-key secondary-key]}]]
+     (let [schema (assoc-if {:primary-key primary-key}
+                            :secondary-key
+                            secondary-key)]
+       (assoc acc table-name {:schema schema
+                              :data {}})))
+   {}
+   dynamo-tables))
+
 (s/defrecord InMemoryDocstoreClient []
   component/Lifecycle
-  (start [component]
-    (assoc component :store (atom {})))
+  (start [{:keys [config] :as component}]
+    (let [{:keys [dynamo-tables]} (config.protocol/get-config config)]
+      (assoc component :store (atom (init-store dynamo-tables)))))
 
   (stop [component]
     (assoc component :store nil))
 
   DocstoreClient
-  (ensure-table! [{:keys [store]} table-name primary-key-schema]
-    (let [table (-> store deref table-name)]
-      (when-not table
-        (swap! store
-               (fn [tables]
-                 (assoc tables table-name {:schema {:primary-key primary-key-schema}
-                                           :data   {}}))))))
-
-  (ensure-table! [{:keys [store]} table-name primary-key-schema
-                  secondary-key-schema]
-    (let [table (-> store deref table-name)]
-      (when-not table
-        (swap! store
-               (fn [tables]
-                 (assoc tables table-name {:schema
-                                           {:primary-key   primary-key-schema
-                                            :secondary-key secondary-key-schema}
-                                           :data {}}))))))
-
-  (delete-table! [{:keys [store]} table-name]
-    (let [table (-> store deref table-name)]
+  (put-item! [{:keys [store] :as component} table-name v]
+    (let [table                                   (-> store deref table-name)
+          [primary-key-name primary-key-type]     (-> table :schema :primary-key)
+          [secondary-key-name secondary-key-type] (-> table :schema :secondary-key)
+          primary-key-value                       (get v primary-key-name)
+          secondary-key-value                     (get v secondary-key-name)]
       (when-not table
         (throw (ex-info "Can't do operations on non-existent table"
                         {:table table-name
                          :type  :non-existent-table})))
-      (swap! store (fn [tables] (dissoc tables table-name)))))
+      (docstore-client.protocol/put-item! component
+                 table-name
+                 (assoc-if {primary-key-name   primary-key-value}
+                           secondary-key-name
+                           secondary-key-value)
+                 v)))
 
-  (put-item! [{:keys [store]} table-name item]
+  (put-item! [{:keys [store]} table-name k v]
     (let  [table                                   (-> store deref table-name)
            [primary-key-name primary-key-type]     (-> table :schema :primary-key)
            [secondary-key-name secondary-key-type] (-> table :schema :secondary-key)
-           primary-key-value                       (get item primary-key-name)
-           secondary-key-value                     (get item secondary-key-name)]
+           primary-key-value                       (get k primary-key-name)
+           secondary-key-value                     (or (get k secondary-key-name)
+                                                       (get v secondary-key-name))]
       (when-not table
         (throw (ex-info "Can't do operations on non-existent table"
                         {:table table-name
@@ -69,17 +78,18 @@
       (if-not secondary-key-name
         (swap! store (fn [tables]
                        (update-in tables [table-name :data]
-                                  #(assoc % primary-key-value item))))
+                                  #(assoc % primary-key-value v))))
         (swap! store (fn [tables]
                        (update-in tables [table-name :data primary-key-value]
-                                  #(assoc % secondary-key-value item)))))))
+                                  #(assoc % secondary-key-value v)))))
+      v))
 
-  (get-item [{:keys [store]} table-name item-key]
+  (get-item [{:keys [store]} table-name k {:keys [schema-resp]}]
     (let  [table                                   (-> store deref table-name)
            [primary-key-name primary-key-type]     (-> table :schema :primary-key)
            [secondary-key-name secondary-key-type] (-> table :schema :secondary-key)
-           primary-key-value                       (get item-key primary-key-name)
-           secondary-key-value                     (get item-key secondary-key-name)]
+           primary-key-value                       (get k primary-key-name)
+           secondary-key-value                     (get k secondary-key-name)]
       (when-not table
         (throw (ex-info "Can't do operations on non-existent table"
                         {:table table-name
@@ -91,16 +101,18 @@
       (when (and secondary-key-name (not secondary-key-value))
         (throw (ex-info "Missing secondary key"
                         {:secondary-key secondary-key-name
-                         :type          :missing-secondary-key})))   
-      (if-not secondary-key-name
-        (get-in table [:data primary-key-value])
-        (get-in table [:data primary-key-value secondary-key-value]))))
+                         :type          :missing-secondary-key})))
+      (let [result
+            (if-not secondary-key-name
+              (get-in table [:data primary-key-value])
+              (get-in table [:data primary-key-value secondary-key-value]))]
+        (s/validate (s/maybe schema-resp) result))))
 
-  (query [{:keys [store]} table-name primary-key-conditions]
+  (query [{:keys [store]} table-name key-conditions {:keys [schema-resp]}]
     (let  [table                               (-> store deref table-name)
            [primary-key-name primary-key-type] (-> table :schema :primary-key)
            [secondary-key-name]                (-> table :schema :secondary-key)
-           [cmp primary-key-value]             (get primary-key-conditions
+           primary-key-value                   (get key-conditions
                                                     primary-key-name)]
       (when-not table
         (throw (ex-info "Can't do operations on non-existent table"
@@ -109,17 +121,26 @@
       (when-not primary-key-value
         (throw (ex-info "Missing primary key"
                         {:primary-key primary-key-name
-                         :type        :missing-primary-key})))   
-      (if-not secondary-key-name
-        (filterv (comp not nil?) [(->> table :data (filter (fn [[k v]] ((cmp cmp->cmp-fn) k primary-key-value))) first second)])
-        (->> table
-             :data
-             (filter (fn [[k v]] ((cmp cmp->cmp-fn) k primary-key-value)))
-             first
-             second
-             vals
-             vec)))))
+                         :type        :missing-primary-key})))
+
+      (let [result
+            (if-not secondary-key-name
+              (filterv (comp not nil?)
+                       [(->> table
+                             :data
+                             (filter (fn [[k v]]
+                                       (= k primary-key-value)))
+                             first
+                             second)])
+              (->> table
+                   :data
+                   (filter (fn [[k v]]                       
+                             (= k primary-key-value)))
+                   first
+                   second
+                   vals
+                   vec))]
+        (s/validate (s/maybe schema-resp) result)))))
 
 (defn new-docstore-client []
   (map->InMemoryDocstoreClient {}))
-
