@@ -103,6 +103,13 @@
                           {:type :non-existent-table}))))
       v))
 
+  (maybe-get-item [component table-name k options]
+    (try
+      (docstore-client.protocol/get-item component table-name k options)
+      (catch Exception e
+        (when-not (= :not-found (-> e ex-data :type))
+          (throw e)))))
+
   (get-item [{:keys [client-options config]} table-name item-key {:keys [schema-resp]}]
     (let [{:keys [dynamo-tables]}             (config.protocol/get-config config)
           {:keys [primary-key secondary-key]} (get dynamo-tables table-name)
@@ -124,11 +131,14 @@
                         {:table table-name
                          :type  :missing-secondary-key})))
       (try
-        (->> (map (fn [[k v]] [k (str v)]) item-key)
-             (into {})
-             (far/get-item client-options table-name)
-             from-dynamo-item
-             (#(coerce schema-resp % {:allow-extra-keys true})))
+        (let [result (->> (map (fn [[k v]] [k (str v)]) item-key)
+                          (into {})
+                          (far/get-item client-options table-name)
+                          from-dynamo-item)]
+          (when-not result
+            (throw (ex-info "Not found" {:type :not-found})))
+          (coerce schema-resp result {:allow-extra-keys true}))
+        
         (catch com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException e
           (throw (ex-info "Can't do operations on non-existent table"
                           {:type :non-existent-table}))))))

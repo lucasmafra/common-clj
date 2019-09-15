@@ -233,7 +233,25 @@
          :table-a
          {:id "invalid uuid"}
          {:schema-resp SchemaA}))
-      => (throws-ex {:type :schema-tools.coerce/error})))
+      => (throws-ex {:type :schema-tools.coerce/error}))
+
+    (fact "throws not-found"
+      (let [docstore-client (init-docstore-client)]
+        (docstore-client.protocol/get-item
+         docstore-client
+         :table-a
+         {:id "not-found"}
+         {:schema-resp SchemaA}))
+      => (throws-ex {:type :not-found})))
+
+  (facts "maybe-get-item"
+    (fact "does not throw when not found"
+      (let [docstore-client (init-docstore-client)]
+        (docstore-client.protocol/maybe-get-item docstore-client
+                                                 :table-a
+                                                 {:id "not-found"}
+                                                 {:schema-resp SchemaA}))
+      => nil))
 
   (facts "query"
     (fact "can't do operations on non-existent table"

@@ -84,6 +84,13 @@
                                   #(assoc % secondary-key-value v)))))
       v))
 
+  (maybe-get-item [component table-name k options]
+    (try
+      (docstore-client.protocol/get-item component table-name k options)
+      (catch Exception e
+        (when-not (= :not-found (-> e ex-data :type))
+          (throw e)))))
+
   (get-item [{:keys [store]} table-name k {:keys [schema-resp]}]
     (let  [table                                   (-> store deref table-name)
            [primary-key-name primary-key-type]     (-> table :schema :primary-key)
@@ -106,7 +113,9 @@
             (if-not secondary-key-name
               (get-in table [:data primary-key-value])
               (get-in table [:data primary-key-value secondary-key-value]))]
-        (s/validate (s/maybe schema-resp) result))))
+        (when-not result
+          (throw (ex-info "Not found" {:type :not-found})))
+        (s/validate schema-resp result))))
 
   (query [{:keys [store]} table-name key-conditions {:keys [schema-resp]}]
     (let  [table                               (-> store deref table-name)
