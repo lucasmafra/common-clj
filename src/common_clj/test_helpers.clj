@@ -159,3 +159,5 @@
   (throws ExceptionInfo (fn [ex]
                           (let [matcher (match m)]
                             (matcher (ex-data ex))))))
+
+(defn random-uuid [] (java.util.UUID/randomUUID))
