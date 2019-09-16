@@ -1,7 +1,7 @@
-(defproject lucasmafra/common-clj "0.15.0"
+(defproject lucasmafra/common-clj "0.16.0"
   :description "Useful stuff for Clojure projects"
   :url "https://github.com/lucasmafra/common-clj" 
- :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
+  :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [clojure.java-time "0.3.2"]
