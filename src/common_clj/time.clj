@@ -11,3 +11,7 @@
 (s/defn friday? :- s/Bool
   [date :- LocalDate]
   (time/friday? date))
+
+(def minus time/minus)
+(def days time/days)
+(def before? time/before?)
