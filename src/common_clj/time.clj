@@ -15,3 +15,4 @@
 (def minus time/minus)
 (def days time/days)
 (def before? time/before?)
+(def local-date-time->local-date time/local-date)
