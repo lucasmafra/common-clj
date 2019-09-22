@@ -16,3 +16,5 @@
 (def days time/days)
 (def before? time/before?)
 (def local-date-time->local-date time/local-date)
+(defn now [] (time/local-date-time))
+(defn today [] (time/local-date))
