@@ -171,6 +171,3 @@
                               (constantly ~value)
                               time/today)]
      ~stuff-to-do))
-
-(def now #date-time "2019-02-08T05:00:00")
-(def today #date "1995-02-08")
