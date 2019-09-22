@@ -12,7 +12,8 @@
             [io.pedestal.test :as test]
             [matcher-combinators.midje :refer [match]]            
             [midje.sweet :refer [throws]]
-            [selvage.midje.flow :refer [*world* flow]])
+            [selvage.midje.flow :refer [*world* flow]]
+            [common-clj.time :as time])
   (:import (clojure.lang ExceptionInfo)
            (org.apache.kafka.clients.consumer ConsumerRecord KafkaConsumer
                                               MockConsumer OffsetResetStrategy)
@@ -161,3 +162,15 @@
                             (matcher (ex-data ex))))))
 
 (defn random-uuid [] (java.util.UUID/randomUUID))
+
+(defmacro as-of [value stuff-to-do]
+  `(with-redefs [time/now (if (= java.time.LocalDateTime (class ~value))
+                            (constantly ~value)
+                            time/now)
+                 time/today (if (= java.time.LocalDate (class ~value))
+                              (constantly ~value)
+                              time/today)]
+     ~stuff-to-do))
+
+(def now #date-time "2019-02-08T05:00:00")
+(def today #date "1995-02-08")
