@@ -1,8 +1,9 @@
 (ns common-clj.components.http-server.in-memory-http-server-test
   (:require [com.stuartsierra.component :as component]
             [common-clj.components.http-server.in-memory-http-server
-             :as in-memory-http-server]
-            [common-clj.schemata.http :as schemata.http]
+             :as
+             in-memory-http-server]
+            [common-clj.schemata.http-server :as schemata.http]
             [midje.sweet :refer :all]
             [schema.core :as s]))
 
