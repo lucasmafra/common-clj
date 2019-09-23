@@ -1,8 +1,11 @@
 (ns common-clj.components.http-server.in-memory-http-server
   (:require [com.stuartsierra.component :as component]
-            [common-clj.components.http-server.protocol :refer [HttpServer]
-             :as http-server.protocol]
-            [common-clj.schemata.http :as schemata.http]
+            [common-clj.components.http-server.protocol
+             :as
+             http-server.protocol
+             :refer
+             [HttpServer]]
+            [common-clj.schemata.http-server :as schemata.http]
             [io.pedestal.http :as http]
             [schema.core :as s]))
 

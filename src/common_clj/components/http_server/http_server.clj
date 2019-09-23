@@ -2,10 +2,13 @@
   (:require [com.stuartsierra.component :as component]
             [common-clj.coercion :refer [coerce]]
             [common-clj.components.config.protocol :as config.protocol]
-            [common-clj.components.http-server.protocol :refer [HttpServer]
-             :as http-server.protocol]
+            [common-clj.components.http-server.protocol
+             :as
+             http-server.protocol
+             :refer
+             [HttpServer]]
             [common-clj.json :refer [json->string]]
-            [common-clj.schemata.http :as schemata.http]
+            [common-clj.schemata.http-server :as schemata.http]
             [io.pedestal.http :as http]
             [io.pedestal.http.body-params :refer [body-params]]
             [io.pedestal.interceptor :refer [interceptor]]
