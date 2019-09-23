@@ -12,9 +12,11 @@
             [matcher-combinators.midje :refer [match]]
             [midje.sweet :refer :all]
             [schema.core :as s]
-            [selvage.midje.flow :refer [*world* flow]]))
+            [selvage.midje.flow :refer [*world* flow]]
+            [common-clj.generators :as gen]))
 
-(def id #uuid "37929dae-f41d-40d5-b512-729b623d6ea7")
+(def id (gen/generate s/Uuid))
+(def another-id (gen/generate s/Uuid))
 
 (defn handler-a [{:keys [body path-params] :as request} {:keys [counter-a logger]}]
   (counter.protocol/inc! counter-a)
@@ -31,12 +33,11 @@
   {:name s/Str
    :date java.time.LocalDate})
 
-(s/def valid-request-body :- RequestA
-  {:name "John"
-   :date #date "2019-08-22"})
+(def valid-request-body (gen/generate RequestA))
+(def another-valid-request-body (gen/generate RequestA))
 
 (def invalid-request-body
- {:name "John"})
+  {:name "John"})
 
 (def ResponseB
   {:name s/Str
@@ -87,19 +88,22 @@
         (partial request-arrived! :a {:body        valid-request-body
                                       :path-params {:id id}})
 
+        (partial request-arrived! :a {:body        another-valid-request-body
+                                      :path-params {:id another-id}})
+
         (fact "corresponding handler is called"
-          (-> *world* :system :counter-a counter.protocol/get-count) => 1)
+          (-> *world* :system :counter-a counter.protocol/get-count) => 2)
 
         (fact "other handlers are not called"
           (-> *world* :system :counter-b counter.protocol/get-count) => 0)
 
         (fact "request body is coerced"
           (-> *world* :system :logger (logger.protocol/get-logs :req-body))
-          => [valid-request-body])
+          => [valid-request-body another-valid-request-body])
 
         (fact "path-params are coerced"
           (-> *world* :system :logger (logger.protocol/get-logs :id))
-          => [id])
+          => [id another-id])
 
         (fact "status 200 is returned"
           (-> *world* :http-responses :a first :status)

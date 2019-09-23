@@ -15,7 +15,8 @@
   (log! [component tag value]
     (-> component
         :logs
-        (swap! (fn [logs] (update logs tag #(conj % value))))))
+        (swap! (fn [logs]
+                 (update logs tag (comp vec conj) value)))))
 
   (get-logs [component tag]
     (-> component

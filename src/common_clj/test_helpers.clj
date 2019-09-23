@@ -149,10 +149,10 @@
      (if (and (not= 500 status) (not= 400 status))
        (let [{:keys [response/schema]} (route routes)
              coerced-body              (coerce schema (string->json body))]
-         (update-in world [:http-responses route] conj (assoc response
-                                                              :body
-                                                              coerced-body)))
-       (update-in world [:http-responses route] conj response)))))
+         (update-in world [:http-responses route] (comp vec conj) (assoc response
+                                                                 :body
+                                                                 coerced-body)))
+       (update-in world [:http-responses route] (comp vec conj) response)))))
 
 
 (defn throws-ex

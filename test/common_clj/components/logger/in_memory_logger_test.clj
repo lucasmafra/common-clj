@@ -25,5 +25,5 @@
 
   (fact "get logs by tag"
     (let [logger (-> *world* :system :logger)]
-      (logger.protocol/get-logs logger :banana) => [:lemon "apple"]
+      (logger.protocol/get-logs logger :banana) => ["apple" :lemon]
       (logger.protocol/get-logs logger :grape) =>  [{:strawberry 100}])))
