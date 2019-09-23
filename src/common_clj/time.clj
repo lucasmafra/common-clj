@@ -1,6 +1,6 @@
 (ns common-clj.time
-  (:require [schema.core :as s]
-            [java-time :as time])
+  (:require [java-time :as time]
+            [schema.core :as s])
   (:import java.time.LocalDate))
 
 (s/defn last-day-of-month? :- s/Bool

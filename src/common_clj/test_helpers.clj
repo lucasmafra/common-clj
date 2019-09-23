@@ -7,13 +7,13 @@
             [common-clj.components.producer.protocol :as producer.protocol]
             [common-clj.json :refer [json->string string->json]]
             [common-clj.lib.kafka :refer [kafka-topic->topic]]
+            [common-clj.time :as time]
             [io.pedestal.http :as http]
             [io.pedestal.http.route :as http.routes]
-            [io.pedestal.test :as test]
-            [matcher-combinators.midje :refer [match]]            
+            [io.pedestal.test :as test]            
+            [matcher-combinators.midje :refer [match]]
             [midje.sweet :refer [throws]]
-            [selvage.midje.flow :refer [*world* flow]]
-            [common-clj.time :as time])
+            [selvage.midje.flow :refer [*world* flow]])
   (:import (clojure.lang ExceptionInfo)
            (org.apache.kafka.clients.consumer ConsumerRecord KafkaConsumer
                                               MockConsumer OffsetResetStrategy)

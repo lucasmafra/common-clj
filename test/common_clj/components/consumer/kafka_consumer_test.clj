@@ -38,12 +38,12 @@
 
 (def consumer-topics
   {:topic-a   
-   {:handler handler-a
-    :schema  SchemaA}
+   {:topic/handler handler-a
+    :topic/schema  SchemaA}
    
    :topic-b
-   {:handler handler-b
-    :schema  s/Any}})
+   {:topic/handler handler-b
+    :topic/schema  s/Any}})
 
 (def app-config
   {:app-name :common-clj

@@ -3,15 +3,17 @@
             [com.stuartsierra.component :as component]
             [common-clj.coercion :refer [coerce]]
             [common-clj.components.config.protocol :as config.protocol]
-            [common-clj.components.consumer.protocol :as consumer.protocol :refer [Consumer]]
+            [common-clj.components.consumer.protocol
+             :as
+             consumer.protocol
+             :refer
+             [Consumer]]
             [common-clj.lib.kafka :refer [kafka-topic->topic topic->kafka-topic]]
-            [common-clj.schemata.config :as schemata.config]
             [common-clj.schemata.consumer :as schemata.consumer]
             [schema.core :as s])
   (:import java.util.Properties
-           (org.apache.kafka.clients.consumer ConsumerConfig KafkaConsumer)
-           (org.apache.kafka.common.errors InterruptException)
-           (org.apache.kafka.common.serialization StringDeserializer)))
+           [org.apache.kafka.clients.consumer ConsumerConfig KafkaConsumer]
+           org.apache.kafka.common.serialization.StringDeserializer))
 
 (defn ^:private consumer-props [config]
   (let [{:keys [app-name kafka-server]} (config.protocol/get-config config)
@@ -55,8 +57,8 @@
 
   Consumer
   (consume! [component topic message]
-    (let [handler         (get-in consumer-topics [topic :handler])
-          schema          (get-in consumer-topics [topic :schema])
+    (let [handler         (get-in consumer-topics [topic :topic/handler])
+          schema          (get-in consumer-topics [topic :topic/schema])
           coerced-message (coerce schema message)]
       (s/validate schema coerced-message)
       (handler coerced-message component))))

@@ -1,6 +1,6 @@
 (ns common-clj.time-test
-  (:require [midje.sweet :refer :all]
-            [common-clj.time :as time]
+  (:require [common-clj.time :as time]
+            [midje.sweet :refer :all]
             [schema.core :as s])
   (:import java.time.LocalDate))
 

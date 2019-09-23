@@ -1,7 +1,6 @@
 (ns common-clj.components.consumer.in-memory-consumer
   (:require [clojure.repl :refer [demunge]]
             [com.stuartsierra.component :as component]
-            [common-clj.components.consumer.protocol]
             [common-clj.components.consumer.protocol :refer [Consumer]]
             [common-clj.schemata.consumer :as schemata.consumer]
             [schema.core :as s]))
@@ -17,7 +16,7 @@
   component/Lifecycle
   (start [component]
     (let [channel (atom nil)]
-      (doseq [[topic {:keys [handler schema]}] consumer-topics]
+      (doseq [[topic {:keys [topic/handler topic/schema]}] consumer-topics]
         (add-watch channel
                    (subscription-key topic handler)
                    (maybe-call handler schema topic component)))

@@ -1,8 +1,8 @@
 (ns common-clj.components.http-client.in-memory-http-client
-  (:require [schema.core :as s]
-            [common-clj.schemata.http-client :as s-hc]
+  (:require [com.stuartsierra.component :as component]
             [common-clj.components.http-client.protocol :as hc-pro]
-            [com.stuartsierra.component :as component]))
+            [common-clj.schemata.http-client :as s-hc]
+            [schema.core :as s]))
 
 (s/defrecord InMemoryHttpClient [endpoints :- s-hc/Endpoints]
   component/Lifecycle
