@@ -137,7 +137,7 @@
          pedestal-routes                    (-> world :system :http-server :pedestal-routes)
          url-for                            (http.routes/url-for-routes
                                              (http.routes/expand-routes pedestal-routes))
-         {:keys [method path]}              (route routes)
+         {:keys [route/method route/path]}  (route routes)
          {:keys [status body] :as response} (test/response-for
                                              service method
                                              (url-for route :path-params path-params)
@@ -147,8 +147,8 @@
                 (not supress-errors))
        (throw (Exception. body)))
      (if (and (not= 500 status) (not= 400 status))
-       (let [{:keys [response-schema]} (route routes)
-             coerced-body (coerce response-schema (string->json body))]
+       (let [{:keys [response/schema]} (route routes)
+             coerced-body              (coerce schema (string->json body))]
          (update-in world [:http-responses route] conj (assoc response
                                                               :body
                                                               coerced-body)))

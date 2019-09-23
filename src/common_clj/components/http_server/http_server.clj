@@ -15,9 +15,15 @@
             [io.pedestal.interceptor.error :as error-int]
             [schema.core :as s]))
 
+(defn ok [body]
+  {:response/status 200
+   :response/body   body})
+
 (defn wrap-handler [handler components]
   (fn [request]
-    (handler request components)))
+    (let [{:keys [response/status response/body]} (handler request components)]
+      {:status status
+       :body   body})))
 
 (def content-type
   (interceptor
@@ -33,15 +39,15 @@
     :enter (fn [{:keys [request route] :as context}]
              (let [{:keys [json-params]}    request
                    {:keys [route-name]}     route
-                   {:keys [request-schema]} (route-name routes)
-                   coerced-body             (when request-schema (coerce request-schema json-params))]
+                   {:keys [request/schema]} (route-name routes)
+                   coerced-body             (when schema (coerce schema json-params))]
                (assoc-in context [:request :body] coerced-body)))
     :leave (fn [{:keys [response route] :as context}]
              (let [{:keys [body]}            response
                    {:keys [route-name]}      route
-                   {:keys [response-schema]} (route-name routes)
+                   {:keys [response/schema]} (route-name routes)
                    coerced-body              (json->string body)]
-               (s/validate response-schema body)
+               (s/validate schema body)
                (assoc-in context [:response :body] coerced-body)))}))
 
 (defn path-params-coercer
@@ -51,9 +57,9 @@
     :enter (fn [{:keys [request route] :as context}]
              (let [{:keys [path-params]}        request
                    {:keys [route-name]}         route
-                   {:keys [path-params-schema]} (route-name routes)
-                   coerced-path-params (when path-params-schema
-                                         (coerce path-params-schema path-params))]
+                   {:keys [path-params/schema]} (route-name routes)
+                   coerced-path-params (when schema
+                                         (coerce schema path-params))]
                (if coerced-path-params
                  (assoc-in context [:request :path-params] coerced-path-params)
                  context)))}))
@@ -78,7 +84,7 @@
   (into
    #{}
    (map
-    (fn [[route-name {:keys [path method handler]}]]
+    (fn [[route-name {:keys [route/path route/method route/handler]}]]
       [path
        method
        (conj (interceptors routes) (wrap-handler handler components))

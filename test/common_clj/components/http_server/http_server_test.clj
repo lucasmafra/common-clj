@@ -20,19 +20,20 @@
   (counter.protocol/inc! counter-a)
   (logger.protocol/log! logger :req-body body)
   (logger.protocol/log! logger :id (:id path-params))
-  {:status 200 :body {:message "Hello"}})
+  {:response/status 200
+   :response/body {:message "Hello"}})
 
 (defn handler-b [request {:keys [counter-b]}]
   (counter.protocol/inc! counter-b)
-  {:status 200 :body {:id id}})
+  (http-server/ok {:id id}))
 
 (def RequestA
-  {:name        s/Str
-   :date        java.time.LocalDate})
+  {:name s/Str
+   :date java.time.LocalDate})
 
 (s/def valid-request-body :- RequestA
-  {:name        "John"
-   :date        #date "2019-08-22"})
+  {:name "John"
+   :date #date "2019-08-22"})
 
 (def invalid-request-body
  {:name "John"})
@@ -43,19 +44,19 @@
 
 (s/def routes :- schemata.http/Routes
   {:a
-   {:path            "/a/:id" 
-    :method          :post
-    :handler         handler-a
-    :path-params-schema {:id s/Uuid}
-    :request-schema  RequestA
-    :response-schema s/Any}
+   {:route/path         "/a/:id" 
+    :route/method       :post
+    :route/handler      handler-a
+    :path-params/schema {:id s/Uuid}
+    :request/schema     RequestA
+    :response/schema    s/Any}
 
    :b
-   {:path               "/b/:id"
-    :method             :get
-    :handler            handler-b
-    :path-params-schema {:id s/Uuid}
-    :response-schema    ResponseB}})
+   {:route/path         "/b/:id"
+    :route/method       :get
+    :route/handler      handler-b
+    :path-params/schema {:id s/Uuid}
+    :response/schema    ResponseB}})
 
 (def app-config
   {:app-name :common-clj
@@ -143,5 +144,4 @@
         (fact "400 is returned"
           (-> *world* :http-responses :b first :status) => 400))
   
-
   (future-fact "starts server on port passed via config"))
