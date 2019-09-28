@@ -6,9 +6,31 @@
 
 (s/defrecord InMemoryHttpClient [endpoints :- s-hc/Endpoints]
   component/Lifecycle
-  (start [component])
+  (start [component]
+    (assoc component :mocked-responses (atom {})))
 
-  (stop [component])
+  (stop [component]
+    component)
 
   hc-pro/HttpClient
-  (request [component endpoint options]))
+  (request [component endpoint]
+    (hc-pro/request component endpoint {}))
+  (request [{:keys [mocked-responses]} endpoint options]
+    (let [response (-> mocked-responses
+                       deref
+                       endpoint
+                       first)]
+      (if response
+        (do
+          (swap! mocked-responses #(update % endpoint rest))
+          (:body response))
+        (throw (ex-info "No response mocked"
+                        {:type :http-client.error/no-response}))))))
+
+(s/defn new-http-client [endpoints :- s-hc/Endpoints]
+  (map->InMemoryHttpClient {:endpoints endpoints}))
+
+(defn mock-response!
+  [{:keys [mocked-responses]} endpoint {:keys [body]}]
+  (swap! mocked-responses
+         #(update % endpoint (comp vec conj) {:body body})))
