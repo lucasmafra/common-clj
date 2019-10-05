@@ -86,12 +86,12 @@
     (catch Exception e
       (update-in world [:producer-error topic] #(conj % e)))))
 
-(defn check-produced-messages
+(defn produced-messages
   [topic]
   (or (-> *world* :system :producer :messages deref topic)
       []))
 
-(defn check-produced-errors
+(defn produced-errors
   [topic]
   (or (-> *world* :producer-error topic)
       []))

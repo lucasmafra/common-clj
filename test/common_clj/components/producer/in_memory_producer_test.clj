@@ -1,9 +1,7 @@
 (ns common-clj.components.producer.in-memory-producer-test
   (:require [com.stuartsierra.component :as component]
             [common-clj.components.producer.in-memory-producer :as in-memory-producer]
-            [common-clj.test-helpers :refer [check-produced-errors check-produced-messages exception? init!
-                                             produce! schema-error?
-                                             try-produce!]]
+            [common-clj.test-helpers :refer :all]
             [matcher-combinators.midje :refer [match]]
             [midje.sweet :refer :all]
             [schema.core :as s]
@@ -37,8 +35,8 @@
   (partial produce! :topic-a valid-message)
 
   (fact "message is produced to correct topic"
-    (check-produced-messages :topic-a) => (match [valid-message])
-    (check-produced-messages :topic-b) => []))
+    (produced-messages :topic-a) => (match [valid-message])
+    (produced-messages :topic-b) => []))
 
 (flow "try to produce invalid message"
   (partial init! system)
@@ -46,10 +44,10 @@
   (partial try-produce! :topic-a invalid-message)
 
   (fact "schema error is thrown"
-    (check-produced-errors :topic-a) => (match [schema-error?]))
+    (produced-errors :topic-a) => (match [schema-error?]))
 
   (fact "no message is actually produced"
-    (check-produced-messages :topic-a) => []))
+    (produced-messages :topic-a) => []))
 
 (flow "try to produce to an unknown topic"
   (partial init! system)
@@ -57,4 +55,4 @@
   (partial try-produce! :unknown-topic valid-message)
 
   (fact "error is thrown"
-    (check-produced-errors :unknown-topic) => (match [exception?])))
+    (produced-errors :unknown-topic) => (match [exception?])))
