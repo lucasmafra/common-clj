@@ -22,8 +22,8 @@
   (counter.protocol/inc! counter-a)
   (logger.protocol/log! logger :req-body body)
   (logger.protocol/log! logger :id (:id path-params))
-  {:response/status 200
-   :response/body {:message "Hello"}})
+  {:status 200
+   :body {:message "Hello"}})
 
 (defn handler-b [request {:keys [counter-b]}]
   (counter.protocol/inc! counter-b)
@@ -45,19 +45,19 @@
 
 (s/def routes :- schemata.http/Routes
   {:a
-   {:route/path         "/a/:id" 
-    :route/method       :post
-    :route/handler      handler-a
-    :path-params/schema {:id s/Uuid}
-    :request/schema     RequestA
-    :response/schema    s/Any}
+   {:path               "/a/:id" 
+    :method             :post
+    :handler            handler-a
+    :path-params-schema {:id s/Uuid}
+    :request-schema     RequestA
+    :response-schema    s/Any}
 
    :b
-   {:route/path         "/b/:id"
-    :route/method       :get
-    :route/handler      handler-b
-    :path-params/schema {:id s/Uuid}
-    :response/schema    ResponseB}})
+   {:path               "/b/:id"
+    :method             :get
+    :handler            handler-b
+    :path-params-schema {:id s/Uuid}
+    :response-schema    ResponseB}})
 
 (def app-config
   {:app-name :common-clj
