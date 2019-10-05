@@ -16,7 +16,7 @@
   component/Lifecycle
   (start [component]
     (let [channel (atom nil)]
-      (doseq [[topic {:keys [topic/handler topic/schema]}] consumer-topics]
+      (doseq [[topic {:keys [handler schema]}] consumer-topics]
         (add-watch channel
                    (subscription-key topic handler)
                    (maybe-call handler schema topic component)))

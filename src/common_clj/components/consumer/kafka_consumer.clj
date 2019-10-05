@@ -57,8 +57,8 @@
 
   Consumer
   (consume! [component topic message]
-    (let [handler         (get-in consumer-topics [topic :topic/handler])
-          schema          (get-in consumer-topics [topic :topic/schema])
+    (let [handler         (get-in consumer-topics [topic :handler])
+          schema          (get-in consumer-topics [topic :schema])
           coerced-message (coerce schema message)]
       (s/validate schema coerced-message)
       (handler coerced-message component))))

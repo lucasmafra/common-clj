@@ -20,5 +20,5 @@
   (tc-gen/such-that valid-topic-name? tc-gen/keyword))
 
 (def ConsumerTopics
-  {TopicName {:topic/handler (s/pred function?)
-              :topic/schema  {s/Keyword s/Any}}})
+  {TopicName {:handler (s/pred function?)
+              :schema  {s/Keyword s/Any}}})

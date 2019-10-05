@@ -12,9 +12,6 @@
                  (s/optional-key :secondary-key) [(s/one key-name "key-name")
                                                   (s/one key-type "key-type")]}})
 
-(s/def definition :- DynamoDefinition
-  {:ledger {:primary-key [:employee-id :s]}})
-
 (def AppConfig
   {:app-name                         s/Keyword
    (s/optional-key :kafka-server)    s/Str

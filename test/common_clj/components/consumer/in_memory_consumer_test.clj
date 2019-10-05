@@ -37,12 +37,12 @@
 
 (def consumer-topics
   {:topic-a   
-   {:topic/handler handler-a
-    :topic/schema  SchemaA}
+   {:handler handler-a
+    :schema  SchemaA}
    
    :topic/b
-   {:topic/handler handler-b
-    :topic/schema  s/Any}})
+   {:handler handler-b
+    :schema  s/Any}})
 
 (def system
   (component/system-map
