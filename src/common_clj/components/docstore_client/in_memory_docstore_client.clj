@@ -91,7 +91,7 @@
         (when-not (= :not-found (-> e ex-data :type))
           (throw e)))))
 
-  (get-item [{:keys [store]} table-name k {:keys [response/schema]}]
+  (get-item [{:keys [store]} table-name k {:keys [schema-resp]}]
     (let  [table                                   (-> store deref table-name)
            [primary-key-name primary-key-type]     (-> table :schema :primary-key)
            [secondary-key-name secondary-key-type] (-> table :schema :secondary-key)
@@ -115,9 +115,9 @@
               (get-in table [:data primary-key-value secondary-key-value]))]
         (when-not result
           (throw (ex-info "Not found" {:type :not-found})))
-        (s/validate schema result))))
+        (s/validate schema-resp result))))
 
-  (query [{:keys [store]} table-name key-conditions {:keys [response/schema]}]
+  (query [{:keys [store]} table-name key-conditions {:keys [schema-resp]}]
     (let  [table                               (-> store deref table-name)
            [primary-key-name primary-key-type] (-> table :schema :primary-key)
            [secondary-key-name]                (-> table :schema :secondary-key)
@@ -149,7 +149,7 @@
                    second
                    vals
                    vec))]
-        (s/validate (s/maybe schema) result)))))
+        (s/validate (s/maybe schema-resp) result)))))
 
 (defn new-docstore-client []
   (map->InMemoryDocstoreClient {}))

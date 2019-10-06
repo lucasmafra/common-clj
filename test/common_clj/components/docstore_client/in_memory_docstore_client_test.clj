@@ -143,21 +143,21 @@
       (-> (init-docstore-client)
           (docstore-client.protocol/get-item :unknown-table
                                              {:a/id "dont care"}
-                                             {:response/schema s/Any}))
+                                             {:schema-resp s/Any}))
       => (throws-ex {:type :non-existent-table}))
 
     (fact "missing primary key"
       (-> (init-docstore-client)
           (docstore-client.protocol/get-item :table/a
                                              {}
-                                             {:response/schema s/Any}))
+                                             {:schema-resp s/Any}))
       => (throws-ex {:type :missing-primary-key}))
 
     (fact "missing secondary key"
       (-> (init-docstore-client)
           (docstore-client.protocol/get-item :table-b
                                              {:employee-id "dont care"}
-                                             {:response/schema s/Any}))
+                                             {:schema-resp s/Any}))
       => (throws-ex {:type :missing-secondary-key}))
 
     (fact "retrieves item"
@@ -169,7 +169,7 @@
         (docstore-client.protocol/get-item docstore-client
                                            :table/a
                                            {:a/id "123"}
-                                           {:response/schema s/Any}))
+                                           {:schema-resp s/Any}))
       => {:a/id   "123"
           :name "dont care"}
 
@@ -183,7 +183,7 @@
                                            :table-b
                                            {:employee-id "123"
                                             :control-key "abc"}
-                                           {:response/schema s/Any}))
+                                           {:schema-resp s/Any}))
       => {:employee-id "123"
           :control-key "abc"
           :name        "dont care"})
@@ -198,7 +198,7 @@
          docstore-client
          :table/a
          {:a/id #uuid "e0515b09-5e4f-4af2-a879-59c5cdbbd00a"}
-         {:response/schema SchemaA}))
+         {:schema-resp SchemaA}))
       => item-a
 
       (let [docstore-client (init-docstore-client)]
@@ -212,7 +212,7 @@
          :table-b
          {:employee-id #uuid "b266ffff-553d-4dd8-836a-e8f3d43acae2"
           :control-key #uuid "e0515b09-5e4f-4af2-a879-59c5cdbbd00a"}
-         {:response/schema SchemaB}))
+         {:schema-resp SchemaB}))
       => item-b)
     (fact "throws schema-error when response does not match"
       (let [docstore-client (init-docstore-client)]
@@ -224,7 +224,7 @@
          docstore-client
          :table/a
          {:a/id "invalid uuid"}
-         {:response/schema SchemaA}))
+         {:schema-resp SchemaA}))
       => (throws-ex {:type :schema.core/error}))
 
     (fact "throws not-found"
@@ -233,7 +233,7 @@
          docstore-client
          :table/a
          {:a/id "not-found"}
-         {:response/schema SchemaA}))
+         {:schema-resp SchemaA}))
       => (throws-ex {:type :not-found})))
 
   (facts "maybe-get-item"
@@ -242,7 +242,7 @@
         (docstore-client.protocol/maybe-get-item docstore-client
                                                  :table/a
                                                  {:a/id "not-found"}
-                                                 {:response/schema SchemaA}))
+                                                 {:schema-resp SchemaA}))
       => nil))
 
   (facts "query"
@@ -250,14 +250,14 @@
       (-> (init-docstore-client)
           (docstore-client.protocol/query :unknown-table
                                           {:a/id "dont care"}
-                                          {:response/schema s/Any}))
+                                          {:schema-resp s/Any}))
       => (throws-ex {:type :non-existent-table}))
 
     (fact "missing primary key"
       (-> (init-docstore-client)
           (docstore-client.protocol/query :table-b
                                           {}
-                                          {:response/schema s/Any}))
+                                          {:schema-resp s/Any}))
       => (throws-ex {:type :missing-primary-key}))
 
     (fact "query items"
@@ -271,7 +271,7 @@
          docstore-client
          :table/a
          {:a/id "123"}
-         {:response/schema s/Any}))
+         {:schema-resp s/Any}))
       => [{:a/id   "123"
            :name "dont care"}]
 
@@ -286,7 +286,7 @@
          docstore-client
          :table-b
          {:employee-id "123"}
-         {:response/schema s/Any}))
+         {:schema-resp s/Any}))
       => [{:employee-id "123"
            :control-key "dont care"
            :name        "dont care"}])
@@ -301,7 +301,7 @@
          docstore-client
          :table/a
          {:a/id #uuid "e0515b09-5e4f-4af2-a879-59c5cdbbd00a"}
-         {:response/schema [SchemaA]}))
+         {:schema-resp [SchemaA]}))
       => [item-a]
 
       (let [docstore-client (init-docstore-client)]
@@ -314,7 +314,7 @@
          docstore-client
          :table-b
          {:employee-id #uuid "b266ffff-553d-4dd8-836a-e8f3d43acae2"}
-         {:response/schema [SchemaB]}))
+         {:schema-resp [SchemaB]}))
       => [item-b])
 
     (fact "throws schema-error when response does not match"
@@ -327,5 +327,5 @@
          docstore-client
          :table/a
          {:a/id "invalid uuid"}
-         {:response/schema [SchemaA]}))
+         {:schema-resp [SchemaA]}))
       => (throws-ex {:type :schema.core/error}))))
