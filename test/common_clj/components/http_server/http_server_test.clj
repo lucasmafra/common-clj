@@ -30,8 +30,8 @@
   (http-server/ok {:id id}))
 
 (def RequestA
-  {:name s/Str
-   :date java.time.LocalDate})
+  {(s/optional-key :name) s/Str
+   :date                  java.time.LocalDate})
 
 (def valid-request-body (gen/generate RequestA))
 (def another-valid-request-body (gen/generate RequestA))
@@ -41,7 +41,7 @@
 
 (def ResponseB
   {:name s/Str
-   :id s/Uuid})
+   :id   s/Uuid})
 
 (s/def routes :- schemata.http/Routes
   {:a
