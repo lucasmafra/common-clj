@@ -33,31 +33,18 @@
     (let [http-client (component/start (im-hc/new-http-client endpoints))]
       (hc-pro/request http-client :a) => (throws-ex {:type :http-client.error/no-response})))
 
-  (fact "mock-response! only mocks once -> the next request will fail"
+  (fact "mock-response! mocks forever by default - subsequent requests will get the same response"
     (let [http-client (component/start (im-hc/new-http-client endpoints))]
       (im-hc/mock-response! http-client :a {:body "mocked response"})
       (hc-pro/request http-client :a) => "mocked response"
-      (hc-pro/request http-client :a) => (throws-ex {:type :http-client.error/no-response})))
-
-  (fact "mocking multiples responses when requesting the same endpoint 
-         multiple times: preserves the mocking order"
-    (let [http-client (component/start (im-hc/new-http-client endpoints))]
-      (im-hc/mock-response! http-client :a {:body "first response"})
-      (im-hc/mock-response! http-client :a {:body "second response"})
-      (hc-pro/request http-client :a) => "first response"
-      (hc-pro/request http-client :a) => "second response"
-      (hc-pro/request http-client :a) => (throws-ex {:type :http-client.error/no-response})))
+      (hc-pro/request http-client :a) => "mocked response"))
 
   (fact "mocking endpoint with path params"
     (let [http-client (component/start (im-hc/new-http-client endpoints))]
-      (im-hc/mock-response! http-client :b {:id id1} {:body "1 - first response"})
-
-      (im-hc/mock-response! http-client :b {:id id1} {:body "1 - second response"})
+      (im-hc/mock-response! http-client :b {:id id1} {:body "1"})
 
       (im-hc/mock-response! http-client :b {:id id2} {:body "2"})
 
-      (hc-pro/request http-client :b {:id id1}) => "1 - first response"
-      (hc-pro/request http-client :b {:id id2}) => "2"
-      (hc-pro/request http-client :b {:id id2}) => (throws-ex {:type :http-client.error/no-response})
-      (hc-pro/request http-client :b {:id id1}) => "1 - second response")))
+      (hc-pro/request http-client :b {:id id1}) => "1"
+      (hc-pro/request http-client :b {:id id2}) => "2")))
 

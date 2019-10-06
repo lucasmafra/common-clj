@@ -26,9 +26,7 @@
                        (get-in response-path)
                        first)]
       (if response
-        (do
-          (swap! mocked-responses #(update-in % response-path rest))
-          (:body response))
+        (:body response)
         (throw (ex-info "No response mocked"
                         {:type :http-client.error/no-response}))))))
 
