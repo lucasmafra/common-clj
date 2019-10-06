@@ -91,6 +91,10 @@
   (or (-> *world* :system :producer :messages deref topic)
       []))
 
+(defn clear-produced-messages! [world]
+  (-> world :system :producer :messages (reset! {}))
+  world)
+
 (defn produced-errors
   [topic]
   (or (-> *world* :producer-error topic)
