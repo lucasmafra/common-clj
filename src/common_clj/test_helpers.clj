@@ -175,3 +175,11 @@
                               (constantly ~value)
                               time/today)]
      ~stuff-to-do))
+
+(defn http-response [route]
+  "Returns last http response found for :route"
+  (-> *world* :http-responses route last))
+
+(defn http-responses [route]
+  "Returns all http responses found for :route"
+  (-> *world* :http-responses route))
