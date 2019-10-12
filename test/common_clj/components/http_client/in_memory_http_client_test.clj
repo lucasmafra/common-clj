@@ -33,11 +33,17 @@
     (let [http-client (component/start (im-hc/new-http-client endpoints))]
       (hc-pro/request http-client :a) => (throws-ex {:type :http-client.error/no-response})))
 
-  (fact "mock-response! mocks forever by default - subsequent requests will get the same response"
+  (fact "mocks forever by default - subsequent requests will get the same response"
     (let [http-client (component/start (im-hc/new-http-client endpoints))]
       (im-hc/mock-response! http-client :a {:body "mocked response"})
       (hc-pro/request http-client :a) => "mocked response"
       (hc-pro/request http-client :a) => "mocked response"))
+
+  (fact "it's possible to overwrite responses"
+    (let [http-client (component/start (im-hc/new-http-client endpoints))]
+      (im-hc/mock-response! http-client :a {:body "first response"})
+      (im-hc/mock-response! http-client :a {:body "second response"})
+      (hc-pro/request http-client :a) => "second response"))
 
   (fact "mocking endpoint with path params"
     (let [http-client (component/start (im-hc/new-http-client endpoints))]

@@ -23,8 +23,7 @@
           response-path (conj path-params-values endpoint)
           response (-> mocked-responses
                        deref
-                       (get-in response-path)
-                       first)]
+                       (get-in response-path))]
       (if response
         (:body response)
         (throw (ex-info "No response mocked"
@@ -41,4 +40,4 @@
                   '())
          response-path (conj path endpoint)]
      (swap! mocked-responses
-            #(update-in % response-path (comp vec conj) {:body body})))))
+            #(assoc-in % response-path {:body body})))))
