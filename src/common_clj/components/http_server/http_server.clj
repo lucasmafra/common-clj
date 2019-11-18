@@ -79,7 +79,7 @@
   [content-type
    error-interceptor
    (body-params)
-   (http.cors/allow-origin ["*"])
+   (http.cors/allow-origin ["http://localhost:3000"])
    (body-coercer routes)
    (path-params-coercer routes)])
 
