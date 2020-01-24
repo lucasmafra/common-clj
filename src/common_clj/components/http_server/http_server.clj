@@ -100,8 +100,8 @@
   component/Lifecycle
   (start [{:keys [config] :as component}]
     (let [pedestal-routes (routes->pedestal routes component)
-          service (http-server.protocol/create-server component)
-          env (config.protocol/get-env config)]
+          service         (http-server.protocol/create-server component)
+          env             (config.protocol/get-env config)]
       (when (not= :test env)
         (http/start service))
       (reset! server service)
@@ -118,6 +118,7 @@
     (let [{:keys [http-port]} (config.protocol/get-config config)]
       (http/create-server
        {::http/routes (routes->pedestal routes component)
+        ::http/host   "0.0.0.0"
         ::http/type   :jetty
         ::http/port   http-port
         ::http/join?  false}))))
