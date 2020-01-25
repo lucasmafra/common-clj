@@ -1,5 +1,6 @@
 (ns common-clj.schemata.config
-  (:require [schema.core :as s]))
+  (:require [schema.core :as s]
+            [common-clj.schema-helpers :as sh]))
 
 (def dynamo-table s/Keyword)
 (def key-name s/Keyword)
@@ -13,13 +14,14 @@
                                                   (s/one key-type "key-type")]}})
 
 (def AppConfig
-  {:app-name                         s/Keyword
-   (s/optional-key :kafka-server)    s/Str
-   (s/optional-key :dynamo-endpoint) s/Str
-   (s/optional-key :aws-access-key)  s/Str
-   (s/optional-key :aws-secret-key)  s/Str
-   (s/optional-key :http-port)       s/Int
-   (s/optional-key :dynamo-tables)   DynamoDefinition})
+  (sh/loose-schema
+   {:app-name                         s/Keyword
+    (s/optional-key :kafka-server)    s/Str
+    (s/optional-key :dynamo-endpoint) s/Str
+    (s/optional-key :aws-access-key)  s/Str
+    (s/optional-key :aws-secret-key)  s/Str
+    (s/optional-key :http-port)       s/Int
+    (s/optional-key :dynamo-tables)   DynamoDefinition}))
 
 (def Env
   (s/enum :test :dev :prod))
