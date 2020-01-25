@@ -117,11 +117,12 @@
   (create-server [{:keys [config] :as component}]
     (let [{:keys [http-port]} (config.protocol/get-config config)]
       (http/create-server
-       {::http/routes (routes->pedestal routes component)
-        ::http/host   "0.0.0.0"
-        ::http/type   :jetty
-        ::http/port   http-port
-        ::http/join?  false}))))
+       {::http/routes          (routes->pedestal routes component)
+        ::http/allowed-origins {:creds true :allowed-origins (constantly true)}
+        ::http/host            "0.0.0.0"
+        ::http/type            :jetty
+        ::http/port            http-port
+        ::http/join?           false}))))
 
 (s/defn new-http-server [routes :- schemata.http/Routes]
   (map->HttpServerImpl {:routes routes}))
