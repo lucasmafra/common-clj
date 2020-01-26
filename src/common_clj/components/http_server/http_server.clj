@@ -13,7 +13,6 @@
             [io.pedestal.http.body-params :refer [body-params]]
             [io.pedestal.interceptor :refer [interceptor]]
             [io.pedestal.interceptor.error :as error-int]
-            [io.pedestal.http.cors :as http.cors]
             [schema.core :as s]))
 
 (defn ok [body]
@@ -79,7 +78,6 @@
   [content-type
    error-interceptor
    (body-params)
-   (http.cors/allow-origin ["http://localhost:3000"])
    (body-coercer routes)
    (path-params-coercer routes)])
 
@@ -118,7 +116,7 @@
     (let [{:keys [http-port]} (config.protocol/get-config config)]
       (http/create-server
        {::http/routes          (routes->pedestal routes component)
-        ::http/allowed-origins (constantly true)
+        ::http/allowed-origins {:creds true :allowed-origins (constantly true)}
         ::http/host            "0.0.0.0"
         ::http/type            :jetty
         ::http/port            http-port

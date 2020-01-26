@@ -1,5 +1,8 @@
 # Change Log
 
+### Changed [0.50.0]
+- Removed hardcoded cors origin
+
 ### Changed [0.49.0]
 - Naively try to fix cors map
 
