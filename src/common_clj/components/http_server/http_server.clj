@@ -118,7 +118,7 @@
     (let [{:keys [http-port]} (config.protocol/get-config config)]
       (http/create-server
        {::http/routes          (routes->pedestal routes component)
-        ::http/allowed-origins {:creds true :allowed-origins (constantly true)}
+        ::http/allowed-origins (constantly true)
         ::http/host            "0.0.0.0"
         ::http/type            :jetty
         ::http/port            http-port

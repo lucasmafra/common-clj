@@ -1,5 +1,8 @@
 # Change Log
 
+### Changed [0.49.0]
+- Naively try to fix cors map
+
 ### Changed [0.48.0]
 - Add CORS
 
