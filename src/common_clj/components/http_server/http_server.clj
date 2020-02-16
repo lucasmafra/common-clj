@@ -1,6 +1,6 @@
 (ns common-clj.components.http-server.http-server
   (:require [com.stuartsierra.component :as component]
-            [common-clj.coercion :refer [coerce]]
+            [common-clj.coercion :refer [coerce] :as coercion]
             [common-clj.components.config.protocol :as config.protocol]
             [common-clj.components.http-server.protocol
              :as
@@ -14,6 +14,8 @@
             [io.pedestal.interceptor :refer [interceptor]]
             [io.pedestal.interceptor.error :as error-int]
             [schema.core :as s]))
+
+(def default-coercers coercion/default-coercers)
 
 (defn ok [body]
   {:status 200
@@ -33,7 +35,7 @@
                        [:response :headers]
                        {"Content-Type" "application/json"}))}))
 (defn body-coercer
-  [routes]
+  [routes {:keys [override-coercers]}]
   (interceptor
    {:name  ::json-coercer
     :enter (fn [{:keys [request route] :as context}]
@@ -41,7 +43,7 @@
                    {:keys [route-name]}     route
                    {:keys [request-schema]} (route-name routes)
                    coerced-body             (when request-schema
-                                              (coerce request-schema json-params))]
+                                              (coerce request-schema json-params (or override-coercers default-coercers)))]
                (assoc-in context [:request :body] coerced-body)))
     :leave (fn [{:keys [response route] :as context}]
              (let [{:keys [body]}            response
@@ -52,7 +54,7 @@
                (assoc-in context [:response :body] coerced-body)))}))
 
 (defn path-params-coercer
-  [routes]
+  [routes {:keys [override-coercers]}]
   (interceptor
    {:name  ::path-params-coercer
     :enter (fn [{:keys [request route] :as context}]
@@ -60,9 +62,23 @@
                    {:keys [route-name]}         route
                    {:keys [path-params-schema]} (route-name routes)
                    coerced-path-params (when path-params-schema
-                                         (coerce path-params-schema path-params))]
+                                         (coerce path-params-schema path-params (or override-coercers default-coercers)))]
                (if coerced-path-params
                  (assoc-in context [:request :path-params] coerced-path-params)
+                 context)))}))
+
+(defn query-params-coercer
+  [routes {:keys [override-coercers]}]
+  (interceptor
+   {:name  ::query-paraqms-coercer
+    :enter (fn [{:keys [request route] :as context}]
+             (let [{:keys [query-params]}        request
+                   {:keys [route-name]}          route
+                   {:keys [query-params-schema]} (route-name routes)
+                   coerced-query-params (when query-params-schema
+                                         (coerce query-params-schema query-params (or override-coercers default-coercers)))]
+               (if coerced-query-params
+                 (assoc-in context [:request :query-params] coerced-query-params)
                  context)))}))
 
 (def error-interceptor
@@ -74,36 +90,40 @@
    :else
    (assoc ctx :response {:status 500 :body (ex-data ex)})))
 
-(defn interceptors [routes]
+(defn interceptors [routes overrides]
   [content-type
    error-interceptor
    (body-params)
-   (body-coercer routes)
-   (path-params-coercer routes)])
+   (body-coercer routes overrides)
+   (path-params-coercer routes overrides)
+   (query-params-coercer routes overrides)])
 
-(s/defn routes->pedestal [routes :- schemata.http/Routes components]
+(s/defn routes->pedestal
+  [routes :- schemata.http/Routes
+   overrides :- (s/maybe schemata.http/Overrides)
+   components]
   (into
    #{}
    (map
     (fn [[route-name {:keys [path method handler]}]]
       [path
        method
-       (conj (interceptors routes) (wrap-handler handler components))
+       (conj (interceptors routes overrides) (wrap-handler handler components))
        :route-name route-name]))
    routes))
 
 (defonce ^:private server (atom nil))
 
-(s/defrecord HttpServerImpl [routes]
+(s/defrecord HttpServerImpl [routes overrides]
   component/Lifecycle
-  (start [{:keys [config] :as component}]
-    (let [pedestal-routes (routes->pedestal routes component)
-          service         (http-server.protocol/create-server component)
+  (start [{:keys [config] :as components}]
+    (let [pedestal-routes (routes->pedestal routes overrides components)
+          service         (http-server.protocol/create-server components)
           env             (config.protocol/get-env config)]
       (when (not= :test env)
         (http/start service))
       (reset! server service)
-      (-> component
+      (-> components
           (assoc :service service)
           (assoc :pedestal-routes pedestal-routes))))
 
@@ -112,15 +132,19 @@
     component)
 
   HttpServer
-  (create-server [{:keys [config] :as component}]
+  (create-server [{:keys [config] :as components}]
     (let [{:keys [http-port]} (config.protocol/get-config config)]
       (http/create-server
-       {::http/routes          (routes->pedestal routes component)
+       {::http/routes          (routes->pedestal routes overrides components)
         ::http/allowed-origins {:creds true :allowed-origins (constantly true)}
         ::http/host            "0.0.0.0"
         ::http/type            :jetty
         ::http/port            http-port
         ::http/join?           false}))))
 
-(s/defn new-http-server [routes :- schemata.http/Routes]
-  (map->HttpServerImpl {:routes routes}))
+(s/defn new-http-server
+  ([routes :- schemata.http/Routes]
+   (new-http-server routes nil))
+  ([routes :- schemata.http/Routes
+    overrides :- (s/maybe schemata.http/Overrides)]
+   (map->HttpServerImpl {:routes routes :overrides overrides})))

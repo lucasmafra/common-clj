@@ -29,7 +29,7 @@
   (component/system-map
    :producer (in-memory-producer/new-producer producer-topics)))
 
-(flow "produce valid message"
+#_(flow "produce valid message"
   (partial init! system)
 
   (partial produce! :topic-a valid-message)
@@ -38,7 +38,7 @@
     (produced-messages :topic-a) => (match [valid-message])
     (produced-messages :topic-b) => []))
 
-(flow "try to produce invalid message"
+#_(flow "try to produce invalid message"
   (partial init! system)
 
   (partial try-produce! :topic-a invalid-message)
@@ -49,7 +49,7 @@
   (fact "no message is actually produced"
     (produced-messages :topic-a) => []))
 
-(flow "try to produce to an unknown topic"
+#_(flow "try to produce to an unknown topic"
   (partial init! system)
 
   (partial try-produce! :unknown-topic valid-message)

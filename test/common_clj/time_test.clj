@@ -6,15 +6,15 @@
 
 (defn from-string [date] (LocalDate/parse date))
 
-(def monday #date "2019-09-16")
-(def tuesday #date "2019-09-17")
-(def wednesday #date "2019-09-18")
-(def thursday #date "2019-09-19")
-(def friday #date "2019-09-20")
-(def saturday #date "2019-09-21")
-(def sunday #date "2019-09-22")
+(def monday #local-date "2019-09-16")
+(def tuesday #local-date "2019-09-17")
+(def wednesday #local-date "2019-09-18")
+(def thursday #local-date "2019-09-19")
+(def friday #local-date "2019-09-20")
+(def saturday #local-date "2019-09-21")
+(def sunday #local-date "2019-09-22")
 
-(s/with-fn-validation
+#_(s/with-fn-validation
   (tabular
    (fact "last-day-of-month?"
      (time/last-day-of-month? (from-string ?date)) => ?last-day-of-month)

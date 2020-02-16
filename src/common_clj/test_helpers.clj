@@ -12,8 +12,7 @@
             [io.pedestal.http.route :as http.routes]
             [io.pedestal.test :as test]            
             [matcher-combinators.midje :refer [match]]
-            [midje.sweet :refer [throws]]
-            [selvage.midje.flow :refer [*world* flow]])
+            [midje.sweet :refer [throws]])
   (:import (clojure.lang ExceptionInfo)
            (org.apache.kafka.clients.consumer ConsumerRecord KafkaConsumer
                                               MockConsumer OffsetResetStrategy)
@@ -87,8 +86,8 @@
       (update-in world [:producer-error topic] #(conj % e)))))
 
 (defn produced-messages
-  [topic]
-  (or (-> *world* :system :producer :messages deref topic)
+  [topic world]
+  (or (-> world :system :producer :messages deref topic)
       []))
 
 (defn clear-produced-messages! [world]
@@ -96,8 +95,8 @@
   world)
 
 (defn produced-errors
-  [topic]
-  (or (-> *world* :producer-error topic)
+  [topic world]
+  (or (-> world :producer-error topic)
       []))
 
 (def exception? (partial instance? Exception))
@@ -115,8 +114,8 @@
     (catch Exception e
       (update-in world [:producer-error topic] #(conj % e)))))
 
-(defn check-kafka-produced-messages [topic]
-  (let [kafka-client (-> *world* :system :producer :kafka-client)]
+(defn check-kafka-produced-messages [topic world]
+  (let [kafka-client (-> world :system :producer :kafka-client)]
     (->> kafka-client
          .history
          vec
@@ -125,8 +124,8 @@
          (filter (fn [{:keys [kafka-topic]}] (= topic kafka-topic)))
          (map :value))))
 
-(defn check-kafka-produced-errors [topic]
-  (or (-> *world* :producer-error topic)
+(defn check-kafka-produced-errors [topic world]
+  (or (-> world :producer-error topic)
       []))
 
 (defn mock-kafka-producer [& args] (MockProducer.))
@@ -176,10 +175,10 @@
                               time/today)]
      ~stuff-to-do))
 
-(defn http-response [route]
+(defn http-response [route world]
   "Returns last http response found for :route"
-  (-> *world* :http-responses route last))
+  (-> world :http-responses route last))
 
-(defn http-responses [route]
+(defn http-responses [route world]
   "Returns all http responses found for :route"
-  (-> *world* :http-responses route))
+  (-> world :http-responses route))

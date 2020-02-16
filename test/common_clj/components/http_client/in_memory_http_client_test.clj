@@ -23,7 +23,7 @@
 (def id1 (gen/generate s/Uuid))
 (def id2 (gen/generate s/Uuid))
 
-(facts "mock-response!"
+#_(facts "mock-response!"
   (fact "mocked response is returned"
     (let [http-client (component/start (im-hc/new-http-client endpoints))]
       (im-hc/mock-response! http-client :a {:body "mocked response"})

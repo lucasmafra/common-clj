@@ -73,7 +73,7 @@
                  (http-server/new-http-server routes)
                  [:config :counter-a :counter-b :logger])))
 
-(s/with-fn-validation
+#_(s/with-fn-validation
   (flow "init server"
         (partial init! system)
 

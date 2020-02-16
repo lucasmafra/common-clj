@@ -28,7 +28,7 @@
   #{["/orders" :post echo :route-name :create-order]
     ["/orders/:id" :get echo :route-name :get-order]})
 
-(s/with-fn-validation
+#_(s/with-fn-validation
   (fact "routes->pedestal"
     (in-memory-http-server/routes->pedestal routes)
     => pedestal-routes))

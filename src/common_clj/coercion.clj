@@ -1,21 +1,20 @@
 (ns common-clj.coercion
-  (:require [java-time :refer [local-date local-date-time]]
+  (:require [common-clj.schema :as cs]
+            [java-time :refer [local-date local-date-time]]
             [schema-tools.coerce :as stc]
             [schema.coerce :as coerce]
             [schema.core :as s]
             [schema.utils :as utils]))
 
-(defn big-decimal-matcher [schema]
-  (when (= java.math.BigDecimal schema)
-    (coerce/safe bigdec)))
-
-(defn local-date-matcher [schema]
-  (when (= java.time.LocalDate schema)
-    (coerce/safe local-date)))
-
-(defn local-date-time-matcher [schema]
-  (when (= java.time.LocalDateTime schema)
-    (coerce/safe local-date-time)))
+(def big-decimal-matcher (partial coerce/safe bigdec))
+(def local-date-matcher (partial coerce/safe local-date))
+(def local-date-time-matcher (partial coerce/safe local-date-time))
+(def int-matcher (partial coerce/safe #(if (string? %)
+                                         (Integer/parseInt %)
+                                         (coerce/safe-long-cast %))))
+(def pos-int-matcher (partial coerce/safe #(if (string? %)
+                                             (Integer/parseInt %)
+                                             (coerce/safe-long-cast %))))
 
 (defn filter-schema-keys
   [m schema-keys extra-keys-walker]
@@ -50,21 +49,31 @@
     (conj coll val)
     coll))
 
+(defn make-matcher [match-schema coerce-fn]
+  (fn [schema]
+    (when (= match-schema schema)
+      (coerce-fn))))
+
 (defn json-matcher
   "Extends built-in schema json matcher to support more
    types like BigDecimals and LocalDate/LocalDateTime"
-  [{:keys [allow-extra-keys]}]
-  (let [base-matchers [local-date-matcher
-                       local-date-time-matcher
-                       big-decimal-matcher
-                       coerce/json-coercion-matcher]]
+  [coercers {:keys [allow-extra-keys]}]
+  (let [base-matchers (into
+                       (reduce (fn [acc [k v]] (conj acc (make-matcher k v))) [] coercers)
+                       [coerce/json-coercion-matcher])]
     (coerce/first-matcher (conj-if base-matchers
                                    allow-extra-keys
                                    map-filter-matcher))))
 
 (defn coerce
-  ([schema data]
-   (coerce schema data nil))
-  ([schema data options]
-   (stc/coerce data schema (json-matcher options))))
+  ([schema data coercers]
+   (coerce schema data coercers nil))
+  ([schema data coercers options]
+   (stc/coerce data schema (json-matcher coercers options))))
 
+(def default-coercers
+  {;cs/LocalDate         local-date-matcher
+   cs/LocalDateTime     local-date-time-matcher
+   s/Int                int-matcher
+   cs/PosInt            pos-int-matcher
+   java.math.BigDecimal big-decimal-matcher})

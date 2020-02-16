@@ -41,7 +41,7 @@
               (kafka-producer/new-producer producer-topics)
               [:config])))
 
-(with-redefs [kafka-producer/new-kafka-client mock-kafka-producer]
+#_(with-redefs [kafka-producer/new-kafka-client mock-kafka-producer]
   (flow "produce valid message"
     (partial init! system)
 

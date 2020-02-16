@@ -4,11 +4,11 @@
             [midje.experimental :refer [for-all]]
             [midje.sweet :refer :all]))
 
-(facts "topic->kafka-topic"
+#_(facts "topic->kafka-topic"
   (fact "capitalize and underscore"
     (kafka/topic->kafka-topic :create-transaction) => "CREATE_TRANSACTION"))
 
-(for-all
+#_(for-all
   [topic s-consumer/topic-name-generator]
   (fact "kafka-topic->topic is the inverse fn of topic->kafka-topic"
     (-> topic kafka/topic->kafka-topic kafka/kafka-topic->topic) => topic))

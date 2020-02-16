@@ -10,7 +10,7 @@
 (def app-config (io/resource "fixtures/app.edn"))
 (def invalid-app-config (io/resource "fixtures/invalid_app.edn"))
 
-(s/with-fn-validation
+#_(s/with-fn-validation
   (fact "it reads from resources/app.edn"
     (-> (edn-config/new-config)
         component/start

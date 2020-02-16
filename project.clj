@@ -22,9 +22,10 @@
              :dev     {:aliases {"lint-fix" ["do" "nsorg" "--replace," "kibit" "--replace"]}
                        :dependencies [[midje "1.9.8"]
                                       [nubank/matcher-combinators "1.0.0"]
-                                      [nubank/selvage "1.0.0-BETA"]]
+                                      [nubank/selvage "1.0.0-BETA"]
+                                      [org.clojure/tools.namespace "0.2.11"]
+                                      [com.stuartsierra/component.repl "0.2.0"]]
+                       :source-paths ["dev"]
                        :plugins [[lein-midje "3.2.1"]
                                  [lein-nsorg "0.3.0"]
-                                 [lein-kibit "0.1.7"]]
-                       :source-paths ["src"]
-                       :main user}})
+                                 [lein-kibit "0.1.7"]]}})

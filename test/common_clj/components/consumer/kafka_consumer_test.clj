@@ -59,7 +59,7 @@
                (kafka-consumer/new-consumer consumer-topics)
                [:config :counter-a :counter-b :logger])))
 
-(with-redefs [kafka-consumer/new-kafka-client mock-kafka-client]
+#_(with-redefs [kafka-consumer/new-kafka-client mock-kafka-client]
   (flow "consumer started"
     (future-fact "consumer group matches :app-name passed in config")
     (future-fact "it listens to kafka server passed to config via :kafka-server"))

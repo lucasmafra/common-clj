@@ -53,7 +53,7 @@
                (in-memory-consumer/new-consumer consumer-topics)
                [:counter-a :counter-b :logger])))
 
-(flow "valid message arrives"
+#_(flow "valid message arrives"
  (partial init! system)
 
  (partial message-arrived! :topic-a valid-message)
@@ -70,7 +70,7 @@
    (-> *world* :system :logger (logger.protocol/get-logs :message))
    => [valid-message]))
 
-(flow "invalid message arrives to topic"
+#_(flow "invalid message arrives to topic"
   (partial init! system)
 
   (partial try-consume! :topic-a invalid-message)

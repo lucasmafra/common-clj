@@ -16,7 +16,7 @@
     (logger.protocol/log! logger tag value)
     world))
 
-(flow "log and retrieve values"
+#_(flow "log and retrieve values"
   (partial init! system)
 
   (partial log! :banana "apple")

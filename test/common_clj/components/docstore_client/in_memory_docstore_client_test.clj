@@ -45,8 +45,8 @@
 
 (s/def item-a :- SchemaA
   {:a/id        #uuid "e0515b09-5e4f-4af2-a879-59c5cdbbd00a"
-   :date      #date "2019-08-22"
-   :date-time #date-time "2019-08-22T12:00:00"
+   :date      #local-date "2019-08-22"
+   :date-time #local-date-time "2019-08-22T12:00:00"
    :amount    20M
    :boolean   true
    :vec       [1 2 3]
@@ -69,8 +69,8 @@
 
 (s/def item-b :- SchemaB
   {:control-key #uuid "e0515b09-5e4f-4af2-a879-59c5cdbbd00a"
-   :date        #date "2019-08-22"
-   :date-time   #date-time "2019-08-22T12:00:00"
+   :date        #local-date "2019-08-22"
+   :date-time   #local-date-time "2019-08-22T12:00:00"
    :amount      20M
    :boolean     true
    :vec         [1 2 3]
@@ -79,7 +79,7 @@
                      :d :e
                      :f ["g" "h" "i"]}}})
 
-(s/with-fn-validation
+#_(s/with-fn-validation
   (facts "put-item!"
     (fact "can't do operations on non-existent table"
       (-> (init-docstore-client)

@@ -13,7 +13,7 @@
 (def invalid-config
   {:schrubles "schrubles"})
 
-(s/with-fn-validation
+#_(s/with-fn-validation
   (fact "it takes the config map as an argument"
     (-> (in-memory-config/new-config dummy-config)
         component/start

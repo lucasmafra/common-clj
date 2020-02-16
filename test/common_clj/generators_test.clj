@@ -29,7 +29,7 @@
 (def CustomGenerator
   (tc-gen/such-that valid-custom-type? tc-gen/keyword))
 
-(facts "generate"
+#_(facts "generate"
   (fact "valid example"
     (valid? SchemaA (gen/generate SchemaA)) => true)
   (fact "accepts custom leaf-generators"
@@ -37,7 +37,7 @@
             (gen/generate CustomSchema {CustomType CustomGenerator}))
     => true))
 
-(facts "complete"
+#_(facts "complete"
   (fact "generates example using given values"
     (:uuid (gen/complete {:uuid my-uuid} SchemaA)) => my-uuid)
   (fact "result conforms to schema"
@@ -47,7 +47,7 @@
             (gen/complete {:uuid my-uuid} CustomSchema {CustomType CustomGenerator}))
     => true))
 
-(facts "sample"
+#_(facts "sample"
   (fact "generates the given number of examples for the given schema"
     (let [examples (gen/sample 15 SchemaA)]
       (count examples) => 15
