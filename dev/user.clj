@@ -21,4 +21,12 @@
   [dt out]
   (.write out (str "#local-date-time \"" (str dt) "\"")))
 
+(defmethod print-method java.time.LocalTime
+  [dt out]
+  (.write out (str "#local-time \"" (str dt) "\"")))
+
+(defmethod print-dup java.time.LocalTime
+  [dt out]
+  (.write out (str "#local-time \"" (str dt) "\"")))
+
 (clojure.tools.namespace.repl/set-refresh-dirs "dev" "src" "test")

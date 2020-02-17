@@ -25,7 +25,10 @@
     (let [config (->> "app.edn" io/resource load-edn)]
       (s/validate schemata.config/AppConfig config)
       (assoc component :config config)))
-  
+
+  (stop [component]
+    (dissoc component :config))
+
   Config
   (get-config [{:keys [config]}]
     config)

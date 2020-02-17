@@ -1,4 +1,7 @@
 # Change Log
+### Changed [0.52.0]
+- Implement stop for EdnConfig
+
 ### Changed [0.51.0]
 - Add reloaded workflow
 - Nice validation errors (humanize)
