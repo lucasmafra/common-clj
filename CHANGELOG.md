@@ -1,4 +1,10 @@
 # Change Log
+### Changed [0.51.0]
+- Add reloaded workflow
+- Nice validation errors (humanize)
+- Stack trace for internal server error when not at production environment
+- Query string schema validation support
+- Added extensibility for coercers and error humanizer. Still missing extensability for interceptors.
 
 ### Changed [0.50.0]
 - Removed hardcoded cors origin
