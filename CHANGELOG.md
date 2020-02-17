@@ -1,4 +1,7 @@
 # Change Log
+### Changed [0.53.0]
+- Add state-flow-helpers
+
 ### Changed [0.52.0]
 - Implement stop for EdnConfig
 

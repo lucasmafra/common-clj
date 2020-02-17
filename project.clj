@@ -1,4 +1,4 @@
-(defproject lucasmafra/common-clj "0.52.0"
+(defproject lucasmafra/common-clj "0.53.0"
   :description "Useful stuff for Clojure projects"
   :url "https://github.com/lucasmafra/common-clj" 
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
@@ -23,6 +23,7 @@
                        :dependencies [[midje "1.9.8"]
                                       [nubank/matcher-combinators "1.0.0"]
                                       [nubank/selvage "1.0.0-BETA"]
+                                      [nubank/state-flow "2.2.3"]
                                       [org.clojure/tools.namespace "0.2.11"]
                                       [com.stuartsierra/component.repl "0.2.0"]]
                        :source-paths ["dev"]
