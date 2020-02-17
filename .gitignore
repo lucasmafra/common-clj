@@ -11,3 +11,4 @@ pom.xml.asc
 .hgignore
 .hg/
 zk-single-kafka-single
+dev/dev.clj
