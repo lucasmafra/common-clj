@@ -15,4 +15,4 @@
      (let [service-fn (-> world :system :http-server :service :io.pedestal.http/service-fn)
            {:keys [status body]} (test/response-for service-fn method path)]
        {:status status
-        :body   (json/string->json (prettify-body body))}))))
+        :body   (prettify-body body)}))))
