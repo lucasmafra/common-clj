@@ -30,4 +30,9 @@
 (def PosInt
   (s/pred pos-int?))
 
-(def Email)
+(def email-regex
+  #"^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+
+(def Email
+  (s/pred (partial re-matches email-regex) 'valid-email))
+

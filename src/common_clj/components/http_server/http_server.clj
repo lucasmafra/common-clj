@@ -16,7 +16,8 @@
             [schema.core :as s]
             [common-clj.lib.utils :refer [map-vals]]
             [common-clj.humanize :as humanize]
-            [schema.utils :as s-utils]))
+            [schema.utils :as s-utils])
+  (:import (java.io StringWriter PrintWriter)))
 
 (def default-coercers coercion/default-coercers)
 
@@ -84,24 +85,33 @@
                  (assoc-in context [:request :query-params] coerced-query-params)
                  context)))}))
 
-(def error-interceptor
+(defn error-interceptor [{:keys [override-humanizer]} env]
   (error-int/error-dispatch
    [ctx ex]
    [{:type :schema-tools.coerce/error}]
-   (let [values (->> ex ex-data :value)
+   (let [values    (->> ex ex-data :value)
+         humanizer (or override-humanizer humanize/humanize)
          error-map (->> ex
                         ex-data
                         :error
-                        (map-vals #(humanize/explain % humanize/humanize))
+                        (map-vals #(humanize/explain % humanizer))
                         (into {}))]
      (assoc ctx :response {:status 400 :body (json->string {:error error-map})}))
 
    :else
-   (assoc ctx :response {:status 500 :body (json->string {:error (ex-data ex)})})))
+   (let [sw       (StringWriter.)
+         pw       (PrintWriter. sw)
+         e        (->> ex ex-data :exception)
+         _        (.printStackTrace e pw)
+         response (if (not= :prod env)
+                    {:error       "Internal Server Error"
+                     :stack-trace (str sw)}
+                    {:error "Internal Server Error"})]
+     (assoc ctx :response {:status 500 :body (json->string response)}))))
 
-(defn interceptors [routes overrides]
+(defn interceptors [routes overrides env]
   [content-type
-   error-interceptor
+   (error-interceptor overrides env)
    (body-params)
    (body-coercer routes overrides)
    (path-params-coercer routes overrides)
@@ -110,6 +120,7 @@
 (s/defn routes->pedestal
   [routes :- schemata.http/Routes
    overrides :- (s/maybe schemata.http/Overrides)
+   env :- s/Keyword
    components]
   (into
    #{}
@@ -117,7 +128,7 @@
     (fn [[route-name {:keys [path method handler]}]]
       [path
        method
-       (conj (interceptors routes overrides) (wrap-handler handler components))
+       (conj (interceptors routes overrides env) (wrap-handler handler components))
        :route-name route-name]))
    routes))
 
@@ -126,9 +137,9 @@
 (s/defrecord HttpServerImpl [routes overrides]
   component/Lifecycle
   (start [{:keys [config] :as components}]
-    (let [pedestal-routes (routes->pedestal routes overrides components)
-          service         (http-server.protocol/create-server components)
-          env             (config.protocol/get-env config)]
+    (let [env             (config.protocol/get-env config)
+          pedestal-routes (routes->pedestal routes overrides env components)
+          service         (http-server.protocol/create-server components)]
       (when (not= :test env)
         (http/start service))
       (reset! server service)
@@ -142,9 +153,10 @@
 
   HttpServer
   (create-server [{:keys [config] :as components}]
-    (let [{:keys [http-port]} (config.protocol/get-config config)]
+    (let [env                 (config.protocol/get-env config)
+          {:keys [http-port]} (config.protocol/get-config config)]
       (http/create-server
-       {::http/routes          (routes->pedestal routes overrides components)
+       {::http/routes          (routes->pedestal routes overrides env components)
         ::http/allowed-origins {:creds true :allowed-origins (constantly true)}
         ::http/host            "0.0.0.0"
         ::http/type            :jetty

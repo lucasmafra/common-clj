@@ -5,6 +5,7 @@
             [common-clj.components.http-server.http-server :as hs]
             [common-clj.schema :as cs]
             [schema.core :as s]
+            [clojure.core.match :refer [match]]
             [common-clj.coercion :as coercion]))
 
 (def routes
@@ -34,8 +35,14 @@
     :method          :post
     :handler         (fn [{{:keys [age name]} :body} _]
                        (hs/ok {:new-name (str name "Bob")}))
-    :request-schema  {:date cs/LocalDate  :age cs/PosInt :obj {:age cs/LocalDateTime}}
-    :response-schema {:new-name s/Str}}})
+    :request-schema  {:date cs/LocalDate :age cs/PosInt :email cs/Email}
+    :response-schema {:new-name s/Str}}
+
+   :route/demo-500
+   {:path "/demo/internal-server-error"
+    :method :get
+    :handler (fn [_ _] (hs/ok {:result (/ 1 0)}))
+    :response-schema s/Any}})
 
 (def config
   {:app-name :hello-world
@@ -51,7 +58,7 @@
 
 (def system
   (component/system-map
-   :config (imc/new-config config)
+   :config (imc/new-config config :dev)
    :http-server (component/using
                  (hs/new-http-server routes overrides)
                  [:config])))

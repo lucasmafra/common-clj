@@ -12,7 +12,8 @@
 
 (def Overrides
   {(s/optional-key :override-coercers)     s/Any
-   (s/optional-key :override-interceptors) s/Any})
+   (s/optional-key :override-interceptors) s/Any
+   (s/optional-key :override-humanizer)    s/Any})
 
 (def Routes
   {s/Keyword RouteSettings})
