@@ -13,7 +13,10 @@
             [io.pedestal.http.body-params :refer [body-params]]
             [io.pedestal.interceptor :refer [interceptor]]
             [io.pedestal.interceptor.error :as error-int]
-            [schema.core :as s]))
+            [schema.core :as s]
+            [common-clj.lib.utils :refer [map-vals]]
+            [common-clj.humanize :as humanize]
+            [schema.utils :as s-utils]))
 
 (def default-coercers coercion/default-coercers)
 
@@ -70,7 +73,7 @@
 (defn query-params-coercer
   [routes {:keys [override-coercers]}]
   (interceptor
-   {:name  ::query-paraqms-coercer
+   {:name  ::query-params-coercer
     :enter (fn [{:keys [request route] :as context}]
              (let [{:keys [query-params]}        request
                    {:keys [route-name]}          route
@@ -85,10 +88,16 @@
   (error-int/error-dispatch
    [ctx ex]
    [{:type :schema-tools.coerce/error}]
-   (assoc ctx :response {:status 400 :body (ex-data ex)})
+   (let [values (->> ex ex-data :value)
+         error-map (->> ex
+                        ex-data
+                        :error
+                        (map-vals #(humanize/explain % humanize/humanize))
+                        (into {}))]
+     (assoc ctx :response {:status 400 :body (json->string {:error error-map})}))
 
    :else
-   (assoc ctx :response {:status 500 :body (ex-data ex)})))
+   (assoc ctx :response {:status 500 :body (json->string {:error (ex-data ex)})})))
 
 (defn interceptors [routes overrides]
   [content-type

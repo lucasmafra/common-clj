@@ -15,10 +15,10 @@
     :response-schema s/Any}
 
    :route/demo-path-params
-   {:path               "/demo/path-params/:date"
+   {:path               "/demo/path-params/:x"
     :method             :get
-    :handler            (fn [{{:keys [date]} :path-params} _] (hs/ok {:message (str "Date: " date)}))
-    :path-params-schema {:date cs/LocalDate}
+    :handler            (fn [{{:keys [x]} :path-params} _] (hs/ok {:message (str "x: " x)}))
+    :path-params-schema {:x cs/PosInt}
     :response-schema    s/Any}
 
    :route/demo-query-params
@@ -34,7 +34,7 @@
     :method          :post
     :handler         (fn [{{:keys [age name]} :body} _]
                        (hs/ok {:new-name (str name "Bob")}))
-    :request-schema  {:name s/Str :age s/Int}
+    :request-schema  {:date cs/LocalDate  :age cs/PosInt :obj {:age cs/LocalDateTime}}
     :response-schema {:new-name s/Str}}})
 
 (def config
@@ -45,9 +45,6 @@
   (merge
    hs/default-coercers
    {cs/LocalDate coercion/local-date-matcher}))
-
-#_(def interceptors
-  (->> hs/default-interceptors))
 
 (def overrides
   {:override-coercers coercers})

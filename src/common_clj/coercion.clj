@@ -72,7 +72,7 @@
    (stc/coerce data schema (json-matcher coercers options))))
 
 (def default-coercers
-  {;cs/LocalDate         local-date-matcher
+  {cs/LocalDate         local-date-matcher
    cs/LocalDateTime     local-date-time-matcher
    s/Int                int-matcher
    cs/PosInt            pos-int-matcher
