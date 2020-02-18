@@ -140,12 +140,9 @@
     (let [env             (config.protocol/get-env config)
           pedestal-routes (routes->pedestal routes overrides env components)
           service         (http-server.protocol/create-server components)]
-      (println "env: " env)
-      (println "class env: " (class env))
       (when (not= :test env)
-        (println "starting server")
-        (http/start service))
-      (reset! server service)
+        (http/start service)
+        (reset! server service))
       (-> components
           (assoc :service service)
           (assoc :pedestal-routes pedestal-routes))))
