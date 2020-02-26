@@ -26,10 +26,12 @@
   (start [component]
     (let [config (->> "app.edn" io/resource load-edn)]
       (s/validate schemata.config/AppConfig config)
-      (reset! loaded-config config)))
+      (reset! loaded-config config)
+      component))
 
   (stop [component]
-    (reset! loaded-config nil))
+    (reset! loaded-config nil)
+    component)
 
   Config
   (get-config [_]
