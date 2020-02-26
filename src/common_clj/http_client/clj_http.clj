@@ -52,7 +52,7 @@
   (request [component endpoint]
     (hc-pro/request component endpoint {}))
 
-  (request [{:keys [config mock-http-client-calls]} endpoint options]
+  (request [{:keys [config] :as component} endpoint options]
     (let [config-map   (conf-pro/get-config config)
           env          (conf-pro/get-env config)
           interceptors (build-interceptors {:endpoints              endpoints
@@ -60,8 +60,7 @@
                                             :options                options
                                             :coercers               coercion/default-coercers
                                             :config                 config-map
-                                            :env                    env
-                                            :mock-http-client-calls mock-http-client-calls})]
+                                            :env                    env})]
       (:response
        (chain/execute {} interceptors)))))
 

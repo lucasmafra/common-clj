@@ -19,22 +19,27 @@
         {:error-message (.getMessage e)
          :file source})))))
 
+(defonce loaded-config (atom nil))
+
 (s/defrecord EdnConfig [env :- schemata.config/Env]
   component/Lifecycle
   (start [component]
     (let [config (->> "app.edn" io/resource load-edn)]
       (s/validate schemata.config/AppConfig config)
-      (assoc component :config config)))
+      (reset! loaded-config config)))
 
   (stop [component]
-    (dissoc component :config))
+    (reset! loaded-config nil))
 
   Config
-  (get-config [{:keys [config]}]
-    config)
+  (get-config [_]
+    @loaded-config)
 
   (get-env [component]
-    env))
+    env)
+
+  (assoc-in! [component ks v]
+    (swap! loaded-config assoc-in ks v)))
 
 (s/defn new-config
   ([] (new-config :prod))

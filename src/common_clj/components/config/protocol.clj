@@ -2,4 +2,5 @@
 
 (defprotocol Config
   (get-config [component])
-  (get-env [component]))
+  (get-env [component])
+  (assoc-in! [component ks v]))

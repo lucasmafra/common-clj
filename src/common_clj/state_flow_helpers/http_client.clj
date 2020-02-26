@@ -1,8 +1,7 @@
 (ns common-clj.state-flow-helpers.http-client
-  (:require [state-flow.state :as state]))
+  (:require [state-flow.state :as state]
+            [com.stuartsierra.component :as component]
+            [common-clj.http-client.interceptors.with-mock-calls :as i-mock]))
 
-(defn mock!
-  ([mock-calls]
-   (mock! mock-calls :http-client))
-  ([mock-calls component-key]
-   (state/modify #(assoc-in % [:system component-key :mock-http-client-calls] mock-calls))))
+(defn mock! [mock-calls]
+  (state/wrap-fn (fn [] (i-mock/mock-calls! mock-calls))))
