@@ -5,7 +5,7 @@
 (defn loose-schema [schema]
   (walk/postwalk
    (fn [form]
-     (if (map? form)
+     (if (and (instance? clojure.lang.PersistentArrayMap form) (nil? (get form s/Keyword)))
        (assoc form s/Keyword s/Any)
        form))
    schema))
