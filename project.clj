@@ -1,4 +1,4 @@
-(defproject lucasmafra/common-clj "0.63.1"
+(defproject lucasmafra/common-clj "0.63.2"
   :description "Useful stuff for Clojure projects"
   :url "https://github.com/lucasmafra/common-clj" 
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"

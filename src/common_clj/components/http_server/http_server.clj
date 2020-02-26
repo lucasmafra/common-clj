@@ -137,6 +137,8 @@
 (s/defrecord HttpServerImpl [routes overrides]
   component/Lifecycle
   (start [{:keys [config] :as components}]
+    (when (nil? config)
+      (throw "Missing dependency :config on http-server"))
     (let [env             (config.protocol/get-env config)
           pedestal-routes (routes->pedestal routes overrides env components)
           service         (http-server.protocol/create-server components)]
@@ -160,7 +162,7 @@
         ::http/allowed-origins {:creds true :allowed-origins (constantly true)}
         ::http/host            "0.0.0.0"
         ::http/type            :jetty
-        ::http/port            http-port
+        ::http/port            (or http-port 80)
         ::http/join?           false}))))
 
 (s/defn new-http-server
