@@ -12,7 +12,8 @@
 (defn request-arrived! [method path]
   (state/gets
    (fn [world]
-     (let [service-fn (-> world :system :http-server :service :io.pedestal.http/service-fn)
+     (let [service-fn (or (-> world :system :http-server :service :io.pedestal.http/service-fn)
+                          (throw (AssertionError. "No http server found in the system")))
            {:keys [status body]} (test/response-for service-fn method path)]
        {:status status
         :body   (prettify-body body)}))))

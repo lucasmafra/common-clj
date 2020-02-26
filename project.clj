@@ -15,7 +15,10 @@
                  [com.taoensso/encore "2.115.0"]
                  [com.taoensso/faraday "1.9.0"]
                  [io.pedestal/pedestal.service "0.5.7"]
-                 [io.pedestal/pedestal.jetty "0.5.7"]]
+                 [io.pedestal/pedestal.jetty "0.5.7"]
+                 [clj-http "3.10.0"]
+                 [clj-http-fake "1.0.3"]
+                 [selmer "1.12.18"]]
   :main ^:skip-aot common-clj.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}
@@ -23,7 +26,7 @@
                        :dependencies [[midje "1.9.8"]
                                       [nubank/matcher-combinators "1.0.0"]
                                       [nubank/selvage "1.0.0-BETA"]
-                                      [nubank/state-flow "2.2.3"]
+                                      [nubank/state-flow "2.2.4"]
                                       [org.clojure/tools.namespace "0.2.11"]
                                       [com.stuartsierra/component.repl "0.2.0"]]
                        :source-paths ["dev"]
