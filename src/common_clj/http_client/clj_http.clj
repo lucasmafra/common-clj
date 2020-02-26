@@ -15,14 +15,14 @@
              :as
              i-resp-parser]
             [common-clj.http-client.interceptors.url-builder :as i-url]
+            [common-clj.http-client.interceptors.with-mock-calls :as i-mock]
             [common-clj.http-client.protocol :as hc-pro]
             [common-clj.schemata.http-client :as s-hc]
             [io.pedestal.interceptor.chain :as chain]
             [schema.core :as s]))
 
-(defn default-interceptors [m]
+(def default-interceptors
   [; enter interceptors
-   (i-ctx/context-initializer m)
    i-path/path-params-replacer
    i-query/query-params
    i-req/request-body
@@ -32,6 +32,12 @@
    ; leave interceptors
    i-resp-coercer/response-body-coercer
    i-resp-parser/response-body-parser])
+
+(defn build-interceptors [{:keys [env] :as m}]
+  (cond->> default-interceptors
+    (= :test env) (cons i-mock/with-mock-calls)
+    
+    true (cons (i-ctx/context-initializer m))))
 
 (s/defrecord CljHttp [endpoints :- s-hc/Endpoints]
   component/Lifecycle
@@ -46,13 +52,16 @@
   (request [component endpoint]
     (hc-pro/request component endpoint {}))
 
-  (request [{:keys [config]} endpoint options]
-    (let [config (conf-pro/get-config config)
-          interceptors (default-interceptors {:endpoints endpoints
-                                              :endpoint  endpoint
-                                              :options   options
-                                              :coercers  coercion/default-coercers
-                                              :config    config})]
+  (request [{:keys [config mock-http-client-calls]} endpoint options]
+    (let [config-map   (conf-pro/get-config config)
+          env          (conf-pro/get-env config)
+          interceptors (build-interceptors {:endpoints              endpoints
+                                            :endpoint               endpoint
+                                            :options                options
+                                            :coercers               coercion/default-coercers
+                                            :config                 config-map
+                                            :env                    env
+                                            :mock-http-client-calls mock-http-client-calls})]
       (:response
        (chain/execute {} interceptors)))))
 

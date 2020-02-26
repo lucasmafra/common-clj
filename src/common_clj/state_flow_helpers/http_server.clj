@@ -1,4 +1,4 @@
-(ns common-clj.state-flow-helpers.http
+(ns common-clj.state-flow-helpers.http-server
   (:require [common-clj.json :as json]
             [io.pedestal.test :as test]
             [state-flow.state :as state]))

@@ -2,14 +2,15 @@
   (:require [aux.init :refer [defflow init!]]
             [clj-http.fake :refer [with-fake-routes]]
             [com.stuartsierra.component :as component]
+            [common-clj.components.config.in-memory-config :as imc]
             [common-clj.http-client.clj-http :as sut]
             [common-clj.http-client.protocol :as hc-pro]
+            [common-clj.json :as json]
+            [common-clj.schema :as cs]
+            [common-clj.state-flow-helpers.http-client :as http-client]
             [schema.core :as s]
             [state-flow.assertions.matcher-combinators :refer [match?]]
-            [state-flow.state :as state]
-            [common-clj.schema :as cs]
-            [common-clj.json :as json]
-            [common-clj.components.config.in-memory-config :as imc]))
+            [state-flow.state :as state]))
 
 (def ResponseSchema
   {:message s/Str})
@@ -36,7 +37,7 @@
 
 (def system
   (component/system-map
-   :config (imc/new-config config)
+   :config (imc/new-config config :test)
    :http-client (component/using
                  (sut/new-http-client endpoints)
                  [:config])))
@@ -53,19 +54,20 @@
    (request endpoint {}))
   ([endpoint options]   
    (state/gets (fn [{{:keys [http-client]} :system}]
-                 (with-fake-routes mock-calls
-                   (:body
-                    (hc-pro/request http-client endpoint options)))))))
+                 (:body
+                  (hc-pro/request http-client endpoint options))))))
 
 (defflow simple-get-request
-  :pre-conditions [(init! system)]
+  :pre-conditions [(init! system)
+                   (http-client/mock! mock-calls)]
 
   [response (request :test/simple-get)]
   (match? {:message "Hello"}
           response))
 
 (defflow request-with-path-params
-  :pre-conditions [(init! system)]
+  :pre-conditions [(init! system)
+                   (http-client/mock! mock-calls)]
 
   [response (request :test/more-features
                      {:path-params {:id #uuid "2c6c6074-3ca8-4ec3-b742-33d0fcbe0b0b"}
