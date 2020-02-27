@@ -58,7 +58,7 @@
                    {:keys [route-name]}      route
                    {:keys [response-schema]} (route-name routes)
                    coerced-body              (json->string body)]
-               (s/validate response-schema coerced-body)
+               (s/validate response-schema body)
                (assoc-in context [:response :body] coerced-body)))}))
 
 (defn path-params-coercer
