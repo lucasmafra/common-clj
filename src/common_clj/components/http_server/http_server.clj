@@ -16,7 +16,8 @@
             [schema.core :as s]
             [common-clj.lib.utils :refer [map-vals]]
             [common-clj.humanize :as humanize]
-            [schema.utils :as s-utils])
+            [schema.utils :as s-utils]
+            [common-clj.misc :as misc])
   (:import (java.io StringWriter PrintWriter)))
 
 (def default-coercers coercion/default-coercers)
@@ -57,9 +58,9 @@
              (let [{:keys [body]}            response
                    {:keys [route-name]}      route
                    {:keys [response-schema]} (route-name routes)
-                   coerced-body              (json->string body)]
+                   serialized-body           (-> body misc/dash->underscore json->string)]
                (s/validate response-schema body)
-               (assoc-in context [:response :body] coerced-body)))}))
+               (assoc-in context [:response :body] serialized-body)))}))
 
 (defn path-params-coercer
   [routes {:keys [override-coercers]}]
@@ -175,7 +176,7 @@
 
 (s/defn new-http-server
   ([routes :- schemata.http/Routes]
-   (new-http-server routes nil))
+   (new-http-server routes {}))
   ([routes :- schemata.http/Routes
-    overrides :- (s/maybe schemata.http/Overrides)]
+    overrides :- schemata.http/Overrides]
    (map->HttpServerImpl {:routes routes :overrides overrides})))

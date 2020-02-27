@@ -10,7 +10,8 @@
             [common-clj.state-flow-helpers.http-client :as http-client]
             [schema.core :as s]
             [state-flow.assertions.matcher-combinators :refer [match?]]
-            [state-flow.state :as state]))
+            [state-flow.state :as state]
+            [clojure.string :as str]))
 
 (def ResponseSchema
   {:message s/Str})
@@ -44,25 +45,23 @@
 
 (def mock-calls
   {"http://test.com/test/get"
-   (constantly {:status 200 :body "{\"message\":\"Hello\"}"})
+   {:status 200 :body {"message" "Hello"}}
    
    "http://service.com/test/more-features/2c6c6074-3ca8-4ec3-b742-33d0fcbe0b0b"
-   (constantly {:status 200 :body "{\"my_name\":\"Tester\", \"date\": \"2019-08-02\"}"})})
+   {:status 200 :body {"my_name" "Tester"
+                       "date"    "2019-08-02"}}})
 
 (defn request
-  ([endpoint]
-   (request endpoint {}))
-  ([endpoint options]   
-   (state/gets (fn [{{:keys [http-client]} :system}]
-                 (:body
-                  (hc-pro/request http-client endpoint options))))))
+  ([endpoint] (request endpoint {}))
+  ([endpoint options] (state/gets (fn [{{:keys [http-client]} :system}]
+                                    (hc-pro/request http-client endpoint options)))))
 
 (defflow simple-get-request
   :pre-conditions [(init! system)
                    (http-client/mock! mock-calls)]
 
   [response (request :test/simple-get)]
-  (match? {:message "Hello"}
+  (match? {:status 200 :body {:message "Hello"}}
           response))
 
 (defflow request-with-path-params
@@ -73,6 +72,17 @@
                      {:path-params {:id #uuid "2c6c6074-3ca8-4ec3-b742-33d0fcbe0b0b"}
                       :body        {:age 25}})]
 
-  (match? {:my-name "Tester"
-           :date    #local-date "2019-08-02"}
+  (match? {:status 200 :body {:my-name "Tester"
+                              :date    #local-date "2019-08-02"}}
+          response))
+
+(defflow test-overrides
+  :pre-conditions [(init! system)
+                   (http-client/mock! mock-calls)]
+
+  [response (request :test/simple-get {:overrides
+                                       {:response-deserializer
+                                        {:parse-key-fn str/upper-case}}})]
+  
+  (match? {:status 200 :body {"MESSAGE" "Hello"}}
           response))

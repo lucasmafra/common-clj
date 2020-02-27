@@ -30,8 +30,8 @@
             (chain/execute context [(nut/context-initializer {:config :dummy})])
             [:config]))))
 
-  (testing "injects coercers to context"
+  (testing "injects overrides to context"
     (is (= :dummy
            (get-in
-            (chain/execute context [(nut/context-initializer {:coercers :dummy})])
-            [:coercers])))))
+            (chain/execute context [(nut/context-initializer {:overrides :dummy})])
+            [:overrides])))))

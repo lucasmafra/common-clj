@@ -1,9 +1,7 @@
-(ns common-clj.http-client.interceptors.response-body-parser
-  (:require [clojure.walk :as walk]
-            [common-clj.json :as json]
-            [io.pedestal.interceptor :as interceptor]
-            [schema.core :as s]
-            [clojure.string :as str]))
+(ns common-clj.misc
+  (:require [schema.core :as s]
+            [clojure.string :as str]
+            [clojure.walk :as walk]))
 
 (def string-or-keyword (s/if keyword? s/Keyword s/Str))
 
@@ -20,7 +18,7 @@
   ([from :- Character, to :- Character, exceptions :- #{s/Keyword}]
     #(if (keyword? %) (replace-char % from to exceptions) %)))
 
-(defn- underscore->dash
+(defn underscore->dash
   "Convert hash-map underscored keywords to dash.
   Example:
     => (underscore->dash {:foo_bar {:bar_foo 1}})
@@ -29,7 +27,16 @@
   [m]
   (walk/postwalk (replace-char-gen \_ \-) m))
 
-(defn- camelcase->dash [m]
+(defn dash->underscore
+  "Inverse of underscore->dash
+  Example:
+    => (dash->underscore {:foo-bar {:bar-foo 1}})
+    {:foo_bar {:bar_foo 1}}
+  "
+  [m]
+  (walk/postwalk (replace-char-gen \- \_) m))
+
+(defn camelcase->dash [m]
   (walk/postwalk
    #(if (keyword? %)
       (-> (str/replace (name %) #"([A-Z])" "-$1")
@@ -38,13 +45,3 @@
           keyword)
       %)
    m))
-
-(def response-body-parser
-  (interceptor/interceptor
-   {:name ::response-body-parser
-    :leave (fn [{{:keys [body]} :response :as context}]
-             (let [parsed-body (-> body
-                                   json/string->json
-                                   underscore->dash
-                                   camelcase->dash)]
-               (assoc-in context [:response :body] parsed-body)))}))

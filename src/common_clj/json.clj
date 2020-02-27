@@ -17,5 +17,8 @@
        (clojure.walk/postwalk to-supported-type)
        generate-string))
 
-(defn string->json [string]
-  (parse-string string true))
+(defn string->json
+  ([string]
+   (string->json string true))
+  ([string keywordize]
+   (parse-string string keywordize)))

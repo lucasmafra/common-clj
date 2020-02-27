@@ -1,6 +1,5 @@
 (ns common-clj.http-client.clj-http
-  (:require [clj-http.client :as client]
-            [com.stuartsierra.component :as component]
+  (:require [com.stuartsierra.component :as component]
             [common-clj.coercion :as coercion]
             [common-clj.components.config.protocol :as conf-pro]
             [common-clj.http-client.interceptors.context-initializer :as i-ctx]
@@ -8,12 +7,12 @@
             [common-clj.http-client.interceptors.path-params-replacer :as i-path]
             [common-clj.http-client.interceptors.query-params :as i-query]
             [common-clj.http-client.interceptors.request-body :as i-req]
-            [common-clj.http-client.interceptors.response-body-coercer
+            [common-clj.http-client.interceptors.response-coercer
              :as
              i-resp-coercer]
-            [common-clj.http-client.interceptors.response-body-parser
+            [common-clj.http-client.interceptors.response-deserializer
              :as
-             i-resp-parser]
+             i-resp-deserializer]
             [common-clj.http-client.interceptors.url-builder :as i-url]
             [common-clj.http-client.interceptors.with-mock-calls :as i-mock]
             [common-clj.http-client.protocol :as hc-pro]
@@ -30,8 +29,8 @@
    i-handler/handler
 
    ; leave interceptors
-   i-resp-coercer/response-body-coercer
-   i-resp-parser/response-body-parser])
+   i-resp-coercer/response-coercer
+   i-resp-deserializer/response-deserializer])
 
 (defn build-interceptors [{:keys [env] :as m}]
   (cond->> default-interceptors
@@ -39,7 +38,8 @@
     
     true (cons (i-ctx/context-initializer m))))
 
-(s/defrecord CljHttp [endpoints :- s-hc/Endpoints]
+(s/defrecord CljHttp [endpoints :- s-hc/Endpoints
+                      overrides :- s-hc/Overrides]
   component/Lifecycle
   (start [component]
     (s/validate s-hc/Endpoints endpoints)
@@ -55,14 +55,19 @@
   (request [{:keys [config] :as component} endpoint options]
     (let [config-map   (conf-pro/get-config config)
           env          (conf-pro/get-env config)
-          interceptors (build-interceptors {:endpoints              endpoints
-                                            :endpoint               endpoint
-                                            :options                options
-                                            :coercers               coercion/default-coercers
-                                            :config                 config-map
-                                            :env                    env})]
+          interceptors (build-interceptors {:endpoints endpoints
+                                            :endpoint  endpoint
+                                            :options   options
+                                            :config    config-map
+                                            :env       env
+                                            :overrides overrides})]
       (:response
        (chain/execute {} interceptors)))))
 
-(s/defn new-http-client [endpoints :- s-hc/Endpoints]
-  (map->CljHttp {:endpoints endpoints}))
+(s/defn new-http-client
+  ([endpoints :- s-hc/Endpoints]
+   (new-http-client endpoints {}))
+  ([endpoints :- s-hc/Endpoints
+    overrides :- s-hc/Overrides]
+   (map->CljHttp {:endpoints endpoints
+                  :overrides overrides})))

@@ -5,7 +5,7 @@
 
 (defn- prettify-body [body]
   (try
-    (json/string->json body)
+    (json/string->json body false)
     (catch Exception e
       body)))
 
