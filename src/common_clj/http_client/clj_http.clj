@@ -49,14 +49,14 @@
     (hc-pro/request component endpoint {}))
 
   (request [{:keys [config] :as component} endpoint options]
-    (let [config-map   (conf-pro/get-config config)
-          env          (conf-pro/get-env config)
-          interceptors (build-interceptors {:endpoints endpoints
-                                            :endpoint  endpoint
-                                            :options   options
-                                            :config    config-map
-                                            :env       env
-                                            :overrides overrides})]
+    (let [{:keys [known-hosts]} (conf-pro/get-config config)
+          env                   (conf-pro/get-env config)
+          interceptors          (build-interceptors {:endpoints   endpoints
+                                                     :endpoint    endpoint
+                                                     :options     options
+                                                     :known-hosts known-hosts
+                                                     :env         env
+                                                     :overrides   overrides})]
       (:response
        (chain/execute {} interceptors)))))
 

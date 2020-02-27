@@ -24,11 +24,11 @@
             (chain/execute context [(nut/context-initializer {:options :dummy})])
             [:request :options]))))
 
-  (testing "injects config to context"
+  (testing "injects known-hosts to context"
     (is (= :dummy
            (get-in
-            (chain/execute context [(nut/context-initializer {:config :dummy})])
-            [:config]))))
+            (chain/execute context [(nut/context-initializer {:known-hosts :dummy})])
+            [:known-hosts]))))
 
   (testing "injects overrides to context"
     (is (= :dummy
