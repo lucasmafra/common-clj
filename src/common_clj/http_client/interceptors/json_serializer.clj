@@ -16,15 +16,15 @@
        (json/json->string serialization-map))))
 
 (def default-values
-  {:serialize-fn default-serialize-fn
-   :extension    nil})
+  {:serialize-fn default-serialize-fn})
 
 (def json-serializer
   (interceptor/interceptor
    {:name  ::json-serializer
     :enter (fn [{:keys [endpoints endpoint] {:keys [body]} :options :as context}]
              (let [{:keys [request-schema]}         (endpoints endpoint)
-                   {:keys [serialize-fn extension]} (parse-overrides context :json-serializer default-values)
+                   {:keys [serialize-fn]} (parse-overrides context :json-serializer default-values)
+                   extension (parse-overrides context :extend-serialization nil)
                    serialization-map                (merge default-serialization-map extension)
                    serialize-fn (if (nil? extension) serialize-fn #(serialize-fn % serialization-map))]
                (when (and (not request-schema) body)

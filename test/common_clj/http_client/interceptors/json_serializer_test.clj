@@ -60,7 +60,7 @@
     (let [extension {cs/EpochMillis #(.toEpochMilli %)}
           serialize-fn #(json/json->string %1 %2)
           context (-> context
-                      (assoc-in [:overrides :json-serializer :extension] extension)
+                      (assoc-in [:overrides :extend-serialization] extension)
                       (assoc-in [:overrides :json-serializer :serialize-fn] serialize-fn)
                       (assoc-in [:options :body] {:created-at #epoch 1422554400000})
                       (assoc-in [:endpoint] :service/bye))]

@@ -24,7 +24,8 @@
   (interceptor/interceptor
    {:name  ::json-deserializer
     :leave (fn [{{:keys [body]} :response :as context}]
-             (let [{:keys [deserialize-fn extension]} (parse-overrides context :json-deserializer default-values)
+             (let [{:keys [deserialize-fn]} (parse-overrides context :json-deserializer default-values)
+                   extension (parse-overrides context :extend-deserialization nil)
                    deserialize-fn (if (nil? extension) deserialize-fn #(deserialize-fn % extension))
                    deserialized    (deserialize-fn body)]
                (assoc-in context [:response :body] deserialized)))}))

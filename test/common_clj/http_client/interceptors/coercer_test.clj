@@ -46,7 +46,7 @@
           extension       {cs/PosInt pos-int-matcher} ; adds cs/PosInt to coercion map
           context         (-> context
                               (assoc-in [:overrides :coercer :coercers] custom-coercers)
-                              (assoc-in [:overrides :coercer :extension] extension))]
+                              (assoc-in [:overrides :extend-coercion] extension))]
       (is (= {:message "Bla"
               :amount    5}
          (get-in (chain/execute context [nut/coercer])

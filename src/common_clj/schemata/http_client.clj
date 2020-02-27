@@ -2,22 +2,21 @@
   (:require [schema.core :as s]))
 
 (def JsonSerializerOverrides
-  {(s/optional-key :serialize-fn) s/Any
-   (s/optional-key :extension)    s/Any})
+  {(s/optional-key :serialize-fn) s/Any})
 
 (def JsonDeserializerOverrides
-  {(s/optional-key :deserialize-fns) [s/Any]
-   (s/optional-key :parse-key-fn)    s/Any
-   (s/optional-key :special-keys)    s/Any})
+  {(s/optional-key :deserialize-fn) [s/Any]})
 
 (def CoercerOverrides
-  {(s/optional-key :coercers) [s/Any]
-   (s/optional-key :extension) [s/Any]})
+  {(s/optional-key :coercers) [s/Any]})
 
 (def Overrides
-  {(s/optional-key :json-serializer)   JsonSerializerOverrides
-   (s/optional-key :json-deserializer) JsonDeserializerOverrides
-   (s/optional-key :coercer)           CoercerOverrides})
+  {(s/optional-key :json-serializer)        JsonSerializerOverrides
+   (s/optional-key :json-deserializer)      JsonDeserializerOverrides
+   (s/optional-key :coercer)                CoercerOverrides
+   (s/optional-key :extend-serialization)   s/Any
+   (s/optional-key :extend-deserialization) s/Any
+   (s/optional-key :extend-coercion)        s/Any})
 
 (def EndpointSettings
   {:host                                 s/Str

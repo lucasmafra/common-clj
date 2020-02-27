@@ -43,7 +43,7 @@
   (testing "override extension"
     (let [special-keys {"message" :special-key}
           context      (assoc-in context
-                                 [:overrides :json-deserializer :extension]
+                                 [:overrides :extend-deserialization]
                                  special-keys)]
       (is (= {:special-key "Hello"}
              (get-in
