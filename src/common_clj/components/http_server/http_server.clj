@@ -20,7 +20,7 @@
             [common-clj.misc :as misc])
   (:import (java.io StringWriter PrintWriter)))
 
-(def default-coercers coercion/default-coercers)
+(def default-coercers coercion/default-coercion-map)
 
 (defn ok [body]
   {:status 200

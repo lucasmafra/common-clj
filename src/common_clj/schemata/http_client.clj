@@ -2,15 +2,17 @@
   (:require [schema.core :as s]))
 
 (def ResponseCoercerOverrides
-  {(s/optional-key :coercers) [s/Any]})
+  {(s/optional-key :coercers) [s/Any]
+   (s/optional-key :extension) [s/Any]})
 
 (def ResponseDeserializerOverrides
   {(s/optional-key :deserialize-fns) [s/Any]
-   (s/optional-key :parse-key-fn)    s/Any})
+   (s/optional-key :parse-key-fn)    s/Any
+   (s/optional-key :special-keys)    s/Any})
 
 (def Overrides
-  {(s/optional-key :response-deserializer) ResponseDeserializerOverrides
-   (s/optional-key :response-coercer)      ResponseCoercerOverrides})
+  {(s/optional-key :deserializer) ResponseDeserializerOverrides
+   (s/optional-key :coercer)      ResponseCoercerOverrides})
 
 (def EndpointSettings
   {:host                                 s/Str
