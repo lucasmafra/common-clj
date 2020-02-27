@@ -16,8 +16,7 @@
    {:service/hello
     {:response-schema ResponseSchema}}
 
-   :request
-   {:endpoint :service/hello}
+   :endpoint :service/hello
 
    :response
    {:body {:message "Bla"

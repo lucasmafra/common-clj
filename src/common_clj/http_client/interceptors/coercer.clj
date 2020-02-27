@@ -13,7 +13,7 @@
 (def coercer
   (interceptor/interceptor
    {:name  ::coercer
-    :leave (fn [{{:keys [endpoint]} :request :keys [endpoints] {:keys [body]} :response :as context}]
+    :leave (fn [{:keys [endpoints endpoint] {:keys [body]} :response :as context}]
              (let [{:keys [response-schema]}    (endpoints endpoint)
                    {:keys [coercers extension]} (parse-overrides context :coercer default-values)
                    coercers                     (merge coercers extension)

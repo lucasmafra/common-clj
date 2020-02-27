@@ -5,7 +5,7 @@
 (def handler
   (interceptor/interceptor
    {:name ::handler
-    :enter (fn [{:keys [endpoints] {:keys [endpoint url options]} :request :as context}]
+    :enter (fn [{:keys [endpoint endpoints url options]:as context}]
              (let [{:keys [method]} (endpoints endpoint)
                    response (case method
                               :get     (client/get url options)

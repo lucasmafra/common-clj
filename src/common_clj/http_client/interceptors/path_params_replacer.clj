@@ -17,7 +17,7 @@
 (def path-params-replacer
   (interceptor/interceptor
    {:name ::path-params-replacer
-    :enter (fn [{:keys [endpoints] {:keys [endpoint] {:keys [path-params]} :options} :request :as context}]
+    :enter (fn [{:keys [endpoints endpoint] {:keys [path-params]} :options :as context}]
              (let [{:keys [path path-params-schema]} (endpoints endpoint)
                    path-template (keywords->placeholders path path-params)
                    path-replaced (sp/render path-template path-params)]
@@ -25,4 +25,4 @@
                  (s/validate path-params-schema path-params))
                (when (and (not path-params-schema) path-params)
                  (throw (AssertionError. ":path-params is present on request but there's no path-params-schema for endpoint " endpoint)))
-               (assoc-in context [:request :path-replaced] path-replaced)))}))
+               (assoc-in context [:path-replaced] path-replaced)))}))

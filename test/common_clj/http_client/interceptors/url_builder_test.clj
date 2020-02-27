@@ -8,20 +8,19 @@
    {:service/hello
     {:host "http://service.com"}}
 
-   :request
-   {:endpoint      :service/hello
-    :path-replaced "/api/hello"}})
+   :endpoint      :service/hello
+   :path-replaced "/api/hello"})
 
 (deftest url-builder
   (testing "builds url and assocs to context"
     (is (= "http://service.com/api/hello"
            (get-in (chain/execute context [nut/url-builder])
-                 [:request :url]))))
+                 [:url]))))
 
   (testing "when host is a variable, gets the value from config"
     (let [context (-> context
                       (assoc-in [:endpoints :service/hello :host] "{{my-service}}")
-                      (assoc-in [:config :known-hosts :my-service] "http://my-service.com"))]
+                      (assoc-in [:known-hosts :my-service] "http://my-service.com"))]
       (is (= "http://my-service.com/api/hello"
            (get-in (chain/execute context [nut/url-builder])
-                   [:request :url]))))))
+                   [:url]))))))

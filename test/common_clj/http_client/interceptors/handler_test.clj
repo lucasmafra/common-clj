@@ -9,9 +9,8 @@
    {:service/hello
     {:method :get}}
 
-   :request
-   {:endpoint :service/hello
-    :url      "http://service.com/api/hello"}})
+   :endpoint :service/hello
+   :url      "http://service.com/api/hello"})
 
 (def mock-calls
   {"http://service.com/api/hello"     {:get (constantly {:status 200 :body "Hello"})}
@@ -25,7 +24,7 @@
                  [:response :body]))))
 
   (testing "passes options to clj-http library"
-    (let [context (assoc-in context [:request :options] {:query-params {:x 1}})]
+    (let [context (assoc context :options {:query-params {:x 1}})]
       (is (= "x = 1"
            (get-in (with-fake-routes mock-calls
                      (chain/execute context [nut/handler]))

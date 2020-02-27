@@ -1,18 +1,23 @@
 (ns common-clj.schemata.http-client
   (:require [schema.core :as s]))
 
-(def ResponseCoercerOverrides
-  {(s/optional-key :coercers) [s/Any]
-   (s/optional-key :extension) [s/Any]})
+(def JsonSerializerOverrides
+  {(s/optional-key :serialize-fn) s/Any
+   (s/optional-key :extension)    s/Any})
 
-(def ResponseDeserializerOverrides
+(def JsonDeserializerOverrides
   {(s/optional-key :deserialize-fns) [s/Any]
    (s/optional-key :parse-key-fn)    s/Any
    (s/optional-key :special-keys)    s/Any})
 
+(def CoercerOverrides
+  {(s/optional-key :coercers) [s/Any]
+   (s/optional-key :extension) [s/Any]})
+
 (def Overrides
-  {(s/optional-key :deserializer) ResponseDeserializerOverrides
-   (s/optional-key :coercer)      ResponseCoercerOverrides})
+  {(s/optional-key :json-serializer)   JsonSerializerOverrides
+   (s/optional-key :json-deserializer) JsonDeserializerOverrides
+   (s/optional-key :coercer)           CoercerOverrides})
 
 (def EndpointSettings
   {:host                                 s/Str

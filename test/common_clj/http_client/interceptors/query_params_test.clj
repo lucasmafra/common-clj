@@ -10,9 +10,8 @@
    {:service/hello
     {:query-params-schema {:age cs/PosInt}}}
 
-   :request
-   {:endpoint :service/hello
-    :options  {:query-params {:age 25}}}})
+   :endpoint :service/hello
+   :options  {:query-params {:age 25}}})
 
 (deftest query-params
   (testing "returns context when query-params conforms to schema"
@@ -20,7 +19,7 @@
            (chain/execute context [nut/query-params]))))
 
   (testing "throws error when query-params does not conform to schema"
-    (let [context (assoc-in context [:request :options :query-params :age] -25)]
+    (let [context (assoc-in context [:options :query-params :age] -25)]
       (is (thrown? ExceptionInfo
                    (chain/execute context [nut/query-params])))))
 
@@ -32,7 +31,7 @@
 
   (testing "does not throw when there's no query-params-schema nor query-params"
     (let [context (-> context
-                      (assoc-in [:request :options :query-params] nil)
+                      (assoc-in [:options :query-params] nil)
                       (assoc-in [:endpoints :service/hello :query-params-schema] nil))]
       (is (= context
              (chain/execute context [nut/query-params]))))))

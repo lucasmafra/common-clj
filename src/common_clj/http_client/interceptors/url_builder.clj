@@ -5,8 +5,8 @@
 (def url-builder
   (interceptor/interceptor
    {:name  ::url-builder
-    :enter (fn [{:keys [endpoints] {:keys [endpoint path-replaced]} :request {:keys [known-hosts]} :config :as context}]
+    :enter (fn [{:keys [endpoints endpoint path-replaced known-hosts] :as context}]
              (let [{:keys [host]} (endpoints endpoint)
                    url-template   (str host path-replaced)
                    url            (sp/render url-template known-hosts)]
-               (assoc-in context [:request :url] url)))}))
+               (assoc context :url url)))}))

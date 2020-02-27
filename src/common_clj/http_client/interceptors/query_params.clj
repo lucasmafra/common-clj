@@ -5,7 +5,7 @@
 (def query-params
   (interceptor/interceptor
    {:name ::query-params
-    :enter (fn [{:keys [endpoints] {{:keys [query-params]} :options :keys [endpoint]} :request :as context}]
+    :enter (fn [{:keys [endpoints endpoint] {:keys [query-params]} :options :as context}]
              (let [{:keys [query-params-schema]} (endpoints endpoint)]
                (when query-params-schema
                  (s/validate query-params-schema query-params))
