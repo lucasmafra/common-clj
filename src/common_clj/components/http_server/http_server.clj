@@ -48,13 +48,17 @@
                    {:keys [request-schema]} (route-name routes)
                    coerced-body             (when request-schema
                                               (coerce request-schema json-params (or override-coercers default-coercers)))]
-               (assoc-in context [:request :body] coerced-body)))
+               (if request-schema
+                 (do
+                   (s/validate request-schema coerced-body)
+                   (assoc-in context [:request :body] coerced-body))
+                 context)))
     :leave (fn [{:keys [response route] :as context}]
              (let [{:keys [body]}            response
                    {:keys [route-name]}      route
                    {:keys [response-schema]} (route-name routes)
                    coerced-body              (json->string body)]
-               (s/validate response-schema body)
+               (s/validate response-schema coerced-body)
                (assoc-in context [:response :body] coerced-body)))}))
 
 (defn path-params-coercer
@@ -68,7 +72,9 @@
                    coerced-path-params (when path-params-schema
                                          (coerce path-params-schema path-params (or override-coercers default-coercers)))]
                (if coerced-path-params
-                 (assoc-in context [:request :path-params] coerced-path-params)
+                 (do
+                   (s/validate path-params-schema coerced-path-params)
+                   (assoc-in context [:request :path-params] coerced-path-params))
                  context)))}))
 
 (defn query-params-coercer
@@ -82,7 +88,9 @@
                    coerced-query-params (when query-params-schema
                                          (coerce query-params-schema query-params (or override-coercers default-coercers)))]
                (if coerced-query-params
-                 (assoc-in context [:request :query-params] coerced-query-params)
+                 (do
+                   (s/validate query-params-schema coerced-query-params)
+                   (assoc-in context [:request :query-params] coerced-query-params))
                  context)))}))
 
 (defn error-interceptor [{:keys [override-humanizer]} env]
