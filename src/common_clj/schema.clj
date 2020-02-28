@@ -36,3 +36,4 @@
 (def Email
   (s/pred (partial re-matches email-regex) 'valid-email))
 
+(def Nil (s/pred nil? 'nil?))

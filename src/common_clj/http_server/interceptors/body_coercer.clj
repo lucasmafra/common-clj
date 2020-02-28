@@ -1,23 +1,24 @@
-(ns common-clj.http-server.interceptors.body-coercer)
+(ns common-clj.http-server.interceptors.body-coercer
+  (:require [common-clj.coercion :as coercion]
+            [common-clj.http-server.interceptors.helpers :refer [parse-overrides]]
+            [common-clj.schema :as cs]
+            [io.pedestal.interceptor :as interceptor]))
 
-#_(def body-coercer
-  (interceptor
+(def default-coercers coercion/default-coercion-map)
+
+(def default-values
+  {:coercers default-coercers})
+
+(def body-coercer
+  (interceptor/interceptor
    {:name  ::body-coercer
-    :enter (fn [{:keys [request route] :as context}]
+    :enter (fn [{:keys [request route routes] :as context}]
              (let [{:keys [json-params]}    request
                    {:keys [route-name]}     route
                    {:keys [request-schema]} (route-name routes)
-                   coerced-body             (when request-schema
-                                              (coerce request-schema json-params (or override-coercers default-coercers)))]
-               (if request-schema
-                 (do
-                   (s/validate request-schema coerced-body)
-                   (assoc-in context [:request :body] coerced-body))
-                 context)))
-    :leave (fn [{:keys [response route] :as context}]
-             (let [{:keys [body]}            response
-                   {:keys [route-name]}      route
-                   {:keys [response-schema]} (route-name routes)
-                   serialized-body           (-> body misc/dash->underscore json->string)]
-               (s/validate response-schema body)
-               (assoc-in context [:response :body] serialized-body)))}))
+                   request-schema           (or request-schema cs/Nil)
+                   {:keys [coercers]}       (parse-overrides context :coercer default-values)
+                   extension                (parse-overrides context :extend-coercion nil)
+                   coercers                 (merge coercers extension)
+                   coerced-body             (coercion/coerce request-schema json-params coercers)]
+               (assoc-in context [:request :body] coerced-body)))}))
