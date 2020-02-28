@@ -20,15 +20,19 @@
 (def UTCDateTime
   "ISO 8601 string representing a UTC date time.
    Ex: 2001-12-09T09:00:00Z"
-  java.time.Instant)
+  (s/pred (partial instance? java.time.Instant) 'utc-date-time))
 
 (def EpochMillis
   "Unix epoch in milliseconds - the number of milliseconds elapsed since 1970-01-01T00:00:00Z.
    Ex: 1581797873000"
-  java.time.Instant)
+  (s/pred (partial instance? java.time.Instant) 'epoch-millis))
+
+(def TimestampMicroseconds
+  "Unix timestamp in microseconds. Ex: 1582769681000000"
+  (s/pred pos-int? 'timestamp-microseconds))
 
 (def PosInt
-  (s/pred pos-int?))
+  (s/pred pos-int? 'pos-int))
 
 (def email-regex
   #"^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")

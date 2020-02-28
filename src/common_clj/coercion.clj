@@ -1,6 +1,6 @@
 (ns common-clj.coercion
   (:require [common-clj.schema :as cs]
-            [java-time :refer [local-date local-date-time]]
+            [java-time :refer [instant local-date local-date-time]]
             [schema-tools.coerce :as stc]
             [schema.coerce :as coerce]
             [schema.core :as s]
@@ -15,6 +15,10 @@
 (def pos-int-matcher (partial coerce/safe #(if (string? %)
                                              (Integer/parseInt %)
                                              (coerce/safe-long-cast %))))
+
+(def epoch-millis-matcher (partial coerce/safe (comp instant #(Long/valueOf %))))
+
+(def long-matcher (partial coerce/safe #(Long/valueOf %)))
 
 (defn filter-schema-keys
   [m schema-keys extra-keys-walker]
@@ -72,8 +76,10 @@
    (stc/coerce data schema (json-matcher coercers options))))
 
 (def default-coercion-map
-  {cs/LocalDate         local-date-matcher
-   cs/LocalDateTime     local-date-time-matcher
-   s/Int                int-matcher
-   cs/PosInt            pos-int-matcher
-   java.math.BigDecimal big-decimal-matcher})
+  {cs/LocalDate             local-date-matcher
+   cs/LocalDateTime         local-date-time-matcher
+   s/Int                    int-matcher
+   cs/PosInt                pos-int-matcher
+   java.math.BigDecimal     big-decimal-matcher
+   cs/EpochMillis           epoch-millis-matcher
+   cs/TimestampMicroseconds long-matcher})

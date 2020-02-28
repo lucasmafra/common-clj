@@ -1,6 +1,7 @@
 (ns common-clj.json
   (:require [cheshire.core :refer [generate-string parse-string]]
-            [clojure.walk :as walk]))
+            [clojure.walk :as walk]
+            [common-clj.schema :as cs]))
 
 (defn- transform-values [json serialization-map]
   (walk/postwalk
@@ -11,8 +12,11 @@
    json))
 
 (def default-serialization-map
-  {java.time.LocalDate str
-   java.time.LocalDateTime str})
+  {cs/LocalDate             str
+   cs/LocalDateTime         str
+   cs/LocalTime             str
+   cs/UTCDateTime           str
+   cs/EpochMillis           #(.toEpochMilli %)})
 
 (defn json->string
   ([json]
