@@ -81,8 +81,8 @@
   (start [{:keys [config] :as components}]
     (when (nil? config)
       (throw "Missing dependency :config on http-server"))
-    (let [env             (config.protocol/get-env config)
-          service         (http-server.protocol/create-server components)]
+    (let [env     (config.protocol/get-env config)
+          service (http-server.protocol/create-server components)]
       (when (not= :test env)
         (http/start service))
       (-> components
@@ -99,6 +99,7 @@
           {:keys [http-port]}                   (config.protocol/get-config config)
           pedestal-routes                       (routes->pedestal routes overrides env components)
           {:keys [service-map interceptors-fn]} overrides
+          http-port                             (or http-port 80)
           service-map                           (build-service-map service-map http-port pedestal-routes env)
           interceptors-fn                       (or interceptors-fn default-interceptors-fn)]
       (-> service-map
