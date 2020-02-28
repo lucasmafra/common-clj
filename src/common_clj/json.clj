@@ -1,8 +1,8 @@
 (ns common-clj.json
   (:require [cheshire.core :refer [generate-string parse-string]]
-            [clojure.walk :as walk]
             [common-clj.schema :as cs]
             [schema.core :as s]
+            [schema.spec.core :as spec]
             [common-clj.misc :as misc]))
 
 (def default-serialization-map
@@ -12,23 +12,33 @@
    cs/UTCDateTime           str
    cs/EpochMillis           #(.toEpochMilli %)})
 
-(defn transform-values [json ks schema serialization-map]
-  (if (map? json)
-    (misc/map-vals-with-key #(transform-values %2 (conj ks %1) schema serialization-map) json)
-    (let [v-schema (get-in schema ks)
-          conversion-fn (or (serialization-map v-schema)
-                            identity)]
-      (conversion-fn json))))
+(defn transform-values [schema serialization-map]
+  (spec/run-checker,
+   (fn [s params]
+     (let [walk (spec/checker (s/spec s) params)]
+       (fn [x]
+         (let [result (walk x)
+               conversion-fn (or (serialization-map s)
+                                 identity)]
+           (conversion-fn result)))))
+   true
+   schema))
+
+(def default-values
+  {:transform-fns [misc/underscore->dash]
+   :serialization-map default-serialization-map})
 
 (defn json->string
   ([json]
-   (json->string json {}))
+   (json->string json s/Any))
   ([json schema]
-   (json->string json schema default-serialization-map))
-  ([json schema serialization-map]
-   (-> json
-       (transform-values [] schema serialization-map)
-       generate-string)))
+   (json->string json schema default-values))
+  ([json schema {:keys [serialization-map transform-fns]}]
+   (s/validate schema json)
+   (->> json
+        ((transform-values schema serialization-map))
+        ((apply comp transform-fns))
+        generate-string)))
 
 (defn string->json
   ([string]

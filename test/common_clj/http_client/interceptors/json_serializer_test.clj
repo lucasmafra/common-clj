@@ -20,7 +20,7 @@
             (chain/execute context [nut/json-serializer])
             [:options :body]))))
   
-  (testing "converts dash to underscore"
+ (testing "converts dash to underscore"
     (let [context (-> context
                       (assoc-in [:endpoints :service/hello :request-schema] {:my-age cs/PosInt})
                       (assoc-in [:options :body] {:my-age 25}))]
@@ -31,8 +31,8 @@
               [:options :body])))))
 
   (testing "throws error when req body does not conform to schema"
-    (let [context (assoc-in context [:options :body :age] -25)]
-      (is (thrown? ExceptionInfo
+    (let [context (assoc-in context [:options :body :age] -25)]      
+      (is (thrown-with-msg? ExceptionInfo #"Value does not match schema"
                    (chain/execute context [nut/json-serializer])))))
 
   (testing "throws when there's request body but no schema"
@@ -64,7 +64,7 @@
                       (assoc-in [:overrides :json-serializer :serialize-fn] serialize-fn)
                       (assoc-in [:options :body] {:created-at #epoch 1422554400000})
                       (assoc-in [:endpoint] :service/bye))]
-      (is (= "{\"created-at\":1422554400000}"
+      (is (= "{\"created_at\":1422554400000}"
              (get-in
               (chain/execute context [nut/json-serializer])
               [:options :body]))))))
