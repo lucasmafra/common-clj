@@ -104,7 +104,7 @@
           interceptors-fn                       (or interceptors-fn default-interceptors-fn)]
       (-> service-map
           interceptors-fn
-          (update ::http/interceptors #(cons (i-ctx/context-initializer routes env) %))
+          (update ::http/interceptors #(cons (i-ctx/context-initializer routes env overrides) %))
           (http/create-server)))))
 
 (s/defn new-http-server
