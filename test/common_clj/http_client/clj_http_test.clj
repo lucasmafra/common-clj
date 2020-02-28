@@ -81,8 +81,8 @@
                    (http-client/mock! mock-calls)]
 
   [response (request :test/simple-get {:overrides
-                                       {:deserializer
-                                        {:parse-key-fn str/upper-case}}})]
+                                       {:extend-deserialization
+                                        {"message" :special-key}}})]
   
-  (match? {:status 200 :body {"MESSAGE" "Hello"}}
+  (match? {:status 200 :body {:special-key "Hello"}}
           response))

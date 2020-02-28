@@ -19,7 +19,8 @@
    (let [sw       (StringWriter.)
          pw       (PrintWriter. sw)
          e        (->> ex ex-data :exception)
-         _        (.printStackTrace e pw)
+         _        (when e
+                    (.printStackTrace e pw))
          response (if (not= :prod env)
                     {:error       "Internal Server Error"
                      :stack-trace (str sw)}

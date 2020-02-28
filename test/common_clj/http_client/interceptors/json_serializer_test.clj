@@ -49,7 +49,7 @@
              (chain/execute context [nut/json-serializer])))))
 
   (testing "override serialize-fn"
-    (let [serialize-fn (fn [_] "schrubles")
+    (let [serialize-fn (fn [_ _ _] "schrubles")
           context (assoc-in context [:overrides :json-serializer :serialize-fn] serialize-fn)]
       (is (= "schrubles"
              (get-in
@@ -58,7 +58,7 @@
 
   (testing "override extension"
     (let [extension {cs/EpochMillis #(.toEpochMilli %)}
-          serialize-fn #(json/json->string %1 %2)
+          serialize-fn #(json/json->string %1 %2 %3)
           context (-> context
                       (assoc-in [:overrides :extend-serialization] extension)
                       (assoc-in [:overrides :json-serializer :serialize-fn] serialize-fn)

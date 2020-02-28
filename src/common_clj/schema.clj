@@ -22,7 +22,7 @@
    Ex: 2001-12-09T09:00:00Z"
   (s/pred (partial instance? java.time.Instant) 'utc-date-time))
 
-(def EpochMillis
+(s/defschema EpochMillis
   "Unix epoch in milliseconds - the number of milliseconds elapsed since 1970-01-01T00:00:00Z.
    Ex: 1581797873000"
   (s/pred (partial instance? java.time.Instant) 'epoch-millis))

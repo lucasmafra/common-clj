@@ -41,15 +41,9 @@
 
 (deftest unknown-error
   (let [context (assoc-in context [::chain/error] (ex-info "Unknown" {:reason :unknown}))]
-    (testing "returns 500 (internal server error) when does not know how to handle"      
-      (is (= 500
-             (get-in
-              (chain/execute context [nut/error])
-              [:response :status]))))
-
-    (testing "body contains helpful description of the error"
-      (is (= (json/json->string
-              {:error "Internal Server Error"})
-             (get-in
-              (chain/execute context [nut/error])
-              [:response :body]))))))
+    (with-redefs [println (constantly nil)] ; otherwise it would polute repl
+      (testing "returns 500 (internal server error) when does not know how to handle"      
+        (is (= 500
+               (get-in
+                (chain/execute context [nut/error])
+                [:response :status])))))))

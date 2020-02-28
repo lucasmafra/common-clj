@@ -73,3 +73,14 @@
    (persistent! (reduce-kv (fn [out-m k v] (assoc! out-m k (f v))) (transient {}) m))
    :else
    (for-map [[k v] m] k (f v))))
+
+(defn map-vals-with-key
+  "Build map k -> (f v) for [k v] in map, preserving the initial type"
+  [f m]
+  (cond
+   (sorted? m)
+   (reduce-kv (fn [out-m k v] (assoc out-m k (f k v))) (sorted-map) m)
+   (map? m)
+   (persistent! (reduce-kv (fn [out-m k v] (assoc! out-m k (f k v))) (transient {}) m))
+   :else
+   (for-map [[k v] m] k (f k v))))

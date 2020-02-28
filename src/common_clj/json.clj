@@ -1,15 +1,9 @@
 (ns common-clj.json
   (:require [cheshire.core :refer [generate-string parse-string]]
             [clojure.walk :as walk]
-            [common-clj.schema :as cs]))
-
-(defn- transform-values [json serialization-map]
-  (walk/postwalk
-   (fn [form]
-     (let [conversion-fn (or (serialization-map (class form))
-                             identity)]
-       (conversion-fn form)))
-   json))
+            [common-clj.schema :as cs]
+            [schema.core :as s]
+            [common-clj.misc :as misc]))
 
 (def default-serialization-map
   {cs/LocalDate             str
@@ -18,12 +12,22 @@
    cs/UTCDateTime           str
    cs/EpochMillis           #(.toEpochMilli %)})
 
+(defn transform-values [json ks schema serialization-map]
+  (if (map? json)
+    (misc/map-vals-with-key #(transform-values %2 (conj ks %1) schema serialization-map) json)
+    (let [v-schema (get-in schema ks)
+          conversion-fn (or (serialization-map v-schema)
+                            identity)]
+      (conversion-fn json))))
+
 (defn json->string
   ([json]
-   (json->string json default-serialization-map))
-  ([json serialization-map]
+   (json->string json {}))
+  ([json schema]
+   (json->string json schema default-serialization-map))
+  ([json schema serialization-map]
    (-> json
-       (transform-values serialization-map)
+       (transform-values [] schema serialization-map)
        generate-string)))
 
 (defn string->json
