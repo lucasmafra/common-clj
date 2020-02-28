@@ -37,3 +37,5 @@
   (s/pred (partial re-matches email-regex) 'valid-email))
 
 (def Nil (s/pred nil? 'nil?))
+
+(def Empty (s/pred empty? 'empty?))

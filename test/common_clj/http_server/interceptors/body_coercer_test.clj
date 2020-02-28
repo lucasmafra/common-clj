@@ -51,7 +51,7 @@
   (testing "override :coercers"
     (let [custom-coercers {} ; empty, doesn't know how to coerce cs/PosInt
           context         (-> context
-                              (assoc-in [:overrides :coercer :coercers] custom-coercers))]
+                              (assoc-in [:overrides :body-coercer :coercers] custom-coercers))]
       (is (thrown? ExceptionInfo
                    (chain/execute context [nut/body-coercer])))))
 
@@ -59,8 +59,8 @@
     (let [custom-coercers {}                          ; empty, doesn't know how to coerce cs/PosInt
           extension       {cs/PosInt pos-int-matcher} ; adds cs/PosInt to coercion map
           context         (-> context
-                              (assoc-in [:overrides :coercer :coercers] custom-coercers)
-                              (assoc-in [:overrides :extend-coercion] extension))]
+                              (assoc-in [:overrides :body-coercer :coercers] custom-coercers)
+                              (assoc-in [:overrides :body-coercer :extension] extension))]
       (is (= {:color :blue
               :age   25}
          (get-in (chain/execute context [nut/body-coercer])

@@ -1,130 +1,65 @@
 (ns common-clj.components.http-server.http-server
   (:require [com.stuartsierra.component :as component]
-            [common-clj.coercion :refer [coerce] :as coercion]
             [common-clj.components.config.protocol :as config.protocol]
             [common-clj.components.http-server.protocol
              :as
              http-server.protocol
              :refer
              [HttpServer]]
-            [common-clj.json :refer [json->string]]
+            [common-clj.http-server.interceptors.body-coercer :as i-body-coercer]
+            [common-clj.http-server.interceptors.content-type :as i-content-type]
+            [common-clj.http-server.interceptors.context-initializer :as i-ctx]
+            [common-clj.http-server.interceptors.error :as i-error]
+            [common-clj.http-server.interceptors.json-serializer
+             :as
+             i-json-serializer]
+            [common-clj.http-server.interceptors.path-params-coercer
+             :as
+             i-path-params-coercer]
+            [common-clj.http-server.interceptors.query-params-coercer
+             :as
+             i-query-params-coercer]
             [common-clj.schemata.http-server :as schemata.http]
             [io.pedestal.http :as http]
             [io.pedestal.http.body-params :refer [body-params]]
-            [io.pedestal.interceptor :refer [interceptor]]
-            [io.pedestal.interceptor.error :as error-int]
-            [schema.core :as s]
-            [common-clj.lib.utils :refer [map-vals]]
-            [common-clj.humanize :as humanize]
-            [schema.utils :as s-utils]
-            [common-clj.misc :as misc])
-  (:import (java.io StringWriter PrintWriter)))
+            [schema.core :as s]))
 
-(def default-coercers coercion/default-coercion-map)
+(def default-handler-interceptors
+  [;; error
+   i-error/error
+   
+   ;; enter
+   (body-params)
+   i-body-coercer/body-coercer
+   i-path-params-coercer/path-params-coercer
+   i-query-params-coercer/query-params-coercer
+   
+   ;; leave
+   i-json-serializer/json-serializer
+   i-content-type/content-type])
 
-(defn ok [body]
-  {:status 200
-   :body   body})
+(defn default-interceptors-fn [{:keys [env] :as service-map}]
+  (cond-> service-map
+    true             http/default-interceptors
+    (not= env :prod) http/dev-interceptors))
+
+(def base-service-map
+  {::http/host            "0.0.0.0"
+   ::http/type            :jetty
+   ::http/join?           false})
+
+(defn build-service-map [override-service-map http-port pedestal-routes env]
+  (merge base-service-map
+         {::http/port   http-port
+          ::http/routes pedestal-routes
+          :env          env}
+         override-service-map))
 
 (defn wrap-handler [handler components]
   (fn [request]
     (let [{:keys [status body]} (handler request components)]
       {:status status
        :body   body})))
-
-(def content-type
-  (interceptor
-   {:name ::content-type
-    :leave (fn [context]
-             (assoc-in context
-                       [:response :headers]
-                       {"Content-Type" "application/json"}))}))
-(defn body-coercer
-  [routes {:keys [override-coercers]}]
-  (interceptor
-   {:name  ::json-coercer
-    :enter (fn [{:keys [request route] :as context}]
-             (let [{:keys [json-params]}    request
-                   {:keys [route-name]}     route
-                   {:keys [request-schema]} (route-name routes)
-                   coerced-body             (when request-schema
-                                              (coerce request-schema json-params (or override-coercers default-coercers)))]
-               (if request-schema
-                 (do
-                   (s/validate request-schema coerced-body)
-                   (assoc-in context [:request :body] coerced-body))
-                 context)))
-    :leave (fn [{:keys [response route] :as context}]
-             (let [{:keys [body]}            response
-                   {:keys [route-name]}      route
-                   {:keys [response-schema]} (route-name routes)
-                   serialized-body           (-> body misc/dash->underscore json->string)]
-               (s/validate response-schema body)
-               (assoc-in context [:response :body] serialized-body)))}))
-
-(defn path-params-coercer
-  [routes {:keys [override-coercers]}]
-  (interceptor
-   {:name  ::path-params-coercer
-    :enter (fn [{:keys [request route] :as context}]
-             (let [{:keys [path-params]}        request
-                   {:keys [route-name]}         route
-                   {:keys [path-params-schema]} (route-name routes)
-                   coerced-path-params (when path-params-schema
-                                         (coerce path-params-schema path-params (or override-coercers default-coercers)))]
-               (if coerced-path-params
-                 (do
-                   (s/validate path-params-schema coerced-path-params)
-                   (assoc-in context [:request :path-params] coerced-path-params))
-                 context)))}))
-
-(defn query-params-coercer
-  [routes {:keys [override-coercers]}]
-  (interceptor
-   {:name  ::query-params-coercer
-    :enter (fn [{:keys [request route] :as context}]
-             (let [{:keys [query-params]}        request
-                   {:keys [route-name]}          route
-                   {:keys [query-params-schema]} (route-name routes)
-                   coerced-query-params (when query-params-schema
-                                         (coerce query-params-schema query-params (or override-coercers default-coercers)))]
-               (if coerced-query-params
-                 (do
-                   (s/validate query-params-schema coerced-query-params)
-                   (assoc-in context [:request :query-params] coerced-query-params))
-                 context)))}))
-
-(defn error-interceptor [{:keys [override-humanizer]} env]
-  (error-int/error-dispatch
-   [ctx ex]
-   [{:type :schema-tools.coerce/error}]
-   (let [values    (->> ex ex-data :value)
-         humanizer (or override-humanizer humanize/humanize)
-         error-map (->> ex
-                        ex-data
-                        :error
-                        (map-vals #(humanize/explain % humanizer))
-                        (into {}))]
-     (assoc ctx :response {:status 400 :body (json->string {:error error-map})}))
-
-   :else
-   (let [sw       (StringWriter.)
-         pw       (PrintWriter. sw)
-         e        (->> ex ex-data :exception)
-         _        (.printStackTrace e pw)
-         response (if (not= :prod env)
-                    {:error       "Internal Server Error"
-                     :stack-trace (str sw)}
-                    {:error "Internal Server Error"})]
-     (assoc ctx :response {:status 500 :body (json->string response)}))))
-
-(defn interceptors [routes overrides env]
-  [content-type
-   (error-interceptor overrides env)
-   (body-params)
-   (body-coercer routes overrides)
-   (path-params-coercer routes overrides)
-   (query-params-coercer routes overrides)])
 
 (s/defn routes->pedestal
   [routes :- schemata.http/Routes
@@ -137,11 +72,9 @@
     (fn [[route-name {:keys [path method handler]}]]
       [path
        method
-       (conj (interceptors routes overrides env) (wrap-handler handler components))
+       (conj default-handler-interceptors (wrap-handler handler components))
        :route-name route-name]))
    routes))
-
-(defonce ^:private server (atom nil))
 
 (s/defrecord HttpServerImpl [routes overrides]
   component/Lifecycle
@@ -149,30 +82,29 @@
     (when (nil? config)
       (throw "Missing dependency :config on http-server"))
     (let [env             (config.protocol/get-env config)
-          pedestal-routes (routes->pedestal routes overrides env components)
           service         (http-server.protocol/create-server components)]
       (when (not= :test env)
-        (http/start service)
-        (reset! server service))
+        (http/start service))
       (-> components
-          (assoc :service service)
-          (assoc :pedestal-routes pedestal-routes))))
+          (assoc :service service))))
 
-  (stop [component]
-    (http/stop @server)
-    component)
+  (stop [{:keys [service] :as component}]
+    (when service
+      (http/stop service))
+    (dissoc component :service))
 
   HttpServer
-  (create-server [{:keys [config] :as components}]
-    (let [env                 (config.protocol/get-env config)
-          {:keys [http-port]} (config.protocol/get-config config)]
-      (http/create-server
-       {::http/routes          (routes->pedestal routes overrides env components)
-        ::http/allowed-origins {:creds true :allowed-origins (constantly true)}
-        ::http/host            "0.0.0.0"
-        ::http/type            :jetty
-        ::http/port            (or http-port 80)
-        ::http/join?           false}))))
+  (create-server [{:keys [config overrides] :as components}]
+    (let [env                                   (config.protocol/get-env config)
+          {:keys [http-port]}                   (config.protocol/get-config config)
+          pedestal-routes                       (routes->pedestal routes overrides env components)
+          {:keys [service-map interceptors-fn]} overrides
+          service-map                           (build-service-map service-map http-port pedestal-routes env)
+          interceptors-fn                       (or interceptors-fn default-interceptors-fn)]
+      (-> service-map
+          interceptors-fn
+          (update ::http/interceptors #(cons (i-ctx/context-initializer routes env) %))
+          (http/create-server)))))
 
 (s/defn new-http-server
   ([routes :- schemata.http/Routes]

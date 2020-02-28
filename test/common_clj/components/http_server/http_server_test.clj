@@ -18,32 +18,32 @@
 (def id (gen/generate s/Uuid))
 (def another-id (gen/generate s/Uuid))
 
-(defn handler-a [{:keys [body path-params] :as request} {:keys [counter-a logger]}]
+#_(defn handler-a [{:keys [body path-params] :as request} {:keys [counter-a logger]}]
   (counter.protocol/inc! counter-a)
   (logger.protocol/log! logger :req-body body)
   (logger.protocol/log! logger :id (:id path-params))
   {:status 200
    :body {:message "Hello"}})
 
-(defn handler-b [request {:keys [counter-b]}]
+#_(defn handler-b [request {:keys [counter-b]}]
   (counter.protocol/inc! counter-b)
   (http-server/ok {:id id}))
 
-(def RequestA
+#_(def RequestA
   {(s/optional-key :name) s/Str
    :date                  java.time.LocalDate})
 
-(def valid-request-body (gen/generate RequestA))
-(def another-valid-request-body (gen/generate RequestA))
+#_(def valid-request-body (gen/generate RequestA))
+#_(def another-valid-request-body (gen/generate RequestA))
 
-(def invalid-request-body
+#_(def invalid-request-body
   {:name "John"})
 
-(def ResponseB
+#_(def ResponseB
   {:name s/Str
    :id   s/Uuid})
 
-(s/def routes :- schemata.http/Routes
+#_(s/def routes :- schemata.http/Routes
   {:a
    {:path               "/a/:id" 
     :method             :post
@@ -59,11 +59,11 @@
     :path-params-schema {:id s/Uuid}
     :response-schema    ResponseB}})
 
-(def app-config
+#_(def app-config
   {:app-name :common-clj
    :http-port 8080})
 
-(def system
+#_(def system
   (component/system-map
    :config      (in-memory-config/new-config app-config :test)
    :counter-a   (in-memory-counter/new-counter)

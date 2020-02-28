@@ -6,3 +6,11 @@
     (merge default-value
            component-override
            route-override)))
+
+(defn ok [body]
+  {:status 200
+   :body   body})
+
+(defn created [body]
+  {:status 201
+   :body   body})
