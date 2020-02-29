@@ -16,15 +16,19 @@
                  [com.taoensso/faraday "1.9.0"]
                  [io.pedestal/pedestal.service "0.5.7"]
                  [io.pedestal/pedestal.jetty "0.5.7"]
+                 [ch.qos.logback/logback-classic "1.2.3" :exclusions [org.slf4j/slf4j-api]]
+                 [org.slf4j/jul-to-slf4j "1.7.28"]
+                 [org.slf4j/jcl-over-slf4j "1.7.28"]
+                 [org.slf4j/log4j-over-slf4j "1.7.28"]
                  [clj-http "3.10.0"]
                  [clj-http-fake "1.0.3"]
                  [selmer "1.12.18"]]
+  :resource-paths ["config", "resources"]
   :main ^:skip-aot common-clj.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}
              :dev     {:aliases {"lint-fix" ["do" "nsorg" "--replace," "kibit" "--replace"]}
                        :dependencies [[nubank/matcher-combinators "1.0.0"]
-                                      [nubank/selvage "1.0.0-BETA"]
                                       [nubank/state-flow "2.2.4"]
                                       [org.clojure/tools.namespace "0.2.11"]
                                       [com.stuartsierra/component.repl "0.2.0"]]

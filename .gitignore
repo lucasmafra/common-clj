@@ -12,3 +12,4 @@ pom.xml.asc
 .hg/
 zk-single-kafka-single
 dev/dev.clj
+logs/

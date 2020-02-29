@@ -9,8 +9,7 @@
             [common-clj.test-helpers :refer [init! message-arrived! schema-error? try-consume!]]
             [matcher-combinators.midje :refer [match]]
             [midje.sweet :refer :all]
-            [schema.core :as s]
-            [selvage.midje.flow :refer [*world* flow]]))
+            [schema.core :as s]))
 
 (s/defschema SchemaA
   {:field1 s/Str

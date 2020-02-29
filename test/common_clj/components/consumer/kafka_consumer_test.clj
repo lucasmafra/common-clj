@@ -10,8 +10,7 @@
                                              kafka-try-consume! mock-kafka-client]]
             [matcher-combinators.midje :refer [match]]
             [midje.sweet :refer :all]
-            [schema.core :as s]
-            [selvage.midje.flow :refer [*world* flow]]))
+            [schema.core :as s]))
 
 (s/defschema SchemaA
   {:field1 s/Str

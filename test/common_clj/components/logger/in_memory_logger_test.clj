@@ -3,8 +3,7 @@
             [common-clj.components.logger.in-memory-logger :as in-memory-logger]
             [common-clj.components.logger.protocol :as logger.protocol]
             [common-clj.test-helpers :refer [init!]]
-            [midje.sweet :refer :all]
-            [selvage.midje.flow :refer [*world* flow]]))
+            [midje.sweet :refer :all]))
 
 (def system
   (component/system-map
