@@ -1,6 +1,5 @@
 (ns common-clj.generators
   (:require [clj-time.coerce :as c]
-            [clj-time.local :as l]
             [clojure.test.check.generators :as gen]
             [common-clj.time :as time]
             [java-time :as j-time]

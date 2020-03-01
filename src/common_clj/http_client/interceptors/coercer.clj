@@ -1,7 +1,6 @@
 (ns common-clj.http-client.interceptors.coercer
   (:require [common-clj.coercion :as coercion]
             [common-clj.http-client.interceptors.helpers :refer [parse-overrides]]
-            [common-clj.json :refer [string->json]]
             [io.pedestal.interceptor :as interceptor]))
 
 (def default-coercers coercion/default-coercion-map)

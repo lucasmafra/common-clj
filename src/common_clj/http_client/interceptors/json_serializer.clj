@@ -3,8 +3,7 @@
             [common-clj.json :as json]
             [common-clj.misc :as misc]
             [common-clj.schema :as cs]
-            [io.pedestal.interceptor :as interceptor]
-            [schema.core :as s]))
+            [io.pedestal.interceptor :as interceptor]))
 
 (def default-serialization-map json/default-serialization-map)
 
