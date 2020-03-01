@@ -10,4 +10,9 @@
                   "src/common_clj/components/counter/*"
                   "src/common_clj/components/docstore_client/*"
                   "src/common_clj/components/logger/*"
-                  "src/common_clj/components/producer/*"]}}
+                  "src/common_clj/components/producer/*"
+                  "test/common_clj/components/consumer/*"
+                  "test/common_clj/components/counter/*"
+                  "test/common_clj/components/docstore_client/*"
+                  "test/common_clj/components/logger/*"
+                  "test/common_clj/components/producer/*"]}}

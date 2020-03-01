@@ -6,7 +6,7 @@
 (defn- prettify-body [body]
   (try
     (json/string->json body false)
-    (catch Exception e
+    (catch Exception _
       body)))
 
 (defn request-arrived! [method path & options]
