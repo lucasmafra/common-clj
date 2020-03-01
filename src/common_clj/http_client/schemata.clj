@@ -1,4 +1,4 @@
-(ns common-clj.schemata.http-client
+(ns common-clj.http-client.schemata
   (:require [schema.core :as s]))
 
 (def JsonSerializerOverrides

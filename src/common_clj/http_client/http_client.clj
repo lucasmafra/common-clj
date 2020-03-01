@@ -1,20 +1,16 @@
-(ns common-clj.http-client.clj-http
+(ns common-clj.http-client.http-client
   (:require [com.stuartsierra.component :as component]
             [common-clj.components.config.protocol :as conf-pro]
             [common-clj.http-client.interceptors.coercer :as i-coercer]
             [common-clj.http-client.interceptors.handler :as i-handler]
-            [common-clj.http-client.interceptors.json-deserializer
-             :as
-             i-json-deserializer]
-            [common-clj.http-client.interceptors.json-serializer
-             :as
-             i-json-serializer]
+            [common-clj.http-client.interceptors.json-deserializer :as i-json-deserializer]
+            [common-clj.http-client.interceptors.json-serializer :as i-json-serializer]
             [common-clj.http-client.interceptors.path-params-replacer :as i-path]
             [common-clj.http-client.interceptors.query-params :as i-query]
             [common-clj.http-client.interceptors.url-builder :as i-url]
             [common-clj.http-client.interceptors.with-mock-calls :as i-mock]
             [common-clj.http-client.protocol :as hc-pro]
-            [common-clj.schemata.http-client :as s-hc]
+            [common-clj.http-client.schemata :as s-hc]
             [io.pedestal.interceptor.chain :as chain]
             [schema.core :as s]))
 
