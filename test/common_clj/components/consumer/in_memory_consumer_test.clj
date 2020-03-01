@@ -1,14 +1,12 @@
 (ns common-clj.components.consumer.in-memory-consumer-test
   (:require [com.stuartsierra.component :as component]
-            [common-clj.components.consumer.in-memory-consumer :as in-memory-consumer]
-            [common-clj.components.consumer.protocol :as consumer.protocol]
+            [common-clj.components.consumer.in-memory-consumer
+             :as
+             in-memory-consumer]
             [common-clj.components.counter.in-memory-counter :as in-memory-counter]
             [common-clj.components.counter.protocol :as counter.protocol]
             [common-clj.components.logger.in-memory-logger :as in-memory-logger]
             [common-clj.components.logger.protocol :as logger.protocol]
-            [common-clj.test-helpers :refer [init! message-arrived! schema-error? try-consume!]]
-            [matcher-combinators.midje :refer [match]]
-            [midje.sweet :refer :all]
             [schema.core :as s]))
 
 (s/defschema SchemaA

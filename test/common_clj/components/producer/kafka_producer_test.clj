@@ -1,14 +1,7 @@
 (ns common-clj.components.producer.kafka-producer-test
-  (:require [cheshire.core :refer [generate-string]]
-            [com.stuartsierra.component :as component]
+  (:require [com.stuartsierra.component :as component]
             [common-clj.components.config.in-memory-config :as in-memory-config]
             [common-clj.components.producer.kafka-producer :as kafka-producer]
-            [common-clj.test-helpers :refer [check-kafka-produced-errors check-kafka-produced-messages exception?
-                                             init! kafka-produce!
-                                             kafka-try-produce! mock-kafka-producer
-                                             schema-error?]]
-            [matcher-combinators.midje :refer [match]]
-            [midje.sweet :refer :all]
             [schema.core :as s]))
 
 (s/defschema SchemaA

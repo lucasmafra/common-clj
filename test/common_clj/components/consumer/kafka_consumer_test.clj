@@ -6,10 +6,6 @@
             [common-clj.components.counter.protocol :as counter.protocol]
             [common-clj.components.logger.in-memory-logger :as in-memory-logger]
             [common-clj.components.logger.protocol :as logger.protocol]
-            [common-clj.test-helpers :refer [coercion-error? init! kafka-message-arrived!
-                                             kafka-try-consume! mock-kafka-client]]
-            [matcher-combinators.midje :refer [match]]
-            [midje.sweet :refer :all]
             [schema.core :as s]))
 
 (s/defschema SchemaA

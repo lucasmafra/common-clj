@@ -1,9 +1,4 @@
-(ns common-clj.coercion-test
-  (:require [common-clj.coercion :as coercion]
-            [common-clj.test-helpers :refer [coercion-error?]]
-            [midje.sweet :refer :all]
-            [schema.core :as s])
-  (:import clojure.lang.ExceptionInfo))
+(ns common-clj.coercion-test)
 
 #_(s/with-fn-validation
     (facts "coerce"

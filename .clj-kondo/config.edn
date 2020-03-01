@@ -1,5 +1,6 @@
 {:linters
- {:unresolved-symbol   {:exclude [(io.pedestal.interceptor.error/error-dispatch)]}
+ {:unresolved-symbol   {:exclude [(io.pedestal.interceptor.error/error-dispatch)
+                                  (aux.init/defflow)]}
   :unused-referred-var {:exclude {com.stuartsierra.component.repl         [start stop reset]
                                   com.stuartsierra.component.user-helpers [dev go reset]}}
   :unused-namespace    {:exclude [com.stuartsierra.component.user-helpers]}}
@@ -15,4 +16,5 @@
                   "test/common_clj/components/counter/*"
                   "test/common_clj/components/docstore_client/*"
                   "test/common_clj/components/logger/*"
-                  "test/common_clj/components/producer/*"]}}
+                  "test/common_clj/components/producer/*"
+                  "test/common_clj/lib/kafka_test.clj"]}}

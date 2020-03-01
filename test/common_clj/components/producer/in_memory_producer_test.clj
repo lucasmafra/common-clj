@@ -1,9 +1,8 @@
 (ns common-clj.components.producer.in-memory-producer-test
   (:require [com.stuartsierra.component :as component]
-            [common-clj.components.producer.in-memory-producer :as in-memory-producer]
-            [common-clj.test-helpers :refer :all]
-            [matcher-combinators.midje :refer [match]]
-            [midje.sweet :refer :all]
+            [common-clj.components.producer.in-memory-producer
+             :as
+             in-memory-producer]
             [schema.core :as s]))
 
 (s/defschema SchemaA

@@ -1,11 +1,5 @@
 (ns common-clj.components.config.edn-config-test
-  (:require [clojure.java.io :as io]
-            [com.stuartsierra.component :as component]
-            [common-clj.components.config.edn-config :as edn-config]
-            [common-clj.components.config.protocol :as config.protocol]
-            [common-clj.test-helpers :refer [schema-error?]]
-            [midje.sweet :refer :all]
-            [schema.core :as s]))
+  (:require [clojure.java.io :as io]))
 
 (def app-config (io/resource "fixtures/app.edn"))
 (def invalid-app-config (io/resource "fixtures/invalid_app.edn"))

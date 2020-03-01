@@ -1,11 +1,4 @@
-(ns common-clj.components.config.in-memory-config-test
-  (:require [com.stuartsierra.component :as component]
-            [common-clj.components.config.in-memory-config :as in-memory-config]
-            [common-clj.components.config.protocol :as config.protocol]
-            [common-clj.test-helpers :refer [schema-error?]]
-            [midje.sweet :refer :all]
-            [schema.core :as s])
-  (:import clojure.lang.ExceptionInfo))
+(ns common-clj.components.config.in-memory-config-test)
 
 (def dummy-config
   {:app-name     :dummy})

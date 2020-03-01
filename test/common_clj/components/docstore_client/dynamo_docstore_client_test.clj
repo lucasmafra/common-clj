@@ -1,13 +1,9 @@
 (ns common-clj.components.docstore-client.dynamo-docstore-client-test
   (:require [com.stuartsierra.component :as component]
-            [common-clj.components.config.in-memory-config
-             :as in-memory-config]
+            [common-clj.components.config.in-memory-config :as in-memory-config]
             [common-clj.components.docstore-client.dynamo-docstore-client
-             :as dynamo-docstore-client]
-            [common-clj.components.docstore-client.protocol :as
-             docstore-client.protocol]
-            [common-clj.test-helpers :refer [schema-error? throws-ex]]
-            [midje.sweet :refer :all]
+             :as
+             dynamo-docstore-client]
             [schema.core :as s]
             [taoensso.faraday :as far]))
 

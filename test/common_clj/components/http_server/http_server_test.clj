@@ -1,17 +1,5 @@
 (ns common-clj.components.http-server.http-server-test
-  (:require [com.stuartsierra.component :as component]
-            [common-clj.components.config.in-memory-config :as in-memory-config]
-            [common-clj.components.counter.in-memory-counter :as in-memory-counter]
-            [common-clj.components.counter.protocol :as counter.protocol]
-            [common-clj.components.http-server.http-server :as http-server]
-            [common-clj.components.logger.in-memory-logger :as in-memory-logger]
-            [common-clj.components.logger.protocol :as logger.protocol]
-            [common-clj.generators :as gen]
-            [common-clj.json :refer [string->json]]
-            [common-clj.schemata.http-server :as schemata.http]
-            [common-clj.test-helpers :refer [init! request-arrived!]]
-            [matcher-combinators.midje :refer [match]]
-            [midje.sweet :refer :all]
+  (:require [common-clj.generators :as gen]
             [schema.core :as s]))
 
 (def id (gen/generate s/Uuid))
