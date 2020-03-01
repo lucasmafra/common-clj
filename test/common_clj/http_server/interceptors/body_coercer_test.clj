@@ -33,6 +33,11 @@
       (is (thrown? ExceptionInfo
                    (chain/execute context [nut/body-coercer])))))
 
+  (testing "throws error when there's no req body but there's schema"
+    (let [context (assoc-in context [:request :json-params] nil)]
+      (is (thrown? ExceptionInfo
+                   (chain/execute context [nut/body-coercer])))))
+
   (testing "throws when there's request body but no schema"
     (let [context (-> context
                       (assoc-in [:routes :route/hello :request-schema] nil))]

@@ -2,7 +2,7 @@
   (:require [com.stuartsierra.component :as component]
             [com.stuartsierra.component.repl :as repl :refer [reset set-init]]
             [common-clj.components.config.in-memory-config :as imc]
-            [common-clj.components.http-server.http-server :as hs]
+            [common-clj.http-server.http-server :as hs]
             [schema.core :as s]))
 
 (def config
