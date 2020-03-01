@@ -63,8 +63,6 @@
 
 (s/defn routes->pedestal
   [routes :- schemata.http/Routes
-   overrides :- (s/maybe schemata.http/Overrides)
-   env :- s/Keyword
    components]
   (into
    #{}
