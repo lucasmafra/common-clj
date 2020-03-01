@@ -1,15 +1,38 @@
-/target
-/classes
-/checkouts
-profiles.clj
+# Project related
+.clj-kondo/.cache
+
+# Java related
 pom.xml
 pom.xml.asc
-*.jar
+*jar
 *.class
-/.lein-*
-/.nrepl-port
-.hgignore
-.hg/
-zk-single-kafka-single
-dev/dev.clj
-logs/
+
+# Leiningen
+classes/
+lib/
+native/
+checkouts/
+target/
+.lein-*
+repl-port
+.nrepl-port
+.repl
+
+# Temp Files
+*.orig
+*~
+.*.swp
+.*.swo
+*.tmp
+*.bak
+
+# OS X
+.DS_Store
+
+# Logging
+*.log
+/logs/
+
+# Builds
+out/
+build/

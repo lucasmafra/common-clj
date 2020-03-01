@@ -1,0 +1,7 @@
+{:linters
+ {:unused-referred-var  {:exclude {com.stuartsierra.component.repl [start stop reset]
+                                   com.stuartsierra.component.user-helpers [dev go reset]}}
+  :unused-namespace {:exclude [com.stuartsierra.component.user-helpers]}}
+
+ :output
+ {:exclude-files ["resources/data_readers.clj"]}}
