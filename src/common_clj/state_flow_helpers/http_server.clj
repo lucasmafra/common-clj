@@ -9,11 +9,19 @@
     (catch Exception _
       body)))
 
+(defn- transform-options [options]
+  (let [{:keys [body] :as options-map} (apply array-map options)]
+    (-> options-map
+        (assoc :body (and body (json/json->string body)))
+        vec
+        flatten)))
+
 (defn request-arrived! [method path & options]
   (state/gets
    (fn [world]
-     (let [service-fn (or (-> world :system :http-server :service :io.pedestal.http/service-fn)
+     (let [service-fn (or (-> world :system :http-server :service-map :io.pedestal.http/service-fn)
                           (throw (AssertionError. "No http server found in the system")))
+           options (transform-options options)
            {:keys [status body]} (apply test/response-for service-fn method path options)]
        {:status status
         :body   (prettify-body body)}))))

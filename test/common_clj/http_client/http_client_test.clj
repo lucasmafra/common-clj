@@ -2,7 +2,7 @@
   (:require [aux.init :refer [defflow init!]]
             [com.stuartsierra.component :as component]
             [common-clj.components.config.in-memory-config :as imc]
-            [common-clj.http-client.http-client :as sut]
+            [common-clj.http-client.http-client :as nut]
             [common-clj.http-client.protocol :as hc-pro]
             [common-clj.schema :as cs]
             [common-clj.state-flow-helpers.http-client :as http-client]
@@ -36,7 +36,7 @@
   (component/system-map
    :config (imc/new-config config :test)
    :http-client (component/using
-                 (sut/new-http-client endpoints)
+                 (nut/new-http-client endpoints)
                  [:config])))
 
 (def mock-calls
