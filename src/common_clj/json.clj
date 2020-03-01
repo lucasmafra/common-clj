@@ -1,9 +1,9 @@
 (ns common-clj.json
   (:require [cheshire.core :refer [generate-string parse-string]]
+            [common-clj.misc :as misc]
             [common-clj.schema :as cs]
             [schema.core :as s]
-            [schema.spec.core :as spec]
-            [common-clj.misc :as misc]))
+            [schema.spec.core :as spec]))
 
 (def default-serialization-map
   {cs/LocalDate             str

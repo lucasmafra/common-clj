@@ -63,5 +63,5 @@
       (s/validate schema coerced-message)
       (handler coerced-message component))))
 
-  (s/defn new-consumer [consumer-topics :- schemata.consumer/ConsumerTopics]
-    (map->KafkaConsumerImpl {:consumer-topics consumer-topics}))
+(s/defn new-consumer [consumer-topics :- schemata.consumer/ConsumerTopics]
+  (map->KafkaConsumerImpl {:consumer-topics consumer-topics}))

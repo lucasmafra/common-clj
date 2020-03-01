@@ -10,7 +10,7 @@
 
   (stop [component]
     (assoc component :logs nil))
-  
+
   Logger
   (log! [component tag value]
     (-> component

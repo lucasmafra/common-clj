@@ -2,7 +2,7 @@
   (:require [common-clj.humanize :as humanize]
             [common-clj.json :as json]
             [io.pedestal.interceptor.error :as error-int])
-  (:import (java.io StringWriter PrintWriter)))
+  (:import (java.io PrintWriter StringWriter)))
 
 (def error
   (error-int/error-dispatch

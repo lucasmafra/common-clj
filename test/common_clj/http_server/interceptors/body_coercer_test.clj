@@ -63,5 +63,5 @@
                               (assoc-in [:overrides :body-coercer :extension] extension))]
       (is (= {:color :blue
               :age   25}
-         (get-in (chain/execute context [nut/body-coercer])
-                 [:request :body]))))))
+             (get-in (chain/execute context [nut/body-coercer])
+                     [:request :body]))))))

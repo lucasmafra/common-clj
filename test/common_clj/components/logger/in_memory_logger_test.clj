@@ -16,13 +16,13 @@
     world))
 
 #_(flow "log and retrieve values"
-  (partial init! system)
+        (partial init! system)
 
-  (partial log! :banana "apple")
-  (partial log! :banana :lemon)
-  (partial log! :grape {:strawberry 100})
+        (partial log! :banana "apple")
+        (partial log! :banana :lemon)
+        (partial log! :grape {:strawberry 100})
 
-  (fact "get logs by tag"
-    (let [logger (-> *world* :system :logger)]
-      (logger.protocol/get-logs logger :banana) => ["apple" :lemon]
-      (logger.protocol/get-logs logger :grape) =>  [{:strawberry 100}])))
+        (fact "get logs by tag"
+              (let [logger (-> *world* :system :logger)]
+                (logger.protocol/get-logs logger :banana) => ["apple" :lemon]
+                (logger.protocol/get-logs logger :grape) =>  [{:strawberry 100}])))

@@ -19,16 +19,16 @@
   (testing "converts underscore to dash"
     (let [context (assoc-in context [:response :body] "{\"my_message\":\"Hello\"}")]
       (is (= {:my-message "Hello"}
-                (get-in
-                 (chain/execute context [nut/json-deserializer])
-                 [:response :body])))))
+             (get-in
+              (chain/execute context [nut/json-deserializer])
+              [:response :body])))))
 
   (testing "converts camelcase to dash"
     (let [context (assoc-in context [:response :body] "{\"myMessage\":\"Hello\"}")]
       (is (= {:my-message "Hello"}
-                (get-in
-                 (chain/execute context [nut/json-deserializer])
-                 [:response :body])))))
+             (get-in
+              (chain/execute context [nut/json-deserializer])
+              [:response :body])))))
 
   (testing "override deserialize-fn"
     (let [deserialize-fn #(parse-string % false) ; dont keywordize keys

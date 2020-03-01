@@ -2,10 +2,10 @@
   (:require [clojure.test :refer :all]
             [common-clj.coercion :as coercion]
             [common-clj.http-server.interceptors.error :as nut]
+            [common-clj.json :as json]
             [io.pedestal.interceptor.chain :as chain]
             [schema.core :as s]
-            [schema.utils :refer [make-ValidationError]]
-            [common-clj.json :as json])
+            [schema.utils :refer [make-ValidationError]])
   (:import clojure.lang.ExceptionInfo))
 
 (defn- make-validation-error [schema value]
@@ -42,7 +42,7 @@
 (deftest unknown-error
   (let [context (assoc-in context [::chain/error] (ex-info "Unknown" {:reason :unknown}))]
     (with-redefs [println (constantly nil)] ; otherwise it would polute repl
-      (testing "returns 500 (internal server error) when does not know how to handle"      
+      (testing "returns 500 (internal server error) when does not know how to handle"
         (is (= 500
                (get-in
                 (chain/execute context [nut/error])

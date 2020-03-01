@@ -48,11 +48,11 @@
                         {:table table-name
                          :type  :non-existent-table})))
       (docstore-client.protocol/put-item! component
-                 table-name
-                 (assoc-if {primary-key-name   primary-key-value}
-                           secondary-key-name
-                           secondary-key-value)
-                 v)))
+                                          table-name
+                                          (assoc-if {primary-key-name   primary-key-value}
+                                                    secondary-key-name
+                                                    secondary-key-value)
+                                          v)))
 
   (put-item! [{:keys [store]} table-name k v]
     (let  [table                                   (-> store deref table-name)
@@ -65,16 +65,16 @@
         (throw (ex-info "Can't do operations on non-existent table"
                         {:table table-name
                          :type  :non-existent-table})))
-      
+
       (when-not primary-key-value
         (throw (ex-info "Missing primary key on item"
                         {:primary-key primary-key-name
                          :type        :missing-primary-key})))
-      
+
       (when (and secondary-key-name (not secondary-key-value))
         (throw (ex-info "Missing secondary key on item"
                         {:secondary-key secondary-key-name
-                         :type          :missing-secondary-key})))   
+                         :type          :missing-secondary-key})))
       (if-not secondary-key-name
         (swap! store (fn [tables]
                        (update-in tables [table-name :data]
@@ -143,7 +143,7 @@
                              second)])
               (->> table
                    :data
-                   (filter (fn [[k v]]                       
+                   (filter (fn [[k v]]
                              (= k primary-key-value)))
                    first
                    second

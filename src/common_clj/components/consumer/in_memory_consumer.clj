@@ -21,9 +21,9 @@
                    (subscription-key topic handler)
                    (maybe-call handler schema topic component)))
       (assoc component :channel channel)))
-  
+
   (stop [{:keys [consumer] :as component}])
-  
+
   Consumer
   (consume! [component topic message]
     (let [channel (:channel component)]

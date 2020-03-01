@@ -12,7 +12,7 @@
 
 (s/def routes :- schemata.http/Routes
   {:create-order
-   {:path            "/orders" 
+   {:path            "/orders"
     :method          :post
     :handler         echo
     :request-schema  s/Any
@@ -29,6 +29,6 @@
     ["/orders/:id" :get echo :route-name :get-order]})
 
 #_(s/with-fn-validation
-  (fact "routes->pedestal"
-    (in-memory-http-server/routes->pedestal routes)
-    => pedestal-routes))
+    (fact "routes->pedestal"
+          (in-memory-http-server/routes->pedestal routes)
+          => pedestal-routes))

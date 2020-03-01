@@ -52,7 +52,7 @@
                      name)
                 (assoc interceptor :enter (fn [context] (with-fake-routes (transform-mock mock-calls)
                                                           (enter context))))
-                interceptor))) 
+                interceptor)))
        (into clojure.lang.PersistentQueue/EMPTY)))
 
 (defn- mock-known-hosts! [hosts config]

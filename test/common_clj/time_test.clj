@@ -15,26 +15,26 @@
 (def sunday #local-date "2019-09-22")
 
 #_(s/with-fn-validation
-  (tabular
-   (fact "last-day-of-month?"
-     (time/last-day-of-month? (from-string ?date)) => ?last-day-of-month)
-   ?date              ?last-day-of-month
-   "2019-08-30"       false
-   "2019-08-31"       true
-   "2019-09-01"       false
-   "2019-09-30"       true
-   "2019-02-28"       true
-   "2020-02-28"       false
-   "2020-02-29"       true)
+    (tabular
+     (fact "last-day-of-month?"
+           (time/last-day-of-month? (from-string ?date)) => ?last-day-of-month)
+     ?date              ?last-day-of-month
+     "2019-08-30"       false
+     "2019-08-31"       true
+     "2019-09-01"       false
+     "2019-09-30"       true
+     "2019-02-28"       true
+     "2020-02-28"       false
+     "2020-02-29"       true)
 
-  (tabular
-   (fact "friday?"
-     (time/friday? ?date) => ?friday)
-   ?date       ?friday
-   monday      false
-   tuesday     false
-   wednesday   false
-   thursday    false
-   friday      true
-   saturday    false
-   sunday      false)) 
+    (tabular
+     (fact "friday?"
+           (time/friday? ?date) => ?friday)
+     ?date       ?friday
+     monday      false
+     tuesday     false
+     wednesday   false
+     thursday    false
+     friday      true
+     saturday    false
+     sunday      false))

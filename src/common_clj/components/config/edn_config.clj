@@ -11,7 +11,7 @@
   [source]
   (try
     (with-open [r (io/reader source)]
-      (edn/read (java.io.PushbackReader. r)))   
+      (edn/read (java.io.PushbackReader. r)))
     (catch RuntimeException e
       (throw
        (ex-info

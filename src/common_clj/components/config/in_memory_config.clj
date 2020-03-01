@@ -26,7 +26,7 @@
     env)
 
   (assoc-in! [component ks v]
-    (swap! loaded-config assoc-in ks v))) 
+    (swap! loaded-config assoc-in ks v)))
 
 (s/defn new-config
   ([config :- schemata.config/AppConfig]

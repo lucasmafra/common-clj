@@ -1,10 +1,10 @@
 (ns common-clj.http-client.interceptors.json-serializer
   (:require [common-clj.http-client.interceptors.helpers :refer [parse-overrides]]
             [common-clj.json :as json]
-            [io.pedestal.interceptor :as interceptor]
-            [schema.core :as s]
             [common-clj.misc :as misc]
-            [common-clj.schema :as cs]))
+            [common-clj.schema :as cs]
+            [io.pedestal.interceptor :as interceptor]
+            [schema.core :as s]))
 
 (def default-serialization-map json/default-serialization-map)
 

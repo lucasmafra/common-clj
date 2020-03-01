@@ -1,8 +1,8 @@
 (ns common-clj.humanize
 
   (:require [clojure.core.match :refer [match]]
-            [schema.core :as s]
             [common-clj.lib.utils :refer [map-vals vectorize]]
+            [schema.core :as s]
             [schema.utils :refer [named-error-explain validation-error-explain]])
   (:import [schema.utils NamedError ValidationError]))
 
@@ -12,7 +12,7 @@
         Number java.lang.Number
         LocalDate java.time.LocalDate]
     (match
-      x
+     x
 
       ['not ['pos? num]]
       (str num " is not positive.")
@@ -25,7 +25,7 @@
 
       ['not ['instance? LocalDate not-local-date]]
       (str "'" not-local-date "' is not a valid date")
-      
+
       ['not [['between min max] given]]
       (str "The value must be between " min " and " max ". But given: " given)
 
@@ -72,7 +72,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Example usage:
 #_(s/defschema PosNum
-  (s/both s/Num (s/pred pos? 'pos?)))
+    (s/both s/Num (s/pred pos? 'pos?)))
 #_(def my-map-schema {:x PosNum :y s/Num :z {:zz s/Str}})
 
 #_(check {:a s/Str} {:a 1 :b 2} humanize);; => "4 is not a string but it should be"
@@ -86,11 +86,11 @@
 ;; Or an example of a custom predicate which carries 
 ;; the data over to name of the predicate:
 #_(defn between
-  "showing that we can store arbitrary information about the schema in the name"
-  [min max]
-  (s/both s/Num
-          (s/pred #(<= min % max)
-                  `(~'between ~min ~max))))
+    "showing that we can store arbitrary information about the schema in the name"
+    [min max]
+    (s/both s/Num
+            (s/pred #(<= min % max)
+                    `(~'between ~min ~max))))
 
 #_(check (between 3 6) 7 humanize) ;; => "The value must be between 3 and 6. But given: 8"
 #_(explain (s/check {:a s/Str :b s/Int} {:a 0 :b "a"}))

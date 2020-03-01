@@ -25,8 +25,8 @@
 
 (def ^:private leaf-generators
   {java.time.LocalDate     local-date
-    java.time.LocalDateTime local-date-time
-    BigDecimal              big-decimal})
+   java.time.LocalDateTime local-date-time
+   BigDecimal              big-decimal})
 
 (defn generate
   ([schema]

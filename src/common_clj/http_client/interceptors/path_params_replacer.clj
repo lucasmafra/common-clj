@@ -1,8 +1,8 @@
 (ns common-clj.http-client.interceptors.path-params-replacer
-  (:require [io.pedestal.interceptor :as interceptor]
-            [selmer.parser :as sp]
-            [clojure.string :as str]
-            [schema.core :as s]))
+  (:require [clojure.string :as str]
+            [io.pedestal.interceptor :as interceptor]
+            [schema.core :as s]
+            [selmer.parser :as sp]))
 
 (defn- keywords->placeholders [^String url, replace-map]
   ;; Convert conventional :id style placeholders to handlebars style for Selmer

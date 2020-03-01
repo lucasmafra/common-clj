@@ -10,7 +10,7 @@
             [common-clj.time :as time]
             [io.pedestal.http :as http]
             [io.pedestal.http.route :as http.routes]
-            [io.pedestal.test :as test]            
+            [io.pedestal.test :as test]
             [matcher-combinators.midje :refer [match]]
             [midje.sweet :refer [throws]])
   (:import (clojure.lang ExceptionInfo)
@@ -64,8 +64,8 @@
 (defn kafka-try-consume!
   [topic message world]
   (let [logger (-> world :system :logger)
-        error-handler (reify Thread$UncaughtExceptionHandler    
-                        (uncaughtException [_ _ e] 
+        error-handler (reify Thread$UncaughtExceptionHandler
+                        (uncaughtException [_ _ e]
                           (logger.protocol/log! logger topic e)))
         consumer-thread (-> world :system :consumer :consumer-thread)]
     (.setUncaughtExceptionHandler consumer-thread error-handler)
@@ -133,7 +133,7 @@
 (defn request-arrived!
   ([route world]
    (request-arrived! route {} world))
-  
+
   ([route {:keys [path-params body supress-errors]} world]
    (let [service                            (-> world :system :http-server :service :io.pedestal.http/service-fn)
          routes                             (-> world :system :http-server :routes)
@@ -153,10 +153,9 @@
        (let [{:keys [response-schema]} (route routes)
              coerced-body              (coerce response-schema (string->json body))]
          (update-in world [:http-responses route] (comp vec conj) (assoc response
-                                                                 :body
-                                                                 coerced-body)))
+                                                                         :body
+                                                                         coerced-body)))
        (update-in world [:http-responses route] (comp vec conj) response)))))
-
 
 (defn throws-ex
   [m]

@@ -5,18 +5,18 @@
             [midje.sweet :refer :all]))
 
 #_(fact "it starts count at 0"
-  (-> (in-memory-counter/new-counter)
-      component/start
-      counter.protocol/get-count)
-  => 0)
+        (-> (in-memory-counter/new-counter)
+            component/start
+            counter.protocol/get-count)
+        => 0)
 
 #_(fact "it increments everytime inc! is called"
-  (let [counter (component/start (in-memory-counter/new-counter))]
-    (counter.protocol/inc! counter)
-    (counter.protocol/get-count counter) => 1
-    
-    (counter.protocol/inc! counter)
-    (counter.protocol/get-count counter) => 2
-    
-    (counter.protocol/inc! counter)
-    (counter.protocol/get-count counter) => 3))
+        (let [counter (component/start (in-memory-counter/new-counter))]
+          (counter.protocol/inc! counter)
+          (counter.protocol/get-count counter) => 1
+
+          (counter.protocol/inc! counter)
+          (counter.protocol/get-count counter) => 2
+
+          (counter.protocol/inc! counter)
+          (counter.protocol/get-count counter) => 3))

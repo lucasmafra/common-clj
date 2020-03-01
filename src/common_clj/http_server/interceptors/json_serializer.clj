@@ -1,10 +1,10 @@
 (ns common-clj.http-server.interceptors.json-serializer
   (:require [common-clj.http-server.interceptors.helpers :refer [parse-overrides]]
             [common-clj.json :as json->string :refer [json->string]]
+            [common-clj.json :as json]
             [common-clj.misc :as misc]
             [io.pedestal.interceptor :as interceptor]
-            [schema.core :as s]
-            [common-clj.json :as json]))
+            [schema.core :as s]))
 
 (def default-serialization-map json->string/default-serialization-map)
 
@@ -16,7 +16,7 @@
 
 (def json-serializer
   (interceptor/interceptor
-   {:name ::json-serializer    
+   {:name ::json-serializer
     :leave
     (fn [{:keys [response routes route] :as context}]
       (let [{:keys [body]}            response
@@ -28,6 +28,6 @@
             serialize-options         {:serialization-map serialization-map
                                        :transform-fns     [misc/dash->underscore]}
             serialized-body           (serialize-fn body response-schema serialize-options)]
-        
+
         (assoc-in context [:response :body] serialized-body)))}))
 

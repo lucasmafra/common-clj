@@ -59,5 +59,5 @@
                               (assoc-in [:overrides :query-params-coercer :extension]
                                         extension))]
       (is (= {:limit 10}
-         (get-in (chain/execute context [nut/query-params-coercer])
-                 [:request :query-params]))))))
+             (get-in (chain/execute context [nut/query-params-coercer])
+                     [:request :query-params]))))))

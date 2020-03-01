@@ -1,11 +1,10 @@
 (ns common-clj.http-server.interceptors.json-serializer-test
   (:require [clojure.test :refer :all]
             [common-clj.http-server.interceptors.json-serializer :as nut]
+            [common-clj.json :as json]
             [common-clj.schema :as cs]
-            [io.pedestal.interceptor.chain :as chain]
-            [common-clj.json :as json])
+            [io.pedestal.interceptor.chain :as chain])
   (:import clojure.lang.ExceptionInfo))
-
 
 (def context
   {:response {:body {:age 25}}
@@ -23,7 +22,7 @@
   (testing "throws when response does not conform to schema"
     (let [context (assoc-in context [:response :body :age] "not an positive integer")]
       (is (thrown-with-msg? ExceptionInfo #"Value does not match schema"
-                        (chain/execute context [nut/json-serializer])))))
+                            (chain/execute context [nut/json-serializer])))))
 
   (testing "override serialize-fn"
     (let [serialize-fn (fn [_ _ _] "schrubles")

@@ -56,5 +56,5 @@
                               (assoc-in [:overrides :path-params-coercer :extension]
                                         extension))]
       (is (= {:id 25}
-         (get-in (chain/execute context [nut/path-params-coercer])
-                 [:request :path-params]))))))
+             (get-in (chain/execute context [nut/path-params-coercer])
+                     [:request :path-params]))))))

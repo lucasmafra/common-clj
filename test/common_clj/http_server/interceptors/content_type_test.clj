@@ -1,6 +1,6 @@
 (ns common-clj.http-server.interceptors.content-type-test
-  (:require [common-clj.http-server.interceptors.content-type :as nut]
-            [clojure.test :refer :all]
+  (:require [clojure.test :refer :all]
+            [common-clj.http-server.interceptors.content-type :as nut]
             [io.pedestal.interceptor.chain :as chain]))
 
 (def context {})

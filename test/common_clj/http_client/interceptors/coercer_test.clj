@@ -26,8 +26,8 @@
   (testing "coerce valid response"
     (is (= {:message "Bla"
             :amount  5}
-         (get-in (chain/execute context [nut/coercer])
-                 [:response :body]))))
+           (get-in (chain/execute context [nut/coercer])
+                   [:response :body]))))
 
   (testing "throws when invalid response"
     (let [context (assoc-in context [:response :body :amount] "-5")]
@@ -49,5 +49,5 @@
                               (assoc-in [:overrides :extend-coercion] extension))]
       (is (= {:message "Bla"
               :amount    5}
-         (get-in (chain/execute context [nut/coercer])
-                 [:response :body]))))))
+             (get-in (chain/execute context [nut/coercer])
+                     [:response :body]))))))

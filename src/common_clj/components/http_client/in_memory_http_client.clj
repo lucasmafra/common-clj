@@ -17,7 +17,7 @@
     (hc-pro/request component endpoint {}))
   (request [{:keys [mocked-responses]} endpoint options]
     (let [path-params-keys (or (-> endpoints endpoint :path-params-schema keys)
-                          '())
+                               '())
           path-params-values (or (vals (filter (fn [[k]] (some #(= k %) path-params-keys)) options))
                                  '())
           response-path (conj path-params-values endpoint)
@@ -36,7 +36,7 @@
   ([http-client endpoint options]
    (mock-response! http-client endpoint {} options))
   ([{:keys [mocked-responses]} endpoint path-params {:keys [body]}]
-   (let [path (or (-> path-params vals)
+   (let [path (or (vals path-params)
                   '())
          response-path (conj path endpoint)]
      (swap! mocked-responses

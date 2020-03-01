@@ -19,7 +19,7 @@
     :method          :get
     :path            "/test/get"
     :response-schema s/Any}
-   
+
    :test/more-features
    {:host               "{{my-service}}"
     :method             :post
@@ -42,7 +42,7 @@
 (def mock-calls
   {"http://test.com/test/get"
    {:status 200 :body {"message" "Hello"}}
-   
+
    "{{my-service}}/test/more-features/2c6c6074-3ca8-4ec3-b742-33d0fcbe0b0b"
    {:status 200 :body {"my_name" "Tester"
                        "date"    "2019-08-02"}}})
@@ -79,6 +79,6 @@
   [response (request :test/simple-get {:overrides
                                        {:extend-deserialization
                                         {"message" :special-key}}})]
-  
+
   (match? {:status 200 :body {:special-key "Hello"}}
           response))

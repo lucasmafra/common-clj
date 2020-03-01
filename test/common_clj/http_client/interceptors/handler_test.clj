@@ -21,11 +21,11 @@
     (is (= "Hello"
            (get-in (with-fake-routes mock-calls
                      (chain/execute context [nut/handler]))
-                 [:response :body]))))
+                   [:response :body]))))
 
   (testing "passes options to clj-http library"
     (let [context (assoc context :options {:query-params {:x 1}})]
       (is (= "x = 1"
-           (get-in (with-fake-routes mock-calls
-                     (chain/execute context [nut/handler]))
-                 [:response :body]))))))
+             (get-in (with-fake-routes mock-calls
+                       (chain/execute context [nut/handler]))
+                     [:response :body]))))))

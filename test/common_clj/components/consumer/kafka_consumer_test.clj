@@ -36,10 +36,10 @@
   (counter.protocol/inc! counter-b))
 
 (def consumer-topics
-  {:topic-a   
+  {:topic-a
    {:handler handler-a
     :schema  SchemaA}
-   
+
    :topic/b
    {:handler handler-b
     :schema  s/Any}})
@@ -59,39 +59,39 @@
                [:config :counter-a :counter-b :logger])))
 
 #_(with-redefs [kafka-consumer/new-kafka-client mock-kafka-client]
-  (flow "consumer started"
-    (future-fact "consumer group matches :app-name passed in config")
-    (future-fact "it listens to kafka server passed to config via :kafka-server"))
+    (flow "consumer started"
+          (future-fact "consumer group matches :app-name passed in config")
+          (future-fact "it listens to kafka server passed to config via :kafka-server"))
 
-  (flow "consumer started but the kafka server is down"
-    (future-fact "it throws error on component/start"))
+    (flow "consumer started but the kafka server is down"
+          (future-fact "it throws error on component/start"))
 
-  (flow "valid message arrives"
-    (partial init! system)
+    (flow "valid message arrives"
+          (partial init! system)
 
-    (partial kafka-message-arrived! "TOPIC_A" valid-message)
-        
-    (fact "handler of corresponding topic was called"
-      (-> *world* :system :counter-a counter.protocol/get-count)
-      => 1)
-    
-    (fact "handler of different topic wasn't called"
-      (-> *world* :system :counter-b counter.protocol/get-count)
-      => 0)
-    
-    (fact "the incoming message is passed to handler"
-      (-> *world* :system :logger (logger.protocol/get-logs :message))
-      => [valid-message]))
+          (partial kafka-message-arrived! "TOPIC_A" valid-message)
 
-  (flow "invalid message arrives"
-    (partial init! system)
+          (fact "handler of corresponding topic was called"
+                (-> *world* :system :counter-a counter.protocol/get-count)
+                => 1)
 
-    (partial kafka-try-consume! "TOPIC_A" invalid-message)
-    
-    (fact "schema error was thrown"
-      (-> *world* :system :logger (logger.protocol/get-logs "TOPIC_A"))
-      => (match [coercion-error?]))
-    
-    (fact "handler didn't consume the message"
-      (-> *world* :system :counter-a counter.protocol/get-count)
-      => 0)))
+          (fact "handler of different topic wasn't called"
+                (-> *world* :system :counter-b counter.protocol/get-count)
+                => 0)
+
+          (fact "the incoming message is passed to handler"
+                (-> *world* :system :logger (logger.protocol/get-logs :message))
+                => [valid-message]))
+
+    (flow "invalid message arrives"
+          (partial init! system)
+
+          (partial kafka-try-consume! "TOPIC_A" invalid-message)
+
+          (fact "schema error was thrown"
+                (-> *world* :system :logger (logger.protocol/get-logs "TOPIC_A"))
+                => (match [coercion-error?]))
+
+          (fact "handler didn't consume the message"
+                (-> *world* :system :counter-a counter.protocol/get-count)
+                => 0)))

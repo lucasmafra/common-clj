@@ -35,7 +35,7 @@
   (testing "throws when path-param value is missing"
     (let [context (assoc-in context [:options :path-params] {})]
       (is (thrown-with-msg? ExceptionInfo #"Missing path-param \"id\" on url \"/api/hello/:id\""
-                   (chain/execute context [nut/path-params-replacer])))))
+                            (chain/execute context [nut/path-params-replacer])))))
 
   (testing "throws when there are path-params but no schema"
     (let [context (-> context
