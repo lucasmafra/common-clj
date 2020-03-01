@@ -4,4 +4,9 @@
   :unused-namespace {:exclude [com.stuartsierra.component.user-helpers]}}
 
  :output
- {:exclude-files ["resources/data_readers.clj"]}}
+ {:exclude-files ["resources/data_readers.clj"
+                  "src/common_clj/components/consumer/*"
+                  "src/common_clj/components/counter/*"
+                  "src/common_clj/components/docstore_client/*"
+                  "src/common_clj/components/logger/*"
+                  "src/common_clj/components/producer/*"]}}
