@@ -1,9 +1,9 @@
 (ns common-clj.humanize
 
   (:require [clojure.core.match :refer [match]]
-            [common-clj.lib.utils :refer [map-vals vectorize]]
             [schema.core :as s]
-            [schema.utils :refer [named-error-explain validation-error-explain]])
+            [schema.utils :refer [named-error-explain validation-error-explain]]
+            [common-clj.misc :as misc])
   (:import [schema.utils NamedError ValidationError]))
 
 (defn humanize
@@ -49,17 +49,17 @@
   ([errors translator]
    (cond
      (map? errors)
-     (map-vals #(explain % translator) errors)
+     (misc/map-vals #(explain % translator) errors)
 
      (or (seq? errors)
          (coll? errors))
      (mapv #(explain % translator) errors)
 
      (instance? NamedError errors)
-     (translator (vectorize (named-error-explain errors)))
+     (translator (misc/vectorize (named-error-explain errors)))
 
      (instance? ValidationError errors)
-     (translator (vectorize (validation-error-explain errors)))
+     (translator (misc/vectorize (validation-error-explain errors)))
 
      :else
      errors)))

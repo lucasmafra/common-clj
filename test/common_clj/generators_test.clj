@@ -3,7 +3,6 @@
             [clojure.test.check.generators :as tc-gen]
             [schema.core :as s]))
 
-(defn- valid? [schema example] (= (s/validate schema example) example))
 (def my-uuid #uuid "2c44e59a-e612-4d2e-bf0f-5bbd6afeda8f")
 (defn- lower-case? [v] (= (str/lower-case v) (str v)))
 (defn- no-underscore? [v] (nil? (re-find #"_" (str v))))

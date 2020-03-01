@@ -1,6 +1,4 @@
-(ns common-clj.json-test
-  (:require [common-clj.json :as json]
-            [midje.sweet :refer :all]))
+(ns common-clj.json-test)
 
 #_(facts "json->string"
          (fact "string"

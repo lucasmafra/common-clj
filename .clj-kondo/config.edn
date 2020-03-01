@@ -1,6 +1,8 @@
 {:linters
  {:unresolved-symbol   {:exclude [(io.pedestal.interceptor.error/error-dispatch)
-                                  (aux.init/defflow)]}
+                                  (aux.init/defflow)
+                                  (clojure.core.match/match)
+                                  (common-clj.misc/for-map)]}
   :unused-referred-var {:exclude {com.stuartsierra.component.repl         [start stop reset]
                                   com.stuartsierra.component.user-helpers [dev go reset]}}
   :unused-namespace    {:exclude [com.stuartsierra.component.user-helpers]}}

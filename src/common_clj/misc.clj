@@ -95,3 +95,10 @@
     (persistent! (reduce-kv (fn [out-m k v] (assoc! out-m k (f k v))) (transient {}) m))
     :else
     (for-map [[k v] m] k (f k v))))
+
+(defn vectorize
+  "Recursively transforms all seq in m to vectors.
+  Because maybe you want to use core.match with it."
+  [x]
+  (walk/postwalk #(if (seq? %) (vec %) %)
+            x))
