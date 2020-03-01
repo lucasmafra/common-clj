@@ -1,5 +1,5 @@
 (ns common-clj.http-server.interceptors.content-type-test
-  (:require [clojure.test :refer [deftest testing is]]
+  (:require [clojure.test :refer [deftest is testing]]
             [common-clj.http-server.interceptors.content-type :as nut]
             [io.pedestal.interceptor.chain :as chain]))
 

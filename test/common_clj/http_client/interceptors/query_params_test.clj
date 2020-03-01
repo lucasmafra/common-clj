@@ -1,5 +1,5 @@
 (ns common-clj.http-client.interceptors.query-params-test
-  (:require [clojure.test :refer [deftest testing is]]
+  (:require [clojure.test :refer [deftest is testing]]
             [common-clj.http-client.interceptors.query-params :as nut]
             [common-clj.schema :as cs]
             [io.pedestal.interceptor.chain :as chain])

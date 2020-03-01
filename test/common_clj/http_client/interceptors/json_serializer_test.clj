@@ -1,5 +1,5 @@
 (ns common-clj.http-client.interceptors.json-serializer-test
-  (:require [clojure.test :refer [deftest testing is]]
+  (:require [clojure.test :refer [deftest is testing]]
             [common-clj.http-client.interceptors.json-serializer :as nut]
             [common-clj.json :as json]
             [common-clj.schema :as cs]

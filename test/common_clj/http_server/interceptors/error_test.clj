@@ -1,5 +1,5 @@
 (ns common-clj.http-server.interceptors.error-test
-  (:require [clojure.test :refer [deftest testing is]]
+  (:require [clojure.test :refer [deftest is testing]]
             [common-clj.coercion :as coercion]
             [common-clj.http-server.interceptors.error :as nut]
             [common-clj.json :as json]

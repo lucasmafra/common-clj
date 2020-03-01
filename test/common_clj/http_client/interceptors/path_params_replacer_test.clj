@@ -1,5 +1,5 @@
 (ns common-clj.http-client.interceptors.path-params-replacer-test
-  (:require [clojure.test :refer [deftest testing is]]
+  (:require [clojure.test :refer [deftest is testing]]
             [common-clj.http-client.interceptors.path-params-replacer :as nut]
             [io.pedestal.interceptor.chain :as chain]
             [schema.core :as s])

@@ -101,4 +101,4 @@
   Because maybe you want to use core.match with it."
   [x]
   (walk/postwalk #(if (seq? %) (vec %) %)
-            x))
+                 x))

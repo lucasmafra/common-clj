@@ -7,13 +7,13 @@
 
 #_(def ^:private day->ms (* 1000 60 60 24))
 #_(defn- large-int->local-date [v]
-  (-> v
-      (* day->ms)
-      c/from-long
-      time/local-date-time->local-date))
+    (-> v
+        (* day->ms)
+        c/from-long
+        time/local-date-time->local-date))
 
 #_(def ^:private local-date
-  (gen/fmap large-int->local-date gen/large-integer))
+    (gen/fmap large-int->local-date gen/large-integer))
 
 (def ^:private local-date-time
   (gen/fmap (comp j-time/local-date-time c/from-long) gen/large-integer))

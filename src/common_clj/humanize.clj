@@ -1,9 +1,9 @@
 (ns common-clj.humanize
 
   (:require [clojure.core.match :refer [match]]
+            [common-clj.misc :as misc]
             [schema.core :as s]
-            [schema.utils :refer [named-error-explain validation-error-explain]]
-            [common-clj.misc :as misc])
+            [schema.utils :refer [named-error-explain validation-error-explain]])
   (:import [schema.utils NamedError ValidationError]))
 
 (defn humanize
