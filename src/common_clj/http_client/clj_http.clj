@@ -50,14 +50,13 @@
     (hc-pro/request component endpoint {}))
 
   (request [{:keys [config] :as component} endpoint options]
-    (let [{:keys [known-hosts]} (conf-pro/get-config config)
-          env                   (conf-pro/get-env config)
+    (let [env                   (conf-pro/get-env config)
           interceptors          (build-interceptors env)
           initial-context       {:endpoints   endpoints
                                  :endpoint    endpoint
                                  :options     options
-                                 :known-hosts known-hosts
-                                 :overrides   overrides}]
+                                 :overrides   overrides
+                                 :components  {:config config}}]
       (:response
        (chain/execute initial-context interceptors)))))
 

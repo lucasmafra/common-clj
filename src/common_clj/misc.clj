@@ -63,6 +63,17 @@
             (reset! m-atom# (assoc! ~m-sym ~key-expr ~val-expr))))
         (persistent! @m-atom#))))
 
+(defn map-keys
+  "Build map k -> (f v) for [k v] in map, preserving the initial type"
+  [f m]
+  (cond
+   (sorted? m)
+   (reduce-kv (fn [out-m k v] (assoc out-m (f k) v)) (sorted-map) m)
+   (map? m)
+   (persistent! (reduce-kv (fn [out-m k v] (assoc! out-m (f k) v)) (transient {}) m))
+   :else
+   (for-map [[k v] m] (f k) v)))
+
 (defn map-vals
   "Build map k -> (f v) for [k v] in map, preserving the initial type"
   [f m]
