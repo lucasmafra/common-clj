@@ -34,7 +34,7 @@
   [schema item]
   (if (and schema
            (not= schema s/Any))
-    (select-keys )))
+    (select-keys)))
 
 (s/defrecord DynamoDocstoreClient []
   component/Lifecycle
@@ -138,7 +138,7 @@
           (when-not result
             (throw (ex-info "Not found" {:type :not-found})))
           (coerce schema-resp result {:allow-extra-keys true}))
-        
+
         (catch com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException e
           (throw (ex-info "Can't do operations on non-existent table"
                           {:type :non-existent-table}))))))

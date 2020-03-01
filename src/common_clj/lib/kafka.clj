@@ -1,5 +1,6 @@
 (ns common-clj.lib.kafka
-  (:require [schema.core :as s]))
+  (:require clojure.string
+            [schema.core :as s]))
 
 (s/defn topic->kafka-topic [topic :- s/Keyword] :- s/Str
   (-> topic

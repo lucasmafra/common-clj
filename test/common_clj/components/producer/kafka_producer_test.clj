@@ -1,14 +1,7 @@
 (ns common-clj.components.producer.kafka-producer-test
-  (:require [cheshire.core :refer [generate-string]]
-            [com.stuartsierra.component :as component]
+  (:require [com.stuartsierra.component :as component]
             [common-clj.components.config.in-memory-config :as in-memory-config]
             [common-clj.components.producer.kafka-producer :as kafka-producer]
-            [common-clj.test-helpers :refer [check-kafka-produced-errors check-kafka-produced-messages exception?
-                                             init! kafka-produce!
-                                             kafka-try-produce! mock-kafka-producer
-                                             schema-error?]]
-            [matcher-combinators.midje :refer [match]]
-            [midje.sweet :refer :all]
             [schema.core :as s]))
 
 (s/defschema SchemaA
@@ -41,30 +34,30 @@
               [:config])))
 
 #_(with-redefs [kafka-producer/new-kafka-client mock-kafka-producer]
-  (flow "produce valid message"
-    (partial init! system)
+    (flow "produce valid message"
+          (partial init! system)
 
-    (partial kafka-produce! :topic-a valid-message)
-        
-    (fact "message is produced to correct topic"
-      (check-kafka-produced-messages "TOPIC_A") => [(generate-string valid-message)]
-      (check-kafka-produced-messages "TOPIC_B") => []))
+          (partial kafka-produce! :topic-a valid-message)
 
-  (flow "try to produce invalid message"
-    (partial init! system)
+          (fact "message is produced to correct topic"
+                (check-kafka-produced-messages "TOPIC_A") => [(generate-string valid-message)]
+                (check-kafka-produced-messages "TOPIC_B") => []))
 
-    (partial kafka-try-produce! :topic-a invalid-message)
+    (flow "try to produce invalid message"
+          (partial init! system)
 
-    (fact "schema error is thrown"
-      (check-kafka-produced-errors :topic-a) => (match [schema-error?]))
-    
-    (fact "no message is actually produced"
-      (check-kafka-produced-messages :topic-a) => []))
+          (partial kafka-try-produce! :topic-a invalid-message)
 
-  (flow "try to produce to an unknown topic"
-    (partial init! system)
+          (fact "schema error is thrown"
+                (check-kafka-produced-errors :topic-a) => (match [schema-error?]))
 
-    (partial kafka-try-produce! :unknown-topic valid-message)
+          (fact "no message is actually produced"
+                (check-kafka-produced-messages :topic-a) => []))
 
-    (fact "error is thrown"
-      (check-kafka-produced-errors :unknown-topic) => (match [exception?]))))
+    (flow "try to produce to an unknown topic"
+          (partial init! system)
+
+          (partial kafka-try-produce! :unknown-topic valid-message)
+
+          (fact "error is thrown"
+                (check-kafka-produced-errors :unknown-topic) => (match [exception?]))))

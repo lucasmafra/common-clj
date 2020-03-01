@@ -1,14 +1,12 @@
 (ns common-clj.components.consumer.in-memory-consumer-test
   (:require [com.stuartsierra.component :as component]
-            [common-clj.components.consumer.in-memory-consumer :as in-memory-consumer]
-            [common-clj.components.consumer.protocol :as consumer.protocol]
+            [common-clj.components.consumer.in-memory-consumer
+             :as
+             in-memory-consumer]
             [common-clj.components.counter.in-memory-counter :as in-memory-counter]
             [common-clj.components.counter.protocol :as counter.protocol]
             [common-clj.components.logger.in-memory-logger :as in-memory-logger]
             [common-clj.components.logger.protocol :as logger.protocol]
-            [common-clj.test-helpers :refer [init! message-arrived! schema-error? try-consume!]]
-            [matcher-combinators.midje :refer [match]]
-            [midje.sweet :refer :all]
             [schema.core :as s]))
 
 (s/defschema SchemaA
@@ -35,10 +33,10 @@
   (counter.protocol/inc! counter-b))
 
 (def consumer-topics
-  {:topic-a   
+  {:topic-a
    {:handler handler-a
     :schema  SchemaA}
-   
+
    :topic/b
    {:handler handler-b
     :schema  s/Any}})
@@ -53,31 +51,31 @@
                [:counter-a :counter-b :logger])))
 
 #_(flow "valid message arrives"
- (partial init! system)
+        (partial init! system)
 
- (partial message-arrived! :topic-a valid-message)
+        (partial message-arrived! :topic-a valid-message)
 
- (fact "handler of corresponding topic was called"
-   (-> *world* :system :counter-a counter.protocol/get-count)
-   => 1)
+        (fact "handler of corresponding topic was called"
+              (-> *world* :system :counter-a counter.protocol/get-count)
+              => 1)
 
- (fact "handler of different topic wasn't called"
-   (-> *world* :system :counter-b counter.protocol/get-count)
-   => 0)
+        (fact "handler of different topic wasn't called"
+              (-> *world* :system :counter-b counter.protocol/get-count)
+              => 0)
 
- (fact "the incoming message is passed to handler"
-   (-> *world* :system :logger (logger.protocol/get-logs :message))
-   => [valid-message]))
+        (fact "the incoming message is passed to handler"
+              (-> *world* :system :logger (logger.protocol/get-logs :message))
+              => [valid-message]))
 
 #_(flow "invalid message arrives to topic"
-  (partial init! system)
+        (partial init! system)
 
-  (partial try-consume! :topic-a invalid-message)
+        (partial try-consume! :topic-a invalid-message)
 
-  (fact "schema error was thrown"
-    (-> *world* :consumption-errors :topic-a)
-    => (match [schema-error?]))
+        (fact "schema error was thrown"
+              (-> *world* :consumption-errors :topic-a)
+              => (match [schema-error?]))
 
-  (fact "handler didn't consume the message"
-    (-> *world* :system :counter-a counter.protocol/get-count)
-    => 0))
+        (fact "handler didn't consume the message"
+              (-> *world* :system :counter-a counter.protocol/get-count)
+              => 0))

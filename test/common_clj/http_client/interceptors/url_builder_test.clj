@@ -1,9 +1,9 @@
 (ns common-clj.http-client.interceptors.url-builder-test
-  (:require [clojure.test :refer [deftest testing is]]
-            [common-clj.http-client.interceptors.url-builder :as nut]
-            [io.pedestal.interceptor.chain :as chain]
+  (:require [clojure.test :refer [deftest is testing]]
+            [com.stuartsierra.component :as component]
             [common-clj.components.config.in-memory-config :as imc]
-            [com.stuartsierra.component :as component]))
+            [common-clj.http-client.interceptors.url-builder :as nut]
+            [io.pedestal.interceptor.chain :as chain]))
 
 (def config
   {:app-name    :app
@@ -25,11 +25,11 @@
   (testing "builds url and assocs to context"
     (is (= "http://service.com/api/hello"
            (get-in (chain/execute context [nut/url-builder])
-                 [:url]))))
+                   [:url]))))
 
   (testing "when host is a variable, gets the value from config"
     (let [context (-> context
                       (assoc-in [:endpoints :service/hello :host] "{{my-service}}"))]
       (is (= "http://my-service.com/api/hello"
-           (get-in (chain/execute context [nut/url-builder])
-                   [:url]))))))
+             (get-in (chain/execute context [nut/url-builder])
+                     [:url]))))))

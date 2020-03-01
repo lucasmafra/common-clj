@@ -22,7 +22,7 @@
 
 (defn filter-schema-keys
   [m schema-keys extra-keys-walker]
-  (reduce-kv (fn [m k v]
+  (reduce-kv (fn [m k _]
                (if (or (contains? schema-keys k)
                        (and extra-keys-walker
                             (not (utils/error? (extra-keys-walker k)))))

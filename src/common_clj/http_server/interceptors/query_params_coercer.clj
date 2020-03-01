@@ -17,7 +17,7 @@
     (fn [{:keys [request route routes] :as context}]
       (let [{:keys [query-params]}        request
             {:keys [route-name]}          route
-            {:keys [query-params-schema]} (route-name routes)                   
+            {:keys [query-params-schema]} (route-name routes)
             query-params-schema           (or query-params-schema cs/Empty)
             {:keys [coercers extension]}  (parse-overrides context :query-params-coercer default-values)
             coercers                      (merge coercers extension)

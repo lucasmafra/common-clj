@@ -1,11 +1,11 @@
 (ns common-clj.http-client.interceptors.handler
-  (:require [io.pedestal.interceptor :as interceptor]
-            [clj-http.client :as client]))
+  (:require [clj-http.client :as client]
+            [io.pedestal.interceptor :as interceptor]))
 
 (def handler
   (interceptor/interceptor
    {:name ::handler
-    :enter (fn [{:keys [endpoint endpoints url options]:as context}]
+    :enter (fn [{:keys [endpoint endpoints url options] :as context}]
              (let [{:keys [method]} (endpoints endpoint)
                    response (case method
                               :get     (client/get url options)

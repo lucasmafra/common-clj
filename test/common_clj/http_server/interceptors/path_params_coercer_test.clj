@@ -1,5 +1,5 @@
 (ns common-clj.http-server.interceptors.path-params-coercer-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is testing]]
             [common-clj.coercion :refer [pos-int-matcher]]
             [common-clj.http-server.interceptors.path-params-coercer :as nut]
             [common-clj.schema :as cs]
@@ -56,5 +56,5 @@
                               (assoc-in [:overrides :path-params-coercer :extension]
                                         extension))]
       (is (= {:id 25}
-         (get-in (chain/execute context [nut/path-params-coercer])
-                 [:request :path-params]))))))
+             (get-in (chain/execute context [nut/path-params-coercer])
+                     [:request :path-params]))))))

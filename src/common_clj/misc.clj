@@ -1,7 +1,7 @@
 (ns common-clj.misc
-  (:require [schema.core :as s]
-            [clojure.string :as str]
-            [clojure.walk :as walk]))
+  (:require [clojure.string :as str]
+            [clojure.walk :as walk]
+            [schema.core :as s]))
 
 (def string-or-keyword (s/if keyword? s/Keyword s/Str))
 
@@ -16,7 +16,7 @@
   ;; Ignores String values in a map (both keys and values)
   ([from :- Character, to :- Character] (replace-char-gen from to #{}))
   ([from :- Character, to :- Character, exceptions :- #{s/Keyword}]
-    #(if (keyword? %) (replace-char % from to exceptions) %)))
+   #(if (keyword? %) (replace-char % from to exceptions) %)))
 
 (defn underscore->dash
   "Convert hash-map underscored keywords to dash.
@@ -55,43 +55,50 @@
   An optional symbol can be passed as a first argument, which will be
   bound to the transient map containing the entries produced so far."
   ([seq-exprs key-expr val-expr]
-     `(for-map ~(gensym "m") ~seq-exprs ~key-expr ~val-expr))
+   `(for-map ~(gensym "m") ~seq-exprs ~key-expr ~val-expr))
   ([m-sym seq-exprs key-expr val-expr]
-     `(let [m-atom# (atom (transient {}))]
-        (doseq ~seq-exprs
-          (let [~m-sym @m-atom#]
-            (reset! m-atom# (assoc! ~m-sym ~key-expr ~val-expr))))
-        (persistent! @m-atom#))))
+   `(let [m-atom# (atom (transient {}))]
+      (doseq ~seq-exprs
+        (let [~m-sym @m-atom#]
+          (reset! m-atom# (assoc! ~m-sym ~key-expr ~val-expr))))
+      (persistent! @m-atom#))))
 
 (defn map-keys
   "Build map k -> (f v) for [k v] in map, preserving the initial type"
   [f m]
   (cond
-   (sorted? m)
-   (reduce-kv (fn [out-m k v] (assoc out-m (f k) v)) (sorted-map) m)
-   (map? m)
-   (persistent! (reduce-kv (fn [out-m k v] (assoc! out-m (f k) v)) (transient {}) m))
-   :else
-   (for-map [[k v] m] (f k) v)))
+    (sorted? m)
+    (reduce-kv (fn [out-m k v] (assoc out-m (f k) v)) (sorted-map) m)
+    (map? m)
+    (persistent! (reduce-kv (fn [out-m k v] (assoc! out-m (f k) v)) (transient {}) m))
+    :else
+    (for-map [[k v] m] (f k) v)))
 
 (defn map-vals
   "Build map k -> (f v) for [k v] in map, preserving the initial type"
   [f m]
   (cond
-   (sorted? m)
-   (reduce-kv (fn [out-m k v] (assoc out-m k (f v))) (sorted-map) m)
-   (map? m)
-   (persistent! (reduce-kv (fn [out-m k v] (assoc! out-m k (f v))) (transient {}) m))
-   :else
-   (for-map [[k v] m] k (f v))))
+    (sorted? m)
+    (reduce-kv (fn [out-m k v] (assoc out-m k (f v))) (sorted-map) m)
+    (map? m)
+    (persistent! (reduce-kv (fn [out-m k v] (assoc! out-m k (f v))) (transient {}) m))
+    :else
+    (for-map [[k v] m] k (f v))))
 
 (defn map-vals-with-key
   "Build map k -> (f v) for [k v] in map, preserving the initial type"
   [f m]
   (cond
-   (sorted? m)
-   (reduce-kv (fn [out-m k v] (assoc out-m k (f k v))) (sorted-map) m)
-   (map? m)
-   (persistent! (reduce-kv (fn [out-m k v] (assoc! out-m k (f k v))) (transient {}) m))
-   :else
-   (for-map [[k v] m] k (f k v))))
+    (sorted? m)
+    (reduce-kv (fn [out-m k v] (assoc out-m k (f k v))) (sorted-map) m)
+    (map? m)
+    (persistent! (reduce-kv (fn [out-m k v] (assoc! out-m k (f k v))) (transient {}) m))
+    :else
+    (for-map [[k v] m] k (f k v))))
+
+(defn vectorize
+  "Recursively transforms all seq in m to vectors.
+  Because maybe you want to use core.match with it."
+  [x]
+  (walk/postwalk #(if (seq? %) (vec %) %)
+                 x))

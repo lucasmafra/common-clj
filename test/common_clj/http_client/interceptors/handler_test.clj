@@ -1,6 +1,6 @@
 (ns common-clj.http-client.interceptors.handler-test
   (:require [clj-http.fake :refer [with-fake-routes]]
-            [clojure.test :refer :all]
+            [clojure.test :refer [deftest is testing]]
             [common-clj.http-client.interceptors.handler :as nut]
             [io.pedestal.interceptor.chain :as chain]))
 
@@ -21,11 +21,11 @@
     (is (= "Hello"
            (get-in (with-fake-routes mock-calls
                      (chain/execute context [nut/handler]))
-                 [:response :body]))))
+                   [:response :body]))))
 
   (testing "passes options to clj-http library"
     (let [context (assoc context :options {:query-params {:x 1}})]
       (is (= "x = 1"
-           (get-in (with-fake-routes mock-calls
-                     (chain/execute context [nut/handler]))
-                 [:response :body]))))))
+             (get-in (with-fake-routes mock-calls
+                       (chain/execute context [nut/handler]))
+                     [:response :body]))))))

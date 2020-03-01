@@ -1,8 +1,6 @@
 (ns user
-  (:require
-   [com.stuartsierra.component.user-helpers :refer [dev go reset]]
-   [midje.repl]
-   [java-time :refer [local-date local-date-time]]))
+  (:require clojure.tools.namespace.repl
+            [com.stuartsierra.component.user-helpers :refer [dev go reset]]))
 
 ;; Configure the printer
 (defmethod print-method java.time.LocalDate

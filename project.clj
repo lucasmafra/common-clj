@@ -27,11 +27,15 @@
   :main ^:skip-aot common-clj.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}
-             :dev     {:aliases {"lint-fix" ["do" "nsorg" "--replace," "kibit" "--replace"]}
+             :dev     {:aliases {"lint-fix" ["do" "nsorg" "--replace," "kibit" "--replace," "cljfmt" "fix"]
+                                 "clj-kondo" ["run" "-m" "clj-kondo.main"]}
                        :dependencies [[nubank/matcher-combinators "1.0.0"]
                                       [nubank/state-flow "2.2.4"]
                                       [org.clojure/tools.namespace "0.2.11"]
-                                      [com.stuartsierra/component.repl "0.2.0"]]
+                                      [com.stuartsierra/component.repl "0.2.0"]
+                                      [clj-kondo "2020.02.28-1"]]
                        :source-paths ["dev"]
-                       :plugins [[lein-nsorg "0.3.0"]
-                                 [lein-kibit "0.1.7"]]}})
+                       :plugins [[lein-cljfmt "0.6.6"]
+                                 [lein-nsorg "0.3.0"]
+                                 [lein-kibit "0.1.8"]
+                                 [clj-kondo "2020.02.28-1"]]}})

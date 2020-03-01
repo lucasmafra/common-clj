@@ -1,10 +1,5 @@
 (ns common-clj.components.http-server.in-memory-http-server-test
-  (:require [com.stuartsierra.component :as component]
-            [common-clj.components.http-server.in-memory-http-server
-             :as
-             in-memory-http-server]
-            [common-clj.schemata.http-server :as schemata.http]
-            [midje.sweet :refer :all]
+  (:require [common-clj.schemata.http-server :as schemata.http]
             [schema.core :as s]))
 
 (defn echo [request]
@@ -12,7 +7,7 @@
 
 (s/def routes :- schemata.http/Routes
   {:create-order
-   {:path            "/orders" 
+   {:path            "/orders"
     :method          :post
     :handler         echo
     :request-schema  s/Any
@@ -29,6 +24,6 @@
     ["/orders/:id" :get echo :route-name :get-order]})
 
 #_(s/with-fn-validation
-  (fact "routes->pedestal"
-    (in-memory-http-server/routes->pedestal routes)
-    => pedestal-routes))
+    (fact "routes->pedestal"
+          (in-memory-http-server/routes->pedestal routes)
+          => pedestal-routes))

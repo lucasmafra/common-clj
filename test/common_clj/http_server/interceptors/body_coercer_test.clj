@@ -1,5 +1,5 @@
 (ns common-clj.http-server.interceptors.body-coercer-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is testing]]
             [common-clj.coercion :refer [pos-int-matcher]]
             [common-clj.http-server.interceptors.body-coercer :as nut]
             [common-clj.schema :as cs]
@@ -63,5 +63,5 @@
                               (assoc-in [:overrides :body-coercer :extension] extension))]
       (is (= {:color :blue
               :age   25}
-         (get-in (chain/execute context [nut/body-coercer])
-                 [:request :body]))))))
+             (get-in (chain/execute context [nut/body-coercer])
+                     [:request :body]))))))

@@ -1,9 +1,9 @@
 (ns common-clj.http-client.interceptors.json-serializer-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is testing]]
             [common-clj.http-client.interceptors.json-serializer :as nut]
+            [common-clj.json :as json]
             [common-clj.schema :as cs]
-            [io.pedestal.interceptor.chain :as chain]
-            [common-clj.json :as json])
+            [io.pedestal.interceptor.chain :as chain])
   (:import clojure.lang.ExceptionInfo))
 
 (def context
@@ -19,8 +19,8 @@
            (get-in
             (chain/execute context [nut/json-serializer])
             [:options :body]))))
-  
- (testing "converts dash to underscore"
+
+  (testing "converts dash to underscore"
     (let [context (-> context
                       (assoc-in [:endpoints :service/hello :request-schema] {:my-age cs/PosInt})
                       (assoc-in [:options :body] {:my-age 25}))]
@@ -31,9 +31,9 @@
               [:options :body])))))
 
   (testing "throws error when req body does not conform to schema"
-    (let [context (assoc-in context [:options :body :age] -25)]      
+    (let [context (assoc-in context [:options :body :age] -25)]
       (is (thrown-with-msg? ExceptionInfo #"Value does not match schema"
-                   (chain/execute context [nut/json-serializer])))))
+                            (chain/execute context [nut/json-serializer])))))
 
   (testing "throws when there's request body but no schema"
     (let [context (-> context

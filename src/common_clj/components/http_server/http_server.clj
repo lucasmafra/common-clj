@@ -27,13 +27,13 @@
 (def default-handler-interceptors
   [;; error
    i-error/error
-   
+
    ;; enter
    (body-params)
    i-body-coercer/body-coercer
    i-path-params-coercer/path-params-coercer
    i-query-params-coercer/query-params-coercer
-   
+
    ;; leave
    i-json-serializer/json-serializer
    i-content-type/content-type])
@@ -63,8 +63,6 @@
 
 (s/defn routes->pedestal
   [routes :- schemata.http/Routes
-   overrides :- (s/maybe schemata.http/Overrides)
-   env :- s/Keyword
    components]
   (into
    #{}
@@ -85,8 +83,7 @@
           service (http-server.protocol/create-server components)]
       (when (not= :test env)
         (http/start service))
-      (-> components
-          (assoc :service service))))
+      (assoc components :service service)))
 
   (stop [{:keys [service] :as component}]
     (when service

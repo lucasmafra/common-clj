@@ -1,6 +1,5 @@
 (ns common-clj.schema
-  (:require [schema.core :as s]
-            [java-time :as time]))
+  (:require [schema.core :as s]))
 
 (def LocalDate
   "Date without timezone information. Useful for stuff such as date of birth, hollidays and so on. 
