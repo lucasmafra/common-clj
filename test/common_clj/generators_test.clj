@@ -1,9 +1,7 @@
 (ns common-clj.generators-test
-  (:require  [clojure.string :as str]
-             [clojure.test.check.generators :as tc-gen]
-             [common-clj.generators :as gen]
-             [midje.sweet :refer :all]
-             [schema.core :as s]))
+  (:require [clojure.string :as str]
+            [clojure.test.check.generators :as tc-gen]
+            [schema.core :as s]))
 
 (defn- valid? [schema example] (= (s/validate schema example) example))
 (def my-uuid #uuid "2c44e59a-e612-4d2e-bf0f-5bbd6afeda8f")

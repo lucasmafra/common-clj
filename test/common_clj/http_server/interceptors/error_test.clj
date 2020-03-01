@@ -1,11 +1,10 @@
 (ns common-clj.http-server.interceptors.error-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest testing is]]
             [common-clj.coercion :as coercion]
             [common-clj.http-server.interceptors.error :as nut]
             [common-clj.json :as json]
             [io.pedestal.interceptor.chain :as chain]
-            [schema.core :as s]
-            [schema.utils :refer [make-ValidationError]])
+            [schema.core :as s])
   (:import clojure.lang.ExceptionInfo))
 
 (defn- make-validation-error [schema value]

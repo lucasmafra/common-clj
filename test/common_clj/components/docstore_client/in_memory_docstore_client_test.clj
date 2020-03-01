@@ -1,15 +1,10 @@
 (ns common-clj.components.docstore-client.in-memory-docstore-client-test
   (:require [com.stuartsierra.component :as component]
-            [common-clj.components.config.in-memory-config
-             :as in-memory-config]
+            [common-clj.components.config.in-memory-config :as in-memory-config]
             [common-clj.components.docstore-client.in-memory-docstore-client
-             :as in-memory-docstore-client]
-            [common-clj.components.docstore-client.protocol :as
-             docstore-client.protocol]
-            [common-clj.test-helpers :refer [schema-error? throws-ex]]
-            [midje.sweet :refer :all]
-            [schema.core :as s])
-  (:import clojure.lang.ExceptionInfo))
+             :as
+             in-memory-docstore-client]
+            [schema.core :as s]))
 
 (def dynamo-tables
   {:table/a {:primary-key [:a/id :s]}
