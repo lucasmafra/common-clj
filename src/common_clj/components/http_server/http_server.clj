@@ -94,7 +94,7 @@
   (create-server [{:keys [config overrides] :as components}]
     (let [env                                   (config.protocol/get-env config)
           {:keys [http-port]}                   (config.protocol/get-config config)
-          pedestal-routes                       (routes->pedestal routes overrides env components)
+          pedestal-routes                       (routes->pedestal routes components)
           {:keys [service-map interceptors-fn]} overrides
           http-port                             (or http-port 80)
           service-map                           (build-service-map service-map http-port pedestal-routes env)

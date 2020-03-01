@@ -1,8 +1,8 @@
-(ns common-clj.http-client.clj-http-test
+(ns common-clj.http-client.http-client-test
   (:require [aux.init :refer [defflow init!]]
             [com.stuartsierra.component :as component]
             [common-clj.components.config.in-memory-config :as imc]
-            [common-clj.http-client.clj-http :as sut]
+            [common-clj.http-client.http-client :as sut]
             [common-clj.http-client.protocol :as hc-pro]
             [common-clj.schema :as cs]
             [common-clj.state-flow-helpers.http-client :as http-client]
