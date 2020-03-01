@@ -1,6 +1,6 @@
 (ns common-clj.http-client.interceptors.handler-test
   (:require [clj-http.fake :refer [with-fake-routes]]
-            [clojure.test :refer :all]
+            [clojure.test :refer [deftest testing is]]
             [common-clj.http-client.interceptors.handler :as nut]
             [io.pedestal.interceptor.chain :as chain]))
 

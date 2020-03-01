@@ -1,6 +1,6 @@
 (ns common-clj.http-client.interceptors.json-deserializer-test
   (:require [cheshire.core :refer [parse-string]]
-            [clojure.test :refer :all]
+            [clojure.test :refer [deftest testing is]]
             [common-clj.http-client.interceptors.json-deserializer :as nut]
             [io.pedestal.interceptor.chain :as chain]))
 

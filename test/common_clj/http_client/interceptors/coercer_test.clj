@@ -1,5 +1,5 @@
 (ns common-clj.http-client.interceptors.coercer-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest testing is]]
             [common-clj.coercion :refer [pos-int-matcher]]
             [common-clj.http-client.interceptors.coercer :as nut]
             [common-clj.schema :as cs]
