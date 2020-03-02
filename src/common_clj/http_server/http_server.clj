@@ -19,13 +19,14 @@
 (defn- build-service-map [{:keys [config] :as component}]
   (let [env                                    (config-protocol/get-env config)
         {:keys [http-port] :or {http-port 80}} (config-protocol/get-config config)]
-    (-> {::http/host   "0.0.0.0"
-         ::http/port   http-port
-         ::http/type   :jetty
-         ::http/join?  false
-         ::http/routes (->pedestal-routes component)
-         :env          env}
-        (build-base-interceptors component))))
+    (build-base-interceptors
+     {::http/type   :jetty
+      ::http/port   http-port
+      ::http/host   "0.0.0.0"
+      ::http/join?  false
+      ::http/routes (->pedestal-routes component)
+      :env         env}
+     component)))
 
 (defn- start-server [{:keys [env] :as service-map}]
   (if (= env :test)
