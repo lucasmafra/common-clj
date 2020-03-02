@@ -12,20 +12,24 @@
 
 (defn- build-base-interceptors [{:keys [env] :as service-map} component]
   (cond-> service-map
+    (not= env :prod) (assoc ::http/allowed-origins {:creds true :allowed-origins (constantly true)})
     true             http/default-interceptors
     (not= env :prod) http/dev-interceptors
     true             (update ::http/interceptors #(cons (i-ctx/context-initializer component) %))))
 
-(defn- build-service-map [{:keys [config] :as component}]
+(defn- build-service-map [{:keys [config overrides] :as component}]
   (let [env                                    (config-protocol/get-env config)
-        {:keys [http-port] :or {http-port 80}} (config-protocol/get-config config)]
+        {:keys [http-port] :or {http-port 80}} (config-protocol/get-config config)
+        {:keys [service-map]} overrides]
     (build-base-interceptors
-     {::http/type   :jetty
-      ::http/port   http-port
-      ::http/host   "0.0.0.0"
-      ::http/join?  false
-      ::http/routes (->pedestal-routes component)
-      :env         env}
+     (merge
+      {::http/type   :jetty
+       ::http/port   http-port
+       ::http/host   "0.0.0.0"
+       ::http/join?  false
+       ::http/routes (->pedestal-routes component)
+       :env         env}
+      service-map)
      component)))
 
 (defn- start-server [{:keys [env] :as service-map}]
