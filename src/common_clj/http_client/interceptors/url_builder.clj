@@ -1,5 +1,5 @@
 (ns common-clj.http-client.interceptors.url-builder
-  (:require [common-clj.components.config.protocol :as config-protocol]
+  (:require [common-clj.config.protocol :as config-protocol]
             [io.pedestal.interceptor :as interceptor]
             [selmer.parser :as sp]))
 

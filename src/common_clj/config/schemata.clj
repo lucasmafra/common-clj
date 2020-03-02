@@ -1,5 +1,5 @@
 (ns common-clj.config.schemata
-  (:require [common-clj.schema-helpers :as csh]
+  (:require [common-clj.schema.helpers :as csh]
             [schema.core :as s]))
 
 (def AppConfig

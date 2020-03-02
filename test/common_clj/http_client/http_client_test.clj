@@ -1,10 +1,10 @@
 (ns common-clj.http-client.http-client-test
   (:require [aux.init :refer [defflow init!]]
             [com.stuartsierra.component :as component]
-            [common-clj.components.config.in-memory-config :as imc]
+            [common-clj.config.in-memory-config :as imc]
             [common-clj.http-client.http-client :as nut]
             [common-clj.http-client.protocol :as hc-pro]
-            [common-clj.schema :as cs]
+            [common-clj.schema.core :as cs]
             [common-clj.state-flow-helpers.http-client :as http-client]
             [schema.core :as s]
             [state-flow.assertions.matcher-combinators :refer [match?]]

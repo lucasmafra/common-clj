@@ -1,7 +1,7 @@
 (ns common-clj.http-client.interceptors.query-params-test
   (:require [clojure.test :refer [deftest is testing]]
             [common-clj.http-client.interceptors.query-params :as nut]
-            [common-clj.schema :as cs]
+            [common-clj.schema.core :as cs]
             [io.pedestal.interceptor.chain :as chain])
   (:import clojure.lang.ExceptionInfo))
 

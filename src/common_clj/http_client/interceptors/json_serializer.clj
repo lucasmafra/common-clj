@@ -2,7 +2,7 @@
   (:require [common-clj.http-client.interceptors.helpers :refer [parse-overrides]]
             [common-clj.json :as json]
             [common-clj.misc :as misc]
-            [common-clj.schema :as cs]
+            [common-clj.schema.core :as cs]
             [io.pedestal.interceptor :as interceptor]))
 
 (def default-serialization-map json/default-serialization-map)

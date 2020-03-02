@@ -2,7 +2,7 @@
   (:require [clojure.test :refer [deftest is testing]]
             [common-clj.http-server.interceptors.json-serializer :as nut]
             [common-clj.json :as json]
-            [common-clj.schema :as cs]
+            [common-clj.schema.core :as cs]
             [io.pedestal.interceptor.chain :as chain])
   (:import clojure.lang.ExceptionInfo))
 

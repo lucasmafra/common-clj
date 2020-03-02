@@ -1,6 +1,6 @@
 (ns common-clj.http-client.http-client
   (:require [com.stuartsierra.component :as component]
-            [common-clj.components.config.protocol :as conf-pro]
+            [common-clj.config.protocol :as conf-pro]
             [common-clj.http-client.interceptors.coercer :as i-coercer]
             [common-clj.http-client.interceptors.handler :as i-handler]
             [common-clj.http-client.interceptors.json-deserializer :as i-json-deserializer]

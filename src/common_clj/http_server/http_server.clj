@@ -1,6 +1,6 @@
 (ns common-clj.http-server.http-server
   (:require [com.stuartsierra.component :as component]
-            [common-clj.components.config.protocol :as config-protocol]
+            [common-clj.config.protocol :as config-protocol]
             [common-clj.http-server.helpers :refer [->pedestal-routes]]
             [common-clj.http-server.interceptors.context-initializer :as i-ctx]
             [common-clj.http-server.schemata :as s-hs]
@@ -37,8 +37,8 @@
   (when service-map
     (http/stop service-map)))
 
-(defn- assoc-components [{:keys [config] :as component}]
-  (assoc component :components {:config config}))
+(defn- assoc-components [component]
+  (assoc component :components component))
 
 (s/defrecord HttpServerImpl
              [routes :- s-hs/Routes
