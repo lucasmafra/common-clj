@@ -1,5 +1,5 @@
 (ns common-clj.coercion
-  (:require [common-clj.schema :as cs]
+  (:require [common-clj.schema.core :as cs]
             [java-time :refer [instant local-date local-date-time]]
             [schema-tools.coerce :as stc]
             [schema.coerce :as coerce]

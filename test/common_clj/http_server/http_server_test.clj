@@ -2,7 +2,7 @@
   (:require [aux.http-server :refer [GET<no-print>]]
             [aux.init :refer [defflow init!]]
             [com.stuartsierra.component :as component]
-            [common-clj.components.config.in-memory-config :as imc]
+            [common-clj.config.in-memory-config :as imc]
             [common-clj.http-server.http-server :as nut]
             [common-clj.http-server.interceptors.helpers :refer [ok]]
             [common-clj.state-flow-helpers.http-server :refer [GET POST]]

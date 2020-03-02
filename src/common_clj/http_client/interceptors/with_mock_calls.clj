@@ -1,6 +1,6 @@
 (ns common-clj.http-client.interceptors.with-mock-calls
   (:require [clj-http.fake :refer [with-fake-routes]]
-            [common-clj.components.config.protocol :as config-pro]
+            [common-clj.config.protocol :as config-pro]
             [common-clj.json :as json]
             [common-clj.misc :as misc]
             [io.pedestal.interceptor :as interceptor]

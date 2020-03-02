@@ -1,7 +1,7 @@
 (ns common-clj.http-client.interceptors.url-builder-test
   (:require [clojure.test :refer [deftest is testing]]
             [com.stuartsierra.component :as component]
-            [common-clj.components.config.in-memory-config :as imc]
+            [common-clj.config.in-memory-config :as imc]
             [common-clj.http-client.interceptors.url-builder :as nut]
             [io.pedestal.interceptor.chain :as chain]))
 

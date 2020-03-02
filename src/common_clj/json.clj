@@ -1,7 +1,7 @@
 (ns common-clj.json
   (:require [cheshire.core :refer [generate-string parse-string]]
             [common-clj.misc :as misc]
-            [common-clj.schema :as cs]
+            [common-clj.schema.core :as cs]
             [schema.core :as s]
             [schema.spec.core :as spec]))
 

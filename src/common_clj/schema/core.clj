@@ -1,4 +1,4 @@
-(ns common-clj.schema
+(ns common-clj.schema.core
   (:require [schema.core :as s]))
 
 (def LocalDate

@@ -1,7 +1,7 @@
 (ns common-clj.http-server.interceptors.path-params-coercer
   (:require [common-clj.coercion :as coercion]
             [common-clj.http-server.interceptors.helpers :refer [parse-overrides]]
-            [common-clj.schema :as cs]
+            [common-clj.schema.core :as cs]
             [io.pedestal.interceptor :as interceptor]))
 
 (def default-coercers coercion/default-coercion-map)

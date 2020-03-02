@@ -1,4 +1,4 @@
-(ns common-clj.schema-helpers
+(ns common-clj.schema.helpers
   (:require [clojure.walk :as walk]
             [schema.core :as s]))
 

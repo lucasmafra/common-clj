@@ -2,7 +2,7 @@
   (:require [clojure.test :refer [deftest is testing]]
             [common-clj.coercion :refer [pos-int-matcher]]
             [common-clj.http-client.interceptors.coercer :as nut]
-            [common-clj.schema :as cs]
+            [common-clj.schema.core :as cs]
             [io.pedestal.interceptor.chain :as chain]
             [schema.core :as s])
   (:import clojure.lang.ExceptionInfo))
