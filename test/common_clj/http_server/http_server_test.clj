@@ -1,6 +1,7 @@
 (ns common-clj.http-server.http-server-test
   (:require [aux.http-server :refer [GET<no-print>]]
             [aux.init :refer [defflow init!]]
+            [clojure.test :refer [deftest is testing]]
             [com.stuartsierra.component :as component]
             [common-clj.config.in-memory-config :as imc]
             [common-clj.http-server.http-server :as nut]
@@ -74,3 +75,14 @@
 
   (match? {:status 500}
           response))
+
+(deftest overrides
+  (testing "override service-map"
+    (let [overrides {:service-map {:dummy-key :dummy-value}}
+          system (assoc system :http-server (component/using
+                                             (nut/new-http-server routes overrides)
+                                             [:config]))]
+      (is (= :dummy-value
+             (get-in
+              (component/start system)
+              [:http-server :service-map :dummy-key]))))))
