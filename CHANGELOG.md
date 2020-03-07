@@ -1,4 +1,7 @@
 # Change Log
+### Changed [1.5.0]
+- [clojure-test-helpers] Add macro `deftest` for testing with schema validation
+
 ### Changed [1.3.0]
 - [coercion] Improve enum coercer to handle snake-cased values
 
