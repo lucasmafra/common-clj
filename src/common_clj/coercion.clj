@@ -1,10 +1,13 @@
 (ns common-clj.coercion
-  (:require [common-clj.schema.core :as cs]
+  (:require [clojure.string :as str]
+            [common-clj.misc :as misc]
+            [common-clj.schema.core :as cs]
             [java-time :refer [instant local-date local-date-time]]
             [schema-tools.coerce :as stc]
             [schema.coerce :as coerce]
             [schema.core :as s]
-            [schema.utils :as utils]))
+            [schema.utils :as utils])
+  (:import schema.core.EnumSchema))
 
 (def big-decimal-matcher (partial coerce/safe bigdec))
 (def local-date-matcher (partial coerce/safe local-date))
@@ -19,6 +22,11 @@
 (def epoch-millis-matcher (partial coerce/safe (comp instant #(Long/valueOf %))))
 
 (def long-matcher (partial coerce/safe #(Long/valueOf %)))
+
+(def enum-matcher (partial coerce/safe #(-> %
+                                            name
+                                            str/lower-case
+                                            (misc/replace-char \_ \- #{}))))
 
 (defn filter-schema-keys
   [m schema-keys extra-keys-walker]
@@ -55,7 +63,9 @@
 
 (defn make-matcher [match-schema coerce-fn]
   (fn [schema]
-    (when (= match-schema schema)
+    (when (or (= match-schema schema) (and
+                                       (instance? java.lang.Class match-schema)
+                                       (instance? match-schema schema)))
       (coerce-fn))))
 
 (defn json-matcher
@@ -69,12 +79,6 @@
                                    allow-extra-keys
                                    map-filter-matcher))))
 
-(defn coerce
-  ([schema data coercers]
-   (coerce schema data coercers nil))
-  ([schema data coercers options]
-   (stc/coerce data schema (json-matcher coercers options))))
-
 (def default-coercion-map
   {cs/LocalDate             local-date-matcher
    cs/LocalDateTime         local-date-time-matcher
@@ -82,4 +86,13 @@
    cs/PosInt                pos-int-matcher
    java.math.BigDecimal     big-decimal-matcher
    cs/EpochMillis           epoch-millis-matcher
-   cs/TimestampMicroseconds long-matcher})
+   cs/TimestampMicroseconds long-matcher
+   EnumSchema               enum-matcher})
+
+(defn coerce
+  ([schema data]
+   (coerce schema data default-coercion-map))
+  ([schema data coercers]
+   (coerce schema data coercers nil))
+  ([schema data coercers options]
+   (stc/coerce data schema (json-matcher coercers options))))

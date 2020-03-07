@@ -5,13 +5,13 @@
 
 (def string-or-keyword (s/if keyword? s/Keyword s/Str))
 
-(s/defn ^:private replace-char :- s/Keyword
+(s/defn replace-char :- s/Keyword
   ;; Replaces the from character with the to character in s, which can be a String or a Keyword
   ;; Does nothing if s is a keyword that is in the exception set
   [s :- string-or-keyword, from :- Character, to :- Character, exceptions :- #{s/Keyword}]
   (if (contains? exceptions s) s (keyword (str/replace (name s) from to))))
 
-(s/defn ^:private replace-char-gen :- (s/pred fn?)
+(s/defn replace-char-gen :- (s/pred fn?)
   ;; Will replace dashes with underscores or underscores with dashes for the keywords in a map
   ;; Ignores String values in a map (both keys and values)
   ([from :- Character, to :- Character] (replace-char-gen from to #{}))
