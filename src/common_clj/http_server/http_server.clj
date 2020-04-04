@@ -5,7 +5,6 @@
             [common-clj.http-server.interceptors.context-initializer :as i-ctx]
             [common-clj.http-server.schemata :as s-hs]
             [io.pedestal.http :as http]
-            [io.pedestal.log :as log]
             [schema.core :as s]))
 
 (defn- assert-dependencies [{:keys [config]}]
@@ -33,13 +32,10 @@
       service-map)
      component)))
 
-(defn- start-server [{:keys [env http/port] :as service-map}]
+(defn- start-server [{:keys [env] :as service-map}]
   (if (= env :test)
     service-map
-    (let [server (http/start service-map)]
-      (log/info :event :server-started
-                :port  port)
-      server)))
+    (http/start service-map)))
 
 (defn- stop-server [{:keys [service-map]}]
   (when service-map
