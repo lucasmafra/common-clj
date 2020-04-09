@@ -26,10 +26,10 @@
    i-coercer/coercer
    i-json-deserializer/json-deserializer])
 
-(defn build-interceptors [env]
-  (if (= env :test)
-    (cons i-mock/with-mock-calls default-interceptors)
-    default-interceptors))
+(defn build-interceptors [env {:keys [extra-interceptors]}]
+  (cond->> default-interceptors
+    (= env :test)              (cons (i-mock/with-mock-calls))
+    (some? extra-interceptors) (concat extra-interceptors)))
 
 (s/defrecord CljHttp [endpoints :- s-hc/Endpoints
                       overrides :- s-hc/Overrides]
@@ -47,7 +47,7 @@
 
   (request [{:keys [config] :as component} endpoint options]
     (let [env                   (conf-pro/get-env config)
-          interceptors          (build-interceptors env)
+          interceptors          (build-interceptors env overrides)
           initial-context       {:endpoints   endpoints
                                  :endpoint    endpoint
                                  :options     options

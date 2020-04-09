@@ -1,4 +1,7 @@
 # Change Log
+### Changed [1.5.2]
+- [http-client] Support `:extra-interceptors` override
+
 ### Changed [1.5.0]
 - [clojure-test-helpers] Add macro `deftest` for testing with schema validation
 

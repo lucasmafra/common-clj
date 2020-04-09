@@ -3,6 +3,7 @@
             [com.stuartsierra.component :as component]
             [common-clj.config.in-memory-config :as imc]
             [common-clj.http-client.http-client :as nut]
+            [common-clj.http-client.interceptors.with-mock-calls :as i-mock]
             [common-clj.http-client.protocol :as hc-pro]
             [common-clj.schema.core :as cs]
             [common-clj.state-flow-helpers.http-client :as http-client]
@@ -72,7 +73,7 @@
                               :date    #local-date "2019-08-02"}}
           response))
 
-(defflow test-overrides
+(defflow test-extend-deserialization
   :pre-conditions [(init! system)
                    (http-client/mock! mock-calls)]
 
@@ -81,4 +82,18 @@
                                         {"message" :special-key}}})]
 
   (match? {:status 200 :body {:special-key "Hello"}}
+          response))
+
+(defflow test-extra-interceptors
+  :pre-conditions
+  [(init! (component/system-map
+           :config (imc/new-config config :prod)
+           :http-client (component/using
+                         (nut/new-http-client
+                          endpoints {:extra-interceptors [(i-mock/with-mock-calls mock-calls)]})
+                         [:config])))]
+
+  [response (request :test/simple-get)]
+
+  (match? {:status 200 :body {:message "Hello"}}
           response))
