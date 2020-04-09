@@ -1,5 +1,6 @@
 (ns common-clj.http-client.interceptors.with-mock-calls
   (:require [clj-http.fake :refer [with-fake-routes]]
+            [clojure.test :refer [function?]]
             [common-clj.config.protocol :as config-pro]
             [common-clj.json :as json]
             [common-clj.misc :as misc]
@@ -20,14 +21,19 @@
 (defn- replace-url [template variable]
   (render template {variable (fake-host variable)}))
 
-(defn- transform-body [mock]
+(defn- transform-body [mock {:keys [options] :as context}]
   (misc/map-vals
-   (fn [{:keys [body status] :as val}]
-     (if (empty? val)
-       {}
-       (if body
-         (constantly {:status status :body (json/json->string body)})
-         (transform-body val))))
+   (fn [{:keys [body status] :as v}]
+     (cond
+       (function? v) (let [{:keys [status body]} (v options)]
+                       (constantly {:status status :body (if (string? body)
+                                                           body
+                                                           (json/json->string body))}))
+       (empty? v) {}
+       (some? body) (constantly {:status status :body (if (string? body)
+                                                        body
+                                                        (json/json->string body))})
+       :else        (transform-body v context)))
    mock))
 
 (defn- transform-hosts [mock]
@@ -40,7 +46,8 @@
        k))
    mock))
 
-(def ^:private transform-mock (comp transform-body transform-hosts))
+(defn ^:private transform-mock [mock-calls context]
+  (-> mock-calls transform-hosts (transform-body context)))
 
 (defn- wrap-handler-interceptor
   "Wraps handler interceptor into with-fake-routes"
@@ -48,9 +55,9 @@
   (->> queue
        seq
        (map (fn [{:keys [name enter] :as interceptor}]
-              (if (= :common-clj.http-client.interceptors.handler/handler
-                     name)
-                (assoc interceptor :enter (fn [context] (with-fake-routes (transform-mock mock-calls)
+              (if (= :common-clj.http-client.interceptors.handler/handler name)
+                (assoc interceptor :enter (fn [context] (with-fake-routes
+                                                          (transform-mock mock-calls context)
                                                           (enter context))))
                 interceptor)))
        (into clojure.lang.PersistentQueue/EMPTY)))
