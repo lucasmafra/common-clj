@@ -42,7 +42,7 @@
 
 (def mock-calls
   {"http://test.com/test/get"
-   {:status 200 :body {"message" "Hello"}}
+   (constantly {:status 200 :body {"message" "Hello"}})
 
    "{{my-service}}/test/more-features/2c6c6074-3ca8-4ec3-b742-33d0fcbe0b0b"
    {:status 200 :body {"my_name" "Tester"

@@ -1,4 +1,7 @@
 # Change Log
+### Changed [1.5.3]
+- [http-client] Extend mock calls to work with functions of the request as well
+
 ### Changed [1.5.2]
 - [http-client] Support `:extra-interceptors` override
 
