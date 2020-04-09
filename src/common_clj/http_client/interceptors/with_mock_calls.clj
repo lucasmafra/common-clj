@@ -59,12 +59,14 @@
   (doseq [host hosts]
     (config-pro/assoc-in! config [:known-hosts host] (fake-host host))))
 
-(def with-mock-calls
-  (interceptor/interceptor
-   {:name ::with-mock-calls
-    :enter (fn [{:keys [:io.pedestal.interceptor.chain/queue] {:keys [config]} :components :as context}]
-             (let [mock-calls (or *mock-calls* {})
-                   host-variables (extract-host-variables mock-calls)
-                   modified-queue (wrap-handler-interceptor queue mock-calls)]
-               (mock-known-hosts! host-variables config)
-               (assoc context :io.pedestal.interceptor.chain/queue modified-queue)))}))
+(defn with-mock-calls
+  ([] (with-mock-calls nil))
+  ([mock-calls]
+   (interceptor/interceptor
+    {:name ::with-mock-calls
+     :enter (fn [{:keys [:io.pedestal.interceptor.chain/queue] {:keys [config]} :components :as context}]
+              (let [mock-calls (or mock-calls *mock-calls* {})
+                    host-variables (extract-host-variables mock-calls)
+                    modified-queue (wrap-handler-interceptor queue mock-calls)]
+                (mock-known-hosts! host-variables config)
+                (assoc context :io.pedestal.interceptor.chain/queue modified-queue)))})))

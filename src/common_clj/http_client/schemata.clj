@@ -16,7 +16,8 @@
    (s/optional-key :coercer)                CoercerOverrides
    (s/optional-key :extend-serialization)   s/Any
    (s/optional-key :extend-deserialization) s/Any
-   (s/optional-key :extend-coercion)        s/Any})
+   (s/optional-key :extend-coercion)        s/Any
+   (s/optional-key :extra-interceptors)     s/Any})
 
 (def EndpointSettings
   {:host                                 s/Str
