@@ -5,12 +5,12 @@
             [common-clj.config.protocol :as config-protocol])
   (:import clojure.lang.ExceptionInfo))
 
-(def valid-config {:app-name :common-clj})
+(def valid-config {:app/name :common-clj})
 (def invalid-config {"APP_NAME" "INVALID_APP_CONFIG"})
 
 (deftest get-config
   (testing "loads given config"
-    (is (= {:app-name :common-clj}
+    (is (= {:app/name :common-clj}
            (config-protocol/get-config
             (component/start (nut/new-config valid-config))))))
 

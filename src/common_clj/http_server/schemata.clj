@@ -1,5 +1,6 @@
 (ns common-clj.http-server.schemata
-  (:require [schema.core :as s]))
+  (:require [common-clj.schema.helpers :as csh]
+            [schema.core :as s]))
 
 (def BodyCoercerOverrides
   {(s/optional-key :coercers) s/Any
@@ -37,3 +38,8 @@
 
 (def Routes
   {s/Keyword RouteSettings})
+
+(def HttpServerConfig
+  (csh/loose-schema
+   #:http-server
+    {:port s/Int}))

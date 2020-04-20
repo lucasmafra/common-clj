@@ -10,6 +10,9 @@
 (defn- assert-dependencies [{:keys [config]}]
   (assert config "Missing dependency: "))
 
+(defn- assert-config [config-map]
+  (s/validate s-hs/HttpServerConfig config-map))
+
 (defn- build-base-interceptors [{:keys [env] :as service-map} component]
   (cond-> service-map
     (not= env :prod) (assoc ::http/allowed-origins {:creds true :allowed-origins (constantly true)})
@@ -19,12 +22,13 @@
 
 (defn- build-service-map [{:keys [config overrides] :as component}]
   (let [env                                    (config-protocol/get-env config)
-        {:keys [http-port] :or {http-port 80}} (config-protocol/get-config config)
+        {:keys [http-server/port] :as config-map} (config-protocol/get-config config)
         {:keys [service-map]} overrides]
+    (assert-config config-map)
     (build-base-interceptors
      (merge
       {::http/type   :jetty
-       ::http/port   http-port
+       ::http/port   port
        ::http/host   "0.0.0.0"
        ::http/join?  false
        ::http/routes (->pedestal-routes component)

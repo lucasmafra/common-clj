@@ -11,7 +11,7 @@
 
 (deftest get-config
   (testing "reads config from edn file"
-    (is (= {:app-name :common-clj}
+    (is (= {:app/name :common-clj}
            (with-redefs [io/resource (constantly valid-config)]
              (config-protocol/get-config
               (component/start (edn-config/new-config)))))))

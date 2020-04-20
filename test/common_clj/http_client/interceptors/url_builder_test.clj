@@ -6,7 +6,7 @@
             [io.pedestal.interceptor.chain :as chain]))
 
 (def config
-  {:app-name    :app
+  {:app/name    :app
    :known-hosts {:my-service "http://my-service.com"}})
 
 (def context

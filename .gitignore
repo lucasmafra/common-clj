@@ -36,3 +36,6 @@ repl-port
 # Builds
 out/
 build/
+
+# docker-compose
+zk-single-kafka-single/

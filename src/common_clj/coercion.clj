@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [common-clj.misc :as misc]
             [common-clj.schema.core :as cs]
-            [java-time :refer [instant local-date local-date-time]]
+            [java-time :as time]
             [schema-tools.coerce :as stc]
             [schema.coerce :as coerce]
             [schema.core :as s]
@@ -10,8 +10,8 @@
   (:import schema.core.EnumSchema))
 
 (def big-decimal-matcher (partial coerce/safe bigdec))
-(def local-date-matcher (partial coerce/safe local-date))
-(def local-date-time-matcher (partial coerce/safe local-date-time))
+(def local-date-matcher (partial coerce/safe time/local-date))
+(def local-date-time-matcher (partial coerce/safe time/local-date-time))
 (def int-matcher (partial coerce/safe #(if (string? %)
                                          (Integer/parseInt %)
                                          (coerce/safe-long-cast %))))
@@ -19,7 +19,7 @@
                                              (Integer/parseInt %)
                                              (coerce/safe-long-cast %))))
 
-(def epoch-millis-matcher (partial coerce/safe (comp instant #(Long/valueOf %))))
+(def epoch-millis-matcher (partial coerce/safe (comp time/instant #(Long/valueOf %))))
 
 (def long-matcher (partial coerce/safe #(Long/valueOf %)))
 

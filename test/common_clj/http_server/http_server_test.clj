@@ -11,7 +11,8 @@
             [state-flow.assertions.matcher-combinators :refer [match?]]))
 
 (def config
-  {:app-name :my-app})
+  {:app/name         :my-app
+   :http-server/port 8000})
 
 (def routes
   {:route/simple-get
