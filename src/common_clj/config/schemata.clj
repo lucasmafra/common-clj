@@ -4,9 +4,7 @@
 
 (def AppConfig
   (csh/loose-schema
-   {:app-name                     s/Keyword
-    (s/optional-key :http-port)   s/Int
-    (s/optional-key :known-hosts) {s/Keyword s/Str}}))
+   {:app/name                     s/Keyword}))
 
 (def Env
   (s/enum :test :dev :prod))

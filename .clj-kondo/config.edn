@@ -2,11 +2,14 @@
  {:unresolved-symbol   {:exclude [(io.pedestal.interceptor.error/error-dispatch)
                                   (aux.init/defflow)
                                   (clojure.core.match/match)
-                                  (common-clj.misc/for-map)]}
+                                  (common-clj.misc/for-map)
+                                  (common-clj.clojure-test-helpers.core/deftest)]}
   :unused-referred-var {:exclude {com.stuartsierra.component.repl         [start stop reset]
                                   com.stuartsierra.component.user-helpers [dev go reset]}}
   :unused-namespace    {:exclude [com.stuartsierra.component.user-helpers]}}
 
  :output
  {:exclude-files ["dev/user.clj"
+                  "src/common_clj/uuid.clj"
+                  "src/common_clj/coercion.clj"
                   "resources/data_readers.clj"]}}

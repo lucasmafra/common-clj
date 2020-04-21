@@ -28,4 +28,3 @@
             serialized-body           (serialize-fn body response-schema serialize-options)]
 
         (assoc-in context [:response :body] serialized-body)))}))
-

@@ -31,7 +31,7 @@
                          :date cs/LocalDate}}})
 
 (def config
-  {:app-name :my-app})
+  {:app/name :my-app})
 
 (def system
   (component/system-map
