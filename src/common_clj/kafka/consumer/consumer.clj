@@ -24,15 +24,16 @@
 
 (s/defrecord KafkaConsumer [topics]
   component/Lifecycle
-  (start [{:keys [config] :as component}]
+  (start [{:keys [config producer] :as component}]
     (let [env                    (conf-pro/get-env config)
           config                 (conf-pro/get-config config)
           start-interceptors     (build-start-interceptors env)
           consume-interceptors   (build-interceptors env)
           context                {:config               config
+                                  :producer             producer
                                   :topics               topics
                                   :consume-interceptors consume-interceptors}
-          {:keys [kafka-client]} (chain/execute start-interceptors context)]
+          {:keys [kafka-client]} (chain/execute context start-interceptors)]
       (assoc component :kafka-client kafka-client)))
 
   (stop [{:keys [kafka-client] :as component}]

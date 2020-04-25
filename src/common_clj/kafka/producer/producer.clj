@@ -29,7 +29,9 @@
   component/Lifecycle
   (start [{:keys [config] :as component}]
     (let [config-map (conf-pro/get-config config)]
-      (assoc component :kafka-producer (init-kafka-producer (->props config-map)))))
+      (-> component
+          (assoc :kafka-producer (init-kafka-producer (->props config-map)))
+          (assoc :produced-records (atom {:records []})))))
 
   (stop [{:keys [kafka-producer] :as component}]
     (.close kafka-producer)

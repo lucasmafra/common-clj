@@ -9,7 +9,9 @@
   (interceptor/interceptor
    {:name  ::mock-kafka-client
     :enter (fn [{:keys [:io.pedestal.interceptor.chain/queue] :as context}]
-             (let [modified-queue (remove #(= i-kafka-client (:name %)) queue)]
+             (let [modified-queue (->> queue
+                                       (remove #(= i-kafka-client (:name %)))
+                                       (into clojure.lang.PersistentQueue/EMPTY))]
                (-> context
                    (assoc :kafka-client (new MockConsumer OffsetResetStrategy/EARLIEST))
                    (assoc :io.pedestal.interceptor.chain/queue modified-queue))))}))

@@ -6,16 +6,12 @@
             [common-clj.kafka.consumer.consumer :as nut]
             [common-clj.key-value-store.in-memory-key-value-store :as in-memory-kvs]
             [common-clj.key-value-store.protocol :as kvs-pro]
-            [schema.core :as s])
-  (:import [org.apache.kafka.clients.consumer ConsumerRecord MockConsumer OffsetResetStrategy]
-           org.apache.kafka.common.TopicPartition))
+            [schema.core :as s]
+            [common-clj.kafka.producer.producer :as kafka-producer]))
 
 (def SchemaA {:a s/Str})
 (def SchemaB {:b s/Str})
 (def SchemaC {:c s/Str})
-
-(def init-mock-kafka-consumer
-  (constantly (new MockConsumer OffsetResetStrategy/EARLIEST)))
 
 (def config {:app/name      :my-app
              :kafka/brokers ["localhost:9092"]})
@@ -41,32 +37,17 @@
   (component/system-map
    :config          (imc/new-config config :test)
    :key-value-store (in-memory-kvs/new-key-value-store)
+   :producer        (component/using
+                     (kafka-producer/new-producer {})
+                     [:config])
    :consumer        (component/using
                      (nut/new-consumer topics)
-                     [:config :key-value-store])))
+                     [:config :key-value-store :producer])))
 
 (defn- start-consumer []
   (component/start system))
 
-(defn get-produced-messages [topic producer]
-  (->> producer
-       :kafka-producer
-       .history
-       (filter #(= topic (.topic %)))
-       (mapv #(.value %))))
-
-(defn- produce! [{:keys [kafka-consumer]} topic message]
-  (let [partitions [(new TopicPartition "TOPIC_A" 0) (new TopicPartition "TOPIC_B" 0)]]    
-    (.rebalance kafka-consumer partitions)
-    (.pause kafka-consumer partitions)
-    (.updateBeginningOffsets kafka-consumer
-                             (apply hash-map (flatten (map (fn [p] [p 0]) partitions))))
-    (.updateEndOffsets kafka-consumer (apply hash-map (flatten (map (fn [p] [p 1]) partitions))))
-    (doseq [partition partitions]
-      (.seek kafka-consumer partition 0))
-    (.addRecord kafka-consumer (new ConsumerRecord topic 0 0 0 message))
-    (.resume kafka-consumer partitions)
-    (Thread/sleep 200)))
+(defn- produce! [{:keys [kafka-consumer]} topic message])
 
 (defn- fetch [key-value-store topic]
   (kvs-pro/fetch key-value-store topic))
@@ -95,17 +76,3 @@
       #_(is (= 1 (get-count key-value-store :topic/c)))
 
       (component/stop consumer))))
-
-
-#_(def a (atom {}))
-
-#_(add-watch a :watcher
-  (fn [key atom old-state new-state]
-    (Thread/sleep 3000)
-    (prn "-- Atom Changed --")
-    (prn "key" key)
-    (prn "atom" atom)
-    (prn "old-state" old-state)
-    (prn "new-state" new-state)))
-
-#_(reset! a {:foo "bar"})

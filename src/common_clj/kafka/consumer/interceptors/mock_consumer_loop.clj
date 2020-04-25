@@ -32,10 +32,16 @@
       (add-records! records context)
       (poll-and-consume! context))))
 
+(def i-consumer-loop
+  :common-clj.kafka.consumer.interceptors.consumer-loop/consumer-loop)
+
 (def mock-consumer-loop
   (interceptor/interceptor
    {:name  ::mock-consumer-loop
-    :enter (fn [{:keys [producer] :as context}]
-             (let [produced-records (:produced-records producer)]
+    :enter (fn [{:keys [producer :io.pedestal.interceptor.chain/queue] :as context}]
+             (let [produced-records (:produced-records producer)
+                   modified-queue (->> queue
+                                       (remove #(= i-consumer-loop (:name %)))
+                                       (into clojure.lang.PersistentQueue/EMPTY))]
                (add-watch produced-records :produced-records (watcher context))
-               context))}))
+               (assoc context :io.pedestal.interceptor.chain/queue modified-queue)))}))
