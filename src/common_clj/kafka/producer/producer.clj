@@ -33,7 +33,7 @@
 
   (stop [{:keys [kafka-producer] :as component}]
     (.close kafka-producer)
-    component)
+    (dissoc component :kafka-producer))
 
   producer-pro/Producer
   (produce! [{:keys [kafka-producer config]} topic message]
