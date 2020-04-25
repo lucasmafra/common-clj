@@ -3,4 +3,5 @@
  local-time      java-time/local-time
  utc             java-time/instant
  epoch           java-time/instant
- instant         java-time/instant}
+ instant         java-time/instant
+ json            common-clj.json/json->string}

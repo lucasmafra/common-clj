@@ -21,9 +21,9 @@
     true             (update ::http/interceptors #(cons (i-ctx/context-initializer component) %))))
 
 (defn- build-service-map [{:keys [config overrides] :as component}]
-  (let [env                                    (config-protocol/get-env config)
+  (let [env                                       (config-protocol/get-env config)
         {:keys [http-server/port] :as config-map} (config-protocol/get-config config)
-        {:keys [service-map]} overrides]
+        {:keys [service-map]}                     overrides]
     (assert-config config-map)
     (build-base-interceptors
      (merge
@@ -32,7 +32,7 @@
        ::http/host   "0.0.0.0"
        ::http/join?  false
        ::http/routes (->pedestal-routes component)
-       :env         env}
+       :env          env}
       service-map)
      component)))
 
