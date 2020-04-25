@@ -30,9 +30,9 @@
           start-interceptors     (build-start-interceptors env)
           consume-interceptors   (build-interceptors env)
           context                {:config               config
-                                  :producer             producer
                                   :topics               topics
-                                  :consume-interceptors consume-interceptors}
+                                  :consume-interceptors consume-interceptors
+                                  :components           component}
           {:keys [kafka-client]} (chain/execute context start-interceptors)]
       (assoc component :kafka-client kafka-client)))
 

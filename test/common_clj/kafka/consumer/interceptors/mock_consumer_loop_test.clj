@@ -19,7 +19,7 @@
                            (.subscribe ["TOPIC_A"]))
    :consume-interceptors [dummy-interceptor]
    :consumed-messages    (atom {"TOPIC_A" []})
-   :producer             {:produced-records (atom {:records []})}})
+   :components           {:producer {:produced-records (atom {:records []})}}})
 
 (def hello (new ConsumerRecord "TOPIC_A" 0 0 0 "hello"))
 (def bye (new ConsumerRecord "TOPIC_A" 0 1 0 "bye"))
@@ -27,8 +27,8 @@
 (defn produce-record! [record]
   (interceptor/interceptor
    {:name ::produce-record
-    :enter (fn [{{:keys [produced-records]} :producer :as context}]
-             (swap! produced-records update :records conj record)
+    :enter (fn [{{:keys [producer]} :components :as context}]
+             (swap! (:produced-records producer) update :records conj record)
              context)}))
 
 (def fake-consumer-loop

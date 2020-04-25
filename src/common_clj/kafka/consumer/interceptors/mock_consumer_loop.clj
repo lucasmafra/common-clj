@@ -38,8 +38,8 @@
 (def mock-consumer-loop
   (interceptor/interceptor
    {:name  ::mock-consumer-loop
-    :enter (fn [{:keys [producer :io.pedestal.interceptor.chain/queue] :as context}]
-             (let [produced-records (:produced-records producer)
+    :enter (fn [{:keys [:io.pedestal.interceptor.chain/queue components] :as context}]
+             (let [produced-records (-> components :producer :produced-records)
                    modified-queue (->> queue
                                        (remove #(= i-consumer-loop (:name %)))
                                        (into clojure.lang.PersistentQueue/EMPTY))]
