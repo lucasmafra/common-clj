@@ -9,10 +9,12 @@
             [common-clj.kafka.consumer.interceptors.subscriber :as i-subscriber]
             [io.pedestal.interceptor.chain :as chain]
             [schema.core :as s]
-            [common-clj.kafka.consumer.interceptors.json-deserializer :as i-json]))
+            [common-clj.kafka.consumer.interceptors.json-deserializer :as i-json]
+            [common-clj.kafka.consumer.interceptors.coercer :as i-coercer]))
 
 (def default-interceptors
   [i-json/json-deserializer
+   i-coercer/coercer
    i-handler/handler])
 
 (def build-interceptors (constantly default-interceptors))
@@ -46,7 +48,6 @@
   (map->KafkaConsumer {:topics topics}))
 
 ; next steps
-; coerce message and validate schema
 ; write test for handler
 ; adjust producer (test interceptors and make sure swaps :produced-messages)
 ; state-flow helpers for kafka (produce! and get-produced-messages)

@@ -8,7 +8,8 @@
             [common-clj.key-value-store.in-memory-key-value-store :as in-memory-kvs]
             [common-clj.key-value-store.protocol :as kvs-pro]
             [schema.core :as s])
-  (:import org.apache.kafka.clients.consumer.ConsumerRecord))
+  (:import clojure.lang.ExceptionInfo
+           org.apache.kafka.clients.consumer.ConsumerRecord))
 
 (def config {:app/name      :my-app
              :kafka/brokers ["localhost:9092"]})
@@ -63,4 +64,10 @@
   (testing "closes consumer on component/stop"
     (let [{:keys [consumer] :as system} (start-consumer)]
       (component/stop system)
-      (is (-> consumer :kafka-client .closed)))))
+      (is (-> consumer :kafka-client .closed))))
+
+  (testing "when message does not conform to schema throws error"
+    (let [{:keys [consumer]} (start-consumer)]
+
+      (is (thrown-with-msg? ExceptionInfo #"Could not coerce value to schema"
+                            (produce! consumer "TOPIC_A" #json {"b" "hello"}))))))
