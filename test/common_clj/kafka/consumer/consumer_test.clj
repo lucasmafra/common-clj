@@ -52,10 +52,15 @@
 
       (produce! consumer "TOPIC_A" #json {"a" "hello"})
 
-      (is (= #json {"a" "hello"} (fetch key-value-store :topic/a)))
+      (is (= {:a "hello"} (fetch key-value-store :topic/a)))
       (is (= nil (fetch key-value-store :topic/b)))
       (is (= nil (fetch key-value-store :topic/c)))
-
+      
       (produce! consumer "TOPIC_B" #json {"b" "hello"})
-
-      (is (= #json {"b" "hello"} (fetch key-value-store :topic/b))))))
+      
+      (is (= {:b "hello"} (fetch key-value-store :topic/b)))))
+  
+  (testing "closes consumer on component/stop"
+    (let [{:keys [consumer] :as system} (start-consumer)]
+      (component/stop system)
+      (is (-> consumer :kafka-client .closed)))))

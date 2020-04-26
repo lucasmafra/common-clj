@@ -7,8 +7,7 @@
 (def handler
   (interceptor/interceptor
    {:name  ::handler
-    :enter (fn [{:keys [record topics components]}]
+    :enter (fn [{:keys [message record topics components]}]
              (let [topic     (ffirst (filter (match-topic? record) topics))
-                   message   (.value record)
                    handle-fn (:handler (topics topic))]
-               (handle-fn message components)))}))
+               (handle-fn #nu/tap message components)))}))

@@ -8,10 +8,12 @@
             [common-clj.kafka.consumer.interceptors.mock-kafka-client :as i-mock-kafka-client]
             [common-clj.kafka.consumer.interceptors.subscriber :as i-subscriber]
             [io.pedestal.interceptor.chain :as chain]
-            [schema.core :as s]))
+            [schema.core :as s]
+            [common-clj.kafka.consumer.interceptors.json-deserializer :as i-json]))
 
 (def default-interceptors
-  [i-handler/handler])
+  [i-json/json-deserializer
+   i-handler/handler])
 
 (def build-interceptors (constantly default-interceptors))
 
@@ -37,8 +39,15 @@
       (assoc component :kafka-client kafka-client)))
 
   (stop [{:keys [kafka-client] :as component}]
-    (.wakeup kafka-client)
+    (.close kafka-client)
     (dissoc component :kafka-client)))
 
 (defn new-consumer [topics]
   (map->KafkaConsumer {:topics topics}))
+
+; next steps
+; coerce message and validate schema
+; write test for handler
+; adjust producer (test interceptors and make sure swaps :produced-messages)
+; state-flow helpers for kafka (produce! and get-produced-messages)
+; assert required dependencies on producer (config) and consumer (config and consumer)
