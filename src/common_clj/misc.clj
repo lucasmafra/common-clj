@@ -102,3 +102,17 @@
   [x]
   (walk/postwalk #(if (seq? %) (vec %) %)
                  x))
+
+(defn keyword->constant-case
+  "Examples:
+  :foo-bar -> FOO_BAR
+  :foo/bar -> FOO_BAR
+  :foo/bar-baz -> FOO_BAR_BAZ"
+  [k]
+  (-> k
+      str
+      str/upper-case
+      (str/replace #":" "")    ; removes :
+      (str/replace \- \_)      ; dash -> underscore
+      (str/replace \/ \_)      ; qualified keyword -> underscore      
+      ))
