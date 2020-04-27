@@ -7,13 +7,14 @@
 
 (deftest sender
   (testing "produces message to topic"
-    (let [context {:producer    (MockProducer.)
-                   :kafka-topic "MY_TOPIC"
-                   :message     "hello"}]
+    (let [context {:kafka-client (MockProducer.)
+                   :topic        :topic/a
+                   :topics       {:topic/a {:topic "MY_TOPIC"}}
+                   :message      "hello"}]
       (chain/execute context [nut/sender])
 
       (is (= ["hello"]
-             (->> context :producer .history (mapv #(.value %)))))
+             (->> context :kafka-client .history (mapv #(.value %)))))
 
       (is (= ["MY_TOPIC"]
-             (->> context :producer .history (mapv #(.topic %))))))))
+             (->> context :kafka-client .history (mapv #(.topic %))))))))

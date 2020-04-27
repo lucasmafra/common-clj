@@ -6,9 +6,14 @@
             [common-clj.kafka.consumer.interceptors.handler :as i-handler]
             [common-clj.kafka.consumer.interceptors.json-deserializer :as i-json]
             [common-clj.kafka.consumer.interceptors.kafka-client :as i-kafka-client]
-            [common-clj.kafka.consumer.interceptors.mock-consumer-loop :as i-mock-loop]
-            [common-clj.kafka.consumer.interceptors.mock-kafka-client :as i-mock-kafka-client]
+            [common-clj.kafka.consumer.interceptors.mock-consumer-loop
+             :as
+             i-mock-loop]
+            [common-clj.kafka.consumer.interceptors.mock-kafka-client
+             :as
+             i-mock-kafka-client]
             [common-clj.kafka.consumer.interceptors.subscriber :as i-subscriber]
+            [common-clj.kafka.producer.schemata :as s-consumer]
             [io.pedestal.interceptor.chain :as chain]
             [schema.core :as s]))
 
@@ -48,5 +53,5 @@
     (.close kafka-client)
     (dissoc component :kafka-client)))
 
-(defn new-consumer [topics]
+(s/defn new-consumer [topics :- s-consumer/Topics]
   (map->KafkaConsumer {:topics topics}))
