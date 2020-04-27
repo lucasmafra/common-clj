@@ -4,12 +4,19 @@
   (:import org.apache.kafka.clients.consumer.ConsumerRecord
            org.apache.kafka.common.TopicPartition))
 
+(defn- subscribed? [subscriptions]
+  (fn [record]
+    (some #(= (.topic record) %) subscriptions)))
+
 (defn- add-records! [records {:keys [kafka-client]}]
-  (let [partitions (map #(new TopicPartition (.topic %) 0) records)]
+  (let [subscriptions (.subscription kafka-client)
+        records (filter (subscribed? subscriptions) records)
+        partitions (map #(new TopicPartition (.topic %) 0) records)]
     (.rebalance kafka-client partitions)
     (.updateBeginningOffsets kafka-client (reduce (fn [acc p] (assoc acc p 0)) {} partitions))
     (.seekToBeginning kafka-client partitions)
-    (doseq [record records] (.addRecord kafka-client record))))
+    (doseq [record records]
+      (.addRecord kafka-client record))))
 
 (defn clear-pedestal-keys [context]
   (apply dissoc context [:io.pedestal.interceptor.chain/execution-id

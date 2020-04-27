@@ -1,5 +1,6 @@
 {:linters
  {:unresolved-symbol   {:exclude [(io.pedestal.interceptor.error/error-dispatch)
+                                  (state-flow.cljtest/defflow)
                                   (aux.init/defflow)
                                   (clojure.core.match/match)
                                   (common-clj.misc/for-map)
