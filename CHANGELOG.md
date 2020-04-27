@@ -1,6 +1,10 @@
 # Change Log
+### Changed [1.5.5]
+- [consumer] Add simple kafka consumer. 
+- [state-flow] Add state-flow helpers for kafka
+
 ### Changed [1.5.4]
-fdev- [producer] Add basic kafka producer. Broker address should be configured through `:kafka/brokers` key on `app.edn`.
+- [producer] Add basic kafka producer. Broker address should be configured through `:kafka/brokers` key on `app.edn`.
 
 ### Changed [1.5.3]
 - [http-client] Extend mock calls to work with functions of the request as well
