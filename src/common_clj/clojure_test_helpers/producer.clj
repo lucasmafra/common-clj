@@ -2,7 +2,7 @@
 
 (defn get-produced-messages [topic producer]
   (->> producer
-       :kafka-producer
+       :kafka-client
        .history
        (filter #(= topic (.topic %)))
        (mapv #(.value %))))

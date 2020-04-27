@@ -4,6 +4,7 @@
             [common-clj.config.in-memory-config :as imc]
             [common-clj.http-server.http-server :as hs]
             [common-clj.http-server.interceptors.helpers :refer [ok]]
+            [common-clj.kafka.consumer.consumer :as kafka-consumer]
             [common-clj.kafka.producer.producer :as kafka-producer]
             [schema.core :as s]))
 
@@ -19,8 +20,15 @@
     :response-schema s/Any
     :handler         (constantly (ok {:message "Hello, World!"}))}})
 
-(def topics
+(def producer-topics
   {:topic/a {:schema {:message s/Str}}})
+
+(def consumer-topics
+  {:topic/a
+   {:topic  "TOPIC_A"
+    :schema {:message s/Str}
+    :handler (fn [message _]
+               (println message))}})
 
 (def dev-system
   (component/system-map
@@ -31,7 +39,11 @@
                  [:config])
 
    :producer (component/using
-              (kafka-producer/new-producer topics)
-              [:config])))
+              (kafka-producer/new-producer producer-topics)
+              [:config])
+
+   :consumer (component/using
+              (kafka-consumer/new-consumer consumer-topics)
+              [:config :producer])))
 
 (set-init (constantly dev-system))

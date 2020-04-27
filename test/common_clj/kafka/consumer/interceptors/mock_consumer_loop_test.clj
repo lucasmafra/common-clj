@@ -4,7 +4,8 @@
             [common-clj.kafka.consumer.interceptors.mock-consumer-loop :as nut]
             [io.pedestal.interceptor :as interceptor]
             [io.pedestal.interceptor.chain :as chain])
-  (:import [org.apache.kafka.clients.consumer ConsumerRecord MockConsumer OffsetResetStrategy]))
+  (:import [org.apache.kafka.clients.consumer MockConsumer OffsetResetStrategy]
+           org.apache.kafka.clients.producer.ProducerRecord))
 
 (def dummy-interceptor
   (interceptor/interceptor
@@ -20,8 +21,8 @@
    :consumed-messages    (atom {"TOPIC_A" []})
    :components           {:producer {:produced-records (atom {:records []})}}})
 
-(def hello (new ConsumerRecord "TOPIC_A" 0 0 0 "hello"))
-(def bye (new ConsumerRecord "TOPIC_A" 0 1 0 "bye"))
+(def hello (new ProducerRecord "TOPIC_A" 0  "hello"))
+(def bye (new ProducerRecord "TOPIC_A" 0  "bye"))
 
 (defn produce-record! [record]
   (interceptor/interceptor

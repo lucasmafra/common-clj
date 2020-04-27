@@ -4,7 +4,9 @@
 
 (def Topic s/Keyword)
 
-(def TopicSettings {:schema s/Any})
+(def TopicSettings
+  {:schema s/Any
+   :topic  s/Str})
 
 (def Topics
   {Topic TopicSettings})

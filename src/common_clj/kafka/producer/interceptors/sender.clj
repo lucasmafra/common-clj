@@ -7,7 +7,9 @@
 
 (def sender
   (interceptor/interceptor
-   {:name ::sender
-    :enter (fn [{:keys [producer kafka-topic message] :as context}]
-             (.send producer (->record kafka-topic message))
-             context)}))
+   {:name  ::sender
+    :enter (fn [{:keys [kafka-client message topics topic] :as context}]
+             (let [kafka-topic (-> topics topic :topic)
+                   record      (->record kafka-topic message)]
+               (.send kafka-client record)
+               (assoc context :record record)))}))
